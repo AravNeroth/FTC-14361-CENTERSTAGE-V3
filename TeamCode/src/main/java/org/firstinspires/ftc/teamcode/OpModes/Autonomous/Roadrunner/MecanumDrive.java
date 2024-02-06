@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Roadrunner;
 
 import androidx.annotation.NonNull;
 
@@ -39,7 +39,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Roadrunner.messages.*;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Roadrunner.messages.MecanumCommandMessage;
 import org.firstinspires.ftc.teamcode.messages.MecanumCommandMessage;
 import org.firstinspires.ftc.teamcode.messages.MecanumEncodersMessage;
 import org.firstinspires.ftc.teamcode.messages.PoseMessage;

@@ -1,6 +1,6 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Roadrunner.tuning.messages;
+package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Roadrunner.messages;
 
-import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
+import com.acmerobotics.roadrunner.PositionVelocityPair;
 
 public final class MecanumEncodersMessage {
     public long timestamp;
