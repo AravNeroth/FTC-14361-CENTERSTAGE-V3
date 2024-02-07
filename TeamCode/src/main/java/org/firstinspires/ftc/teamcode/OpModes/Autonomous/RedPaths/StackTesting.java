@@ -8,13 +8,16 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
+//import com.acmerobotics.roadrunner.geometry.Pose2d;
+//import com.acmerobotics.roadrunner.geometry.Vector2d;
 
-import org.firstinspires.ftc.teamcode.OpModes.Autonomous.trajectorysequence.TrajectorySequence;
+//import org.firstinspires.ftc.teamcode.OpModes.Autonomous.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Commands.*;
 import org.firstinspires.ftc.teamcode.Subsystems.*;
-import org.firstinspires.ftc.teamcode.OpModes.Autonomous.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Roadrunner.MecanumDrive;
+
+// GUYS THIS WON'T WORK B/C WE HAVE NEW ROADRUNNER!
+// MAKE NEW CLASS & GO TO https://rr.brott.dev/docs/v1-0/ FOR HOW TO USE NEW ROADRUNNER V.1 RELEASE 3 BETA
 
 @Autonomous(name = "stackTesting", group = "Auto")
 public class StackTesting extends LinearOpMode {
@@ -26,80 +29,80 @@ public class StackTesting extends LinearOpMode {
 
     public void runOpMode() {
         bot = new Robot(hardwareMap, telemetry);
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
-
-        drive.setPoseEstimate(startPose);
-        initCam();
-
-        // ---------------------------- Left ---------------------------- //
-
-        TrajectorySequence strafeIntoStack = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(1.5,0))
-                .addDisplacementMarker(() -> {
-                    bot.setLidPosition(lidState.open);
-                  bot.setArmPosition(armState.intaking, armExtensionState.extending);
-                  bot.setWristPosition(wristState.intaking);
-                  bot.linkage.setLinkageCustomPosition(.88);
-                  bot.activeIntake.setActiveIntakePower(.4);
-                })
-
-                .lineToLinearHeading(new Pose2d(6.5, -3 ,Math.toRadians(45)))
-
-                .lineToLinearHeading(new Pose2d(6.5, 0 ,Math.toRadians(0)))
-                .addDisplacementMarker(() -> {
-                    bot.linkage.setLinkageCustomPosition(.96);
-                    bot.setActiveIntakePosition(activeIntakeState.active);
-                })
-                .waitSeconds(.5)
-                .lineToConstantHeading(new Vector2d(6.6,0))
-                .waitSeconds(.5)
-                .lineToConstantHeading(new Vector2d(4,0))
-                .addDisplacementMarker(() -> {
-                    bot.setActiveIntakePosition(activeIntakeState.activeReverse);
-                })
-                .waitSeconds(.25)
-                .lineToConstantHeading(new Vector2d(3.99,0))
-                .addDisplacementMarker(() -> {
-                    bot.setActiveIntakePosition(activeIntakeState.inactive);
-                })
-                .build();
-
-
-        TrajectorySequence dropdownLinkage = drive.trajectorySequenceBuilder(startPose)
-
-                .lineToConstantHeading(new Vector2d(1,0))
-                .addDisplacementMarker(() -> {
-                    bot.setLidPosition(lidState.open);
-                    bot.setArmPosition(armState.intaking, armExtensionState.extending);
-                    bot.setWristPosition(wristState.intaking);
-                    bot.linkage.setLinkageCustomPosition(82);
-                })
-                .lineToConstantHeading(new Vector2d(6.5,0))
-                .lineToConstantHeading(new Vector2d(6.6,0))
-                .addDisplacementMarker(() -> {
-                    bot.linkage.setLinkageCustomPosition(92);
-                })
-                .lineToConstantHeading(new Vector2d(5,0))
-                .addDisplacementMarker(() -> {
-                  bot.setActiveIntakePosition(activeIntakeState.active);
-                })
-                .waitSeconds(.25)
-                .lineToConstantHeading(new Vector2d(3,0))
-
-
-
-                .build();
-
-
-
-        // ---------------------------- Camera Initialization ---------------------------- //
-
-        waitForStart();
-        camera.stopStreaming();
-        if (isStopRequested()) return;
-        drive.setPoseEstimate(startPose);
-        drive.followTrajectorySequence(strafeIntoStack);
+//        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+//        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
+//
+//        drive.setPoseEstimate(startPose);
+//        initCam();
+//
+//        // ---------------------------- Left ---------------------------- //
+//
+//        TrajectorySequence strafeIntoStack = drive.trajectorySequenceBuilder(startPose)
+//                .lineToConstantHeading(new Vector2d(1.5,0))
+//                .addDisplacementMarker(() -> {
+//                    bot.setLidPosition(lidState.open);
+//                  bot.setArmPosition(armState.intaking, armExtensionState.extending);
+//                  bot.setWristPosition(wristState.intaking);
+//                  bot.linkage.setLinkageCustomPosition(.88);
+//                  bot.activeIntake.setActiveIntakePower(.4);
+//                })
+//
+//                .lineToLinearHeading(new Pose2d(6.5, -3 ,Math.toRadians(45)))
+//
+//                .lineToLinearHeading(new Pose2d(6.5, 0 ,Math.toRadians(0)))
+//                .addDisplacementMarker(() -> {
+//                    bot.linkage.setLinkageCustomPosition(.96);
+//                    bot.setActiveIntakePosition(activeIntakeState.active);
+//                })
+//                .waitSeconds(.5)
+//                .lineToConstantHeading(new Vector2d(6.6,0))
+//                .waitSeconds(.5)
+//                .lineToConstantHeading(new Vector2d(4,0))
+//                .addDisplacementMarker(() -> {
+//                    bot.setActiveIntakePosition(activeIntakeState.activeReverse);
+//                })
+//                .waitSeconds(.25)
+//                .lineToConstantHeading(new Vector2d(3.99,0))
+//                .addDisplacementMarker(() -> {
+//                    bot.setActiveIntakePosition(activeIntakeState.inactive);
+//                })
+//                .build();
+//
+//
+//        TrajectorySequence dropdownLinkage = drive.trajectorySequenceBuilder(startPose)
+//
+//                .lineToConstantHeading(new Vector2d(1,0))
+//                .addDisplacementMarker(() -> {
+//                    bot.setLidPosition(lidState.open);
+//                    bot.setArmPosition(armState.intaking, armExtensionState.extending);
+//                    bot.setWristPosition(wristState.intaking);
+//                    bot.linkage.setLinkageCustomPosition(82);
+//                })
+//                .lineToConstantHeading(new Vector2d(6.5,0))
+//                .lineToConstantHeading(new Vector2d(6.6,0))
+//                .addDisplacementMarker(() -> {
+//                    bot.linkage.setLinkageCustomPosition(92);
+//                })
+//                .lineToConstantHeading(new Vector2d(5,0))
+//                .addDisplacementMarker(() -> {
+//                  bot.setActiveIntakePosition(activeIntakeState.active);
+//                })
+//                .waitSeconds(.25)
+//                .lineToConstantHeading(new Vector2d(3,0))
+//
+//
+//
+//                .build();
+//
+//
+//
+//        // ---------------------------- Camera Initialization ---------------------------- //
+//
+//        waitForStart();
+//        camera.stopStreaming();
+//        if (isStopRequested()) return;
+//        drive.setPoseEstimate(startPose);
+//        drive.followTrajectorySequence(strafeIntoStack);
 
 
     }
