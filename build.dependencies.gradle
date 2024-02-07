@@ -9,6 +9,7 @@ repositories {
 }
 
 dependencies {
+    // preset imports!
     implementation 'org.firstinspires.ftc:Inspection:9.0.1'
     implementation 'org.firstinspires.ftc:Blocks:9.0.1'
     implementation 'org.firstinspires.ftc:Tfod:9.0.1'
@@ -21,13 +22,17 @@ dependencies {
     implementation 'org.firstinspires.ftc:gameAssets-CenterStage:1.0.0'
     implementation 'org.tensorflow:tensorflow-lite-task-vision:0.4.3'
 
+    // all ACME Robotics imports are very sensitive do not change versions!!!
+    // dashboard has basics, 'FTC' has all NEW V1 RR imports, and Core & Actions do math for us n shi
     implementation 'com.acmerobotics.dashboard:dashboard:0.4.15'
     implementation 'com.acmerobotics.roadrunner:ftc:0.1.12'
-    implementation 'com.acmerobotics.roadrunner:core:1.0.0-beta3'
-    implementation 'com.acmerobotics.roadrunner:actions:1.0.0-beta3'
+    implementation 'com.acmerobotics.roadrunner:core:1.0.0-beta6'
+    implementation 'com.acmerobotics.roadrunner:actions:1.0.0-beta6'
 
+    // if android app compat doesnt work make the version 1.6.0
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
+    // camera
     implementation 'org.openftc:easyopencv:1.7.0'
 
     implementation 'org.apache.commons:commons-math3:3.6.1'
