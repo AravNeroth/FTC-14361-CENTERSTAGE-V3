@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Roadrunner.MecanumDrive
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 
 public class AutoTest {
-    @Autonomous(name = "closeBlueObjectDetect", group = "Auto")
+    @Autonomous(name = "AutoTestingGround", group = "New Roadrunner")
     public class closeBlue extends LinearOpMode {
         Robot bot;
 
@@ -23,7 +23,7 @@ public class AutoTest {
 
             waitForStart();
 //         ----------------------------------------------
-//         still wondering wtf action is but hopefully this works !
+//         still wondering wtf action is but hopefully this works ! (test 1)
             Action okipullup = drive.actionBuilder(startPose)
                     .splineToLinearHeading(new Pose2d(42, -36, 0), 0)
                     .build();
@@ -32,9 +32,10 @@ public class AutoTest {
             Actions.runBlocking(okipullup);
 //         ----------------------------------------------
             /*
-            close left blue test! i put in some random ahh values
+            close left blue test! i put in some random ahh values (test 2)
             does this even make sense chat what teh hell is this new uodate
              */
+
 //            Actions.runBlocking(new SequentialAction(
 //                            // Red Right Purple Right
 //                            drive.actionBuilder(new Pose2d(13, -60, Math.toRadians(90)))
@@ -44,7 +45,8 @@ public class AutoTest {
 //                    )
 //            );
 //          ---------------------------------------------
-//             Traj Action Builder test
+//             Traj Action Builder (test 3)
+//
 //            TrajectoryActionBuilder actionBuilder = drive.actionBuilder(drive.pose)
 //                    .strafeTo(new Vector2d(-42, -63))
 //                    .turn(0.00001)
