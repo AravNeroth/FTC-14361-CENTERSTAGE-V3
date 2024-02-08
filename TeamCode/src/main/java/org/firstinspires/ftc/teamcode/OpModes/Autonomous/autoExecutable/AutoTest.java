@@ -16,6 +16,7 @@ public class AutoTest {
     public class closeBlue extends LinearOpMode {
         Robot bot;
 
+        @Override
         public void runOpMode() {
             bot = new Robot(hardwareMap, telemetry);
             Pose2d startPose = new Pose2d(15, 61, Math.toRadians(90));
