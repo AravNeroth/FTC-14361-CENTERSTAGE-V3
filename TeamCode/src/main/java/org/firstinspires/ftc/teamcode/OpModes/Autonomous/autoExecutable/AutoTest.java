@@ -22,6 +22,7 @@ public class AutoTest {
             Pose2d startPose = new Pose2d(15, 61, Math.toRadians(90));
             MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(new Vector2d(0.0, 0.0), Math.toRadians(90)));
 
+            // !!! these are all premade tests! to the lucky fellow who gets
             waitForStart();
             if (isStopRequested()) return;
 //         ----------------------------------------------
@@ -38,14 +39,14 @@ public class AutoTest {
             does this even make sense chat what teh hell is this new uodate
              */
 
-            Actions.runBlocking(new SequentialAction(
-                            // Red Right Purple Right
-                            drive.actionBuilder(new Pose2d(13, -60, Math.toRadians(90)))
-                                    .splineTo(new Vector2d(13, -46), Math.toRadians(90))
-                                    .splineTo(new Vector2d(18, -38), Math.toRadians(60))
-                                    .build()
-                    )
-            );
+//            Actions.runBlocking(new SequentialAction(
+//                            // Red Right Purple Right
+//                            drive.actionBuilder(new Pose2d(13, -60, Math.toRadians(90)))
+//                                    .splineTo(new Vector2d(13, -46), Math.toRadians(90))
+//                                    .splineTo(new Vector2d(18, -38), Math.toRadians(60))
+//                                    .build()
+//                    )
+//            );
 //          ---------------------------------------------
 //             Traj Action Builder (test 3)
 //
