@@ -23,6 +23,7 @@ public class AutoTest {
             MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(new Vector2d(0.0, 0.0), Math.toRadians(90)));
 
             waitForStart();
+            if (isStopRequested()) return;
 //         ----------------------------------------------
 //         still wondering wtf action is but hopefully this works ! (test 1)
             Action okipullup = drive.actionBuilder(startPose)
