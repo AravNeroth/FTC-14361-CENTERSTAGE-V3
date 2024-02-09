@@ -75,8 +75,6 @@ public class HSVRedDetection extends OpenCvPipeline {
         right.release();
         middle.release();
 
-        telemetry.addData("Right raw value", (int) Core.sumElems(right).val[0]);
-        telemetry.addData("Middle raw value", (int) Core.sumElems(middle).val[0]);
         telemetry.addData("Right percentage", Math.round(rightValue * 100) + "%");
         telemetry.addData("Middle percentage", Math.round(middleValue * 100) + "%");
 
