@@ -21,13 +21,17 @@ public class robotConstants
         public static int MEDIUMLEFT = 1300;
         public static int MEDIUMRIGHT = 1300;
         public static int LOWMEDLEFT = 1000;
-        public static int LOWMEDRIGHT=1000;
+        public static int LOWMEDRIGHT = 1000;
 
         public static int LOWLEFT = 675;
         public static int LOWRIGHT = 675;
 
         public static int AUTOLOWLEFT = 100;
         public static int AUTOLOWRIGHT = 100;
+
+       // 2 below r for using dist sensor
+        public static int AUTOMEDLEFT = 350;
+        public static int AUTOMEDRIGHT = 350;
 
         public static int GROUNDLEFT = 0;
         public static int GROUNDRIGHT = 0;
@@ -86,8 +90,12 @@ public class robotConstants
     }
     public static class Lid
     {
+        // wihtout Distance Sensor
+//        public static double close = 0;
+//        public static double open =.2 ;
+
         public static double close = 0;
-        public static double open =.2 ;
+        public static double open = 0.09;
     }
 
     public static class Arm
@@ -132,6 +140,5 @@ public class robotConstants
         public static double droneLaunch = .4;
         public static double droneReset = .6;
     }
-
 
 }

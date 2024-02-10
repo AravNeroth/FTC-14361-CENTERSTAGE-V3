@@ -26,7 +26,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "distance testing ", group = "goobTest")
+@Autonomous(name = "stack distance testing ", group = "goobTest")
 public class distanceTesting extends LinearOpMode {
 
     DistanceSensor distSensor;
@@ -37,7 +37,7 @@ public class distanceTesting extends LinearOpMode {
 
     // true is blue, false is red. DONT TOUCH JUST ENTER IT IN!
     boolean setBlue = true;
-    boolean setRed = true;
+    boolean setRed = false;
 
     public void runOpMode() {
 
@@ -49,18 +49,16 @@ public class distanceTesting extends LinearOpMode {
 
         drive.setPoseEstimate(startPose);
 
-        TrajectorySequence adjustmentTest = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-40, 30))
-                        .build();
-
-
-
+        telemetry.addLine("Sensor & Drivetrain Initialized");
+        telemetry.update();
 
         waitForStart();
         if (isStopRequested()) return;
 
         while (opModeIsActive() && !isStopRequested()) {
 
+            distanceTelemetry();
+            telemetry.update();
 
 
         }
@@ -69,6 +67,12 @@ public class distanceTesting extends LinearOpMode {
 
 
     public void distanceTelemetry(){
-        telemetry.addLine("");
+        // if true, then blue. if false, red detect
+        if(distSensor.getAlliance())
+            telemetry.addLine("Using Sensor: LEFT");
+        else
+            telemetry.addLine("Using Sensor: RIGHT");
+
+        telemetry.addData("Distance To Wall: ", distSensor.getDistance());
     }
 }

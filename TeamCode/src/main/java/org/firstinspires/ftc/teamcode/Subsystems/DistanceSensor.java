@@ -10,7 +10,6 @@ public class DistanceSensor
 {
     com.qualcomm.robotcore.hardware.DistanceSensor distanceSensor;
 
-    boolean redSide = false;
     boolean blueSide = false;
 
     double directionOffset = -1;
@@ -25,18 +24,16 @@ public class DistanceSensor
         // if alliance is false, red side
         if(alliance)
             blueSide = true;
-        else
-            redSide = true;
 
         if(blueSide)
-            distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "leftDistanceSensor");
+            distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "leftDist");
         else
-            distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "rightDistanceSensor");
+            distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "rightDist");
     }
 
     public DistanceSensor(HardwareMap hardwareMap){
         // if you don't enter an alliance, then it defaults to lid distance sensor
-        distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "lidDistanceSensor");
+        distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "lidDist");
     }
 
     // Remember to account for the distance between the detector and the center of the robot.
@@ -47,7 +44,7 @@ public class DistanceSensor
     {
         double yOffset = 0;
 
-        if(redSide)
+        if(!blueSide)
         {
             double currentLeftdistance = -(72 - distanceSensor.getDistance(DistanceUnit.INCH)) + robotSideOffset;
 
@@ -71,7 +68,7 @@ public class DistanceSensor
     {
         double yOffset = 0;
 
-        if(redSide)
+        if(!blueSide)
         {
             double currentRightdistance = (72 - distanceSensor.getDistance(DistanceUnit.INCH)) - robotSideOffset;
 
@@ -109,5 +106,9 @@ public class DistanceSensor
 
     public double getDistance(){
         return distanceSensor.getDistance(DistanceUnit.INCH);
+    }
+
+    public boolean getAlliance(){
+        return blueSide;
     }
 }
