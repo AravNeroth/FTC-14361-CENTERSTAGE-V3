@@ -37,7 +37,10 @@ public class FieldCentric extends OpMode {
 
         telemetry.addLine("It's goobin time");
         telemetry.addLine("Time taken: " + getRuntime() + " seconds.");
-
+        telemetry.addLine("Red Value " + bot.colorSensor.getRedValue());
+        telemetry.addLine("Blue Value " + bot.colorSensor.getBlueValue());
+        telemetry.addLine("Green Value " + bot.colorSensor.getGreenValue());
+        telemetry.addLine("Alpha Value " + bot.colorSensor.getAlphaValue());
         telemetry.update();
 
         bot.setArmPosition(armState.intaking, armExtensionState.extending);
