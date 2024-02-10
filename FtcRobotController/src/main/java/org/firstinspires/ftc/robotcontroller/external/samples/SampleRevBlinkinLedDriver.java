@@ -90,6 +90,7 @@ public class SampleRevBlinkinLedDriver extends OpMode {
 
         ledCycleDeadline = new Deadline(LED_PERIOD, TimeUnit.SECONDS);
         gamepadRateLimit = new Deadline(GAMEPAD_LOCKOUT, TimeUnit.MILLISECONDS);
+
     }
 
     @Override
