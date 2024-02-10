@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.OpModes.Autonomous.drive.SampleMecanumDriv
 @Autonomous(name = "distanceTest", group = "Auto")
 public class distanceSenseTest extends LinearOpMode {
     Robot bot;
-    distanceSensor distanceSense;
+    DistanceSensor distanceSense;
     double xOffset, yOffset;
     public void runOpMode() {
         bot = new Robot(hardwareMap, telemetry);
@@ -39,9 +39,9 @@ public class distanceSenseTest extends LinearOpMode {
                 .lineToConstantHeading(new Vector2d(48, -11))
                 .lineToConstantHeading(new Vector2d(48,-40))
 
-                .addDisplacementMarker(() -> {
-                    distanceSense.setRedAlliance();
-                })
+//                .addDisplacementMarker(() -> {
+//                    distanceSense.setRedAlliance();
+//                })
 
                 .strafeLeft(distanceSense.getLeftStackDistance())
                 .build();

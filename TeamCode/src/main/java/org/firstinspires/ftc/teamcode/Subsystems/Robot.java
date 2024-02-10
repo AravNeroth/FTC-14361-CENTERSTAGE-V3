@@ -40,7 +40,7 @@ public class Robot {
     public linkageState linkageState;
     // this is only diff- added VoltMecanum
     public VoltMecanum voltMecanum;
-    public org.firstinspires.ftc.teamcode.Subsystems.distanceSensor distanceSensor;
+    public org.firstinspires.ftc.teamcode.Subsystems.DistanceSensor distanceSensor;
 
     Telemetry telemetry;
 

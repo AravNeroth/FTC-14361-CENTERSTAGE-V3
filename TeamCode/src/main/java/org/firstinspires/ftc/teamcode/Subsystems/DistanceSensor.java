@@ -6,11 +6,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
-public class distanceSensor
+public class DistanceSensor
 {
     com.qualcomm.robotcore.hardware.DistanceSensor distanceSensor;
 
-    boolean redSide = false;
     boolean blueSide = false;
 
     double directionOffset = -1;
@@ -20,11 +19,21 @@ public class distanceSensor
     int robotFrontBackOffset = 9;
     int robotSideOffset = 8;
 
-    public  distanceSensor(HardwareMap hardwareMap)
-    {
-        //distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "forwardDistanceSensor");
-        distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "leftDistanceSensor");
-        distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "rightDistanceSensor");
+    public DistanceSensor(HardwareMap hardwareMap, boolean alliance){
+        // if alliance is true, blue side
+        // if alliance is false, red side
+        if(alliance)
+            blueSide = true;
+
+        if(blueSide)
+            distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "leftDist");
+        else
+            distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "rightDist");
+    }
+
+    public DistanceSensor(HardwareMap hardwareMap){
+        // if you don't enter an alliance, then it defaults to lid distance sensor
+        distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "lidDist");
     }
 
     // Remember to account for the distance between the detector and the center of the robot.
@@ -35,15 +44,17 @@ public class distanceSensor
     {
         double yOffset = 0;
 
-        if(redSide == (true))
+        if(!blueSide)
         {
             double currentLeftdistance = -(72 - distanceSensor.getDistance(DistanceUnit.INCH)) + robotSideOffset;
 
             if(currentLeftdistance < stackYPose * directionOffset)
+
             {
                 yOffset = -(currentLeftdistance + stackYPose);
                 return yOffset;
             }
+
             else if(currentLeftdistance > stackYPose * directionOffset)
             {
                 yOffset = currentLeftdistance + stackYPose;
@@ -57,7 +68,7 @@ public class distanceSensor
     {
         double yOffset = 0;
 
-        if(redSide == (true))
+        if(!blueSide)
         {
             double currentRightdistance = (72 - distanceSensor.getDistance(DistanceUnit.INCH)) - robotSideOffset;
 
@@ -78,48 +89,26 @@ public class distanceSensor
     public double getFrontStackDistance()
     {
         double xOffset = 0;
-
         double currentFrontdistance = - (72 - distanceSensor.getDistance(DistanceUnit.INCH)) + robotFrontBackOffset;
 
-        if(currentFrontdistance < stackXPose)
-        {
+        if(currentFrontdistance < stackXPose) {
             xOffset = -(currentFrontdistance + stackXPose);
             return xOffset;
         }
-        else if(currentFrontdistance > stackXPose)
-        {
+
+        else if(currentFrontdistance > stackXPose) {
             xOffset = stackXPose - currentFrontdistance;
             return xOffset;
         }
+
         return xOffset;
     }
 
-    public void setRedAlliance()
-    {
-        if(redSide = false)
-        {
-            redSide = true;
-        }
-        else
-        {
-            redSide = false;
-        }
-    }
-
-    public void setBlueAlliance()
-    {
-        if(blueSide = false)
-        {
-            blueSide = true;
-        }
-        else
-        {
-            blueSide = false;
-        }
-    }
-
-    public double getDistance()
-    {
+    public double getDistance(){
         return distanceSensor.getDistance(DistanceUnit.INCH);
+    }
+
+    public boolean getAlliance(){
+        return blueSide;
     }
 }
