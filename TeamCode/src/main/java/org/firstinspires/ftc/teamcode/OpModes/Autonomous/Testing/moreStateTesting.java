@@ -129,9 +129,12 @@ public class moreStateTesting extends LinearOpMode {
                     telemetry.addLine("Detections Called & Recieved");
                     telemetry.addData("Detections Found:", currentDetections);
                     telemetry.addLine("Detections Called & Recieved");
+                    if(currentDetections.size()!=0)
+                    telemetry.addData("Tag Detectied", currentDetections.get(0).id);
+
                     telemetry.update();
 
-                    if (currentDetections != null && currentDetections.size() != 0) {
+                    if (currentDetections.size() != 0) {
 
 
                         for (AprilTagDetection detection : currentDetections) {
@@ -151,9 +154,11 @@ public class moreStateTesting extends LinearOpMode {
                                                 .build();
                                         drive.followTrajectorySequenceAsync(tag);
                                     }
-
+                                    telemetry.addLine(" found");
+                                    telemetry.update();
                                 } else {
                                     telemetry.addLine("Not found");
+                                    telemetry.update();
 
                                 }
                                 ID_TAG_OF_INTEREST = STACK;
