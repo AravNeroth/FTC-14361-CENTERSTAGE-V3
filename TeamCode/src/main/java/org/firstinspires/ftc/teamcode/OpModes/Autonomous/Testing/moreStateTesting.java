@@ -56,7 +56,7 @@ public class moreStateTesting extends LinearOpMode {
     double tagsize = 0.166;
     // AprilTagDetectionPipeline aprilTagDetectionPipeline;
     AprilTagDetection tagOfInterest = null;
-    int LEFT = 1, MIDDLE = 2, RIGHT = 3, STACK = 7;
+    int LEFT = 1, MIDDLE = 2, RIGHT = 3, REDSTACK = 7;
     int ID_TAG_OF_INTEREST = -1;
     boolean tagFound = false;
     boolean caseTagFound = false;
@@ -72,7 +72,7 @@ public class moreStateTesting extends LinearOpMode {
 
 
     enum state {
-        tape, firstTimeBoard, secondTimeBoard, thirdTimeBoard, stack
+        tape, firstTimeBoard, secondTimeBoard, thirdTimeBoard, stack, idle
     }
 
     AprilTagDetection lastTOI = null;
@@ -110,21 +110,32 @@ public class moreStateTesting extends LinearOpMode {
 //        TrajectorySequence rightBoard = drive.trajectorySequenceBuilder(start)
 //                .lineToConstantHeading(new Vector2d(rightBoardX,rightBoardY))
 //                .build();
+        TrajectorySequence forward = drive.trajectorySequenceBuilder(start)
+                .lineToConstantHeading(new Vector2d(1,1))
+                .build();
 
 
         // initCam();
+        TrajectorySequence tag = null;
         waitForStart();
 
 
         if (isStopRequested()) return;
+        drive.followTrajectorySequenceAsync(forward);
+        currentState = state.firstTimeBoard;
         while (opModeIsActive() && !isStopRequested()) {
 
             //telemetryAprilTag();
             //telemetry.update();
 
             switch (currentState) {
-
                 case tape:
+                    if (!drive.isBusy()) {
+                        currentState = state.firstTimeBoard;
+                       // drive.followTrajectoryAsync(trajectory2);
+                    }
+                    break;
+                case firstTimeBoard:
                     List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
 
@@ -151,39 +162,49 @@ public class moreStateTesting extends LinearOpMode {
                                     if (tagFound) {
                                         telemetry.addLine("Inside TagFound If Statement");
                                         telemetry.update();
-
-                                        TrajectorySequence tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                                .lineToConstantHeading(new Vector2d(tagOfInterest.ftcPose.x - .5, tagOfInterest.ftcPose.y))
+                                       // final double distanceX = tagOfInterest.center.x;
+                                       tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                                .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y, drive.getPoseEstimate().getX()))
+                                               .waitSeconds(4)
                                                 .build();
 
-                                        drive.followTrajectorySequence(tag);
+
 
                                         telemetry.addData("FTC Pose x: ", tagOfInterest.ftcPose.x);
                                         telemetry.addData("FTC Pose y: ", tagOfInterest.ftcPose.y);
+                                        telemetry.addData("New Pose x: ", drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.x);
+                                        telemetry.addData("New Pose y: ", drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.y);
 
                                         telemetry.addLine("Traj Seq Builder ran");
                                         telemetry.update();
                                     }
                                 }
 
-                                else {
-                                    telemetry.addLine("Not found");
-                                    telemetry.update();
 
-                                }
 
-                                ID_TAG_OF_INTEREST = STACK;
-                                currentState = state.stack;
+                                ID_TAG_OF_INTEREST = REDSTACK;
+
 
                         } // detect for loop end
 
                     } // if detect not 0 end
-                    break;
-                case stack:
+//                    else{
+//                        tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+//                                .lineToConstantHeading(new Vector2d(1, 1))
+//                                .build();
+//                    }
+                    if (!drive.isBusy()) {
+                        drive.followTrajectorySequenceAsync(tag);
 
+                      //  currentState = state.firstTimeBoard;
+                    }
+
+                    break;
+                case idle:
+                        break;
             } //switch statement end
 
-
+drive.update();
             } // opmode loop
 
         } // run opmode

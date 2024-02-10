@@ -84,10 +84,10 @@ public class FieldCentric extends OpMode {
 
         telemetry.addLine("Wrist Position: " + bot.wrist.getWristPosition());
         telemetry.addLine("State of V4B: init / " + bot.arm.getArmExtensionState());
-        telemetry.addLine("Red Value " + bot.colorSensor.getRedValue());
-        telemetry.addLine("Blue Value " + bot.colorSensor.getBlueValue());
-        telemetry.addLine("Green Value " + bot.colorSensor.getGreenValue());
-        telemetry.addLine("Alpha Value " + bot.colorSensor.getAlphaValue());
+//        telemetry.addLine("Red Value " + bot.colorSensor.getRedValue());
+//        telemetry.addLine("Blue Value " + bot.colorSensor.getBlueValue());
+//        telemetry.addLine("Green Value " + bot.colorSensor.getGreenValue());
+//        telemetry.addLine("Alpha Value " + bot.colorSensor.getAlphaValue());
 //        telemetry.addLine("Right Claw Position: " + bot.claw.getRightClawPosition());
 //        telemetry.addLine("Left Claw Position: " + bot.claw.getLeftClawPosition());
         telemetry.addLine("Right Arm Position: " + bot.arm.getRightArmPosition() + " ticks.");

@@ -57,7 +57,7 @@ public class Robot {
         activeIntake = new ActiveIntake(hardwareMap);
         lid = new Lid(hardwareMap);
         drone = new Drone(hardwareMap);
-        colorSensor = new colorSensor(hardwareMap);
+       // colorSensor = new colorSensor(hardwareMap);
         // this is only diff- added VoltMecanum
 
         voltMecanum = new VoltMecanum(hardwareMap);
