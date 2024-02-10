@@ -29,7 +29,6 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.trajectorysequence.TrajectorySequenceRunner;
-import org.firstinspires.ftc.teamcode.drive.TwoWheelTrackingLocalizer;
 import org.firstinspires.ftc.teamcode.util.AxisDirection;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 
@@ -54,10 +53,10 @@ import static org.firstinspires.ftc.teamcode.OpModes.Autonomous.drive.DriveConst
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(9, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(9, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1.785;
+    public static double LATERAL_MULTIPLIER = 1.81129808;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -84,7 +83,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
-                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.005);
+                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
 
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 
@@ -131,7 +130,9 @@ public class SampleMecanumDrive extends MecanumDrive {
         leftRear.setDirection(DcMotorEx.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
+
         setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this));
+
         trajectorySequenceRunner = new TrajectorySequenceRunner(
                 follower, HEADING_PID, batteryVoltageSensor,
                 lastEncPositions, lastEncVels, lastTrackingEncPositions, lastTrackingEncVels
@@ -310,4 +311,6 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static TrajectoryAccelerationConstraint getAccelerationConstraint(double maxAccel) {
         return new ProfileAccelerationConstraint(maxAccel);
     }
+
 }
+
