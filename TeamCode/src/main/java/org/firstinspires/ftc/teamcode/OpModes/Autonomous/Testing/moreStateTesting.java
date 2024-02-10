@@ -119,65 +119,74 @@ public class moreStateTesting extends LinearOpMode {
         if (isStopRequested()) return;
         while (opModeIsActive() && !isStopRequested()) {
 
-            telemetry.addLine("Inside Active TeleOp");
+            //telemetryAprilTag();
+            //telemetry.update();
 
             switch (currentState) {
 
                 case tape:
                     List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
-                    telemetry.addLine("Detections Called & Recieved");
-                    telemetry.addData("Detections Found:", currentDetections);
-                    telemetry.addLine("Detections Called & Recieved");
-                    if(currentDetections.size()!=0)
-                    telemetry.addData("Tag Detectied", currentDetections.get(0).id);
 
-                    telemetry.update();
 
                     if (currentDetections.size() != 0) {
 
 
                         for (AprilTagDetection detection : currentDetections) {
-                            {
+
                                 if (detection.metadata != null) {
+
+                                    telemetry.addLine("Inside Metadata If");
+                                    telemetry.update();
+
                                     //  Check to see if we want to track towards this tag.
-                                    if ((ID_TAG_OF_INTEREST < 0) || (detection.id == ID_TAG_OF_INTEREST)) {
+                                    if ((ID_TAG_OF_INTEREST < 0)) {
+                                        telemetry.addLine("Inside Tag Of Interest If");
+                                        telemetry.update();
                                         // Yes, we want to use this tag.
                                         tagFound = true;
                                         tagOfInterest = detection;
-                                        break;  // don't look any further.
                                     }
+
                                     if (tagFound) {
+                                        telemetry.addLine("Inside TagFound If Statement");
+                                        telemetry.update();
 
                                         TrajectorySequence tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                                .lineTo(new Vector2d(tagOfInterest.ftcPose.x - .5, tagOfInterest.ftcPose.y))
+                                                .lineToConstantHeading(new Vector2d(tagOfInterest.ftcPose.x - .5, tagOfInterest.ftcPose.y))
                                                 .build();
-                                        drive.followTrajectorySequenceAsync(tag);
+
+                                        drive.followTrajectorySequence(tag);
+
+                                        telemetry.addData("FTC Pose x: ", tagOfInterest.ftcPose.x);
+                                        telemetry.addData("FTC Pose y: ", tagOfInterest.ftcPose.y);
+
+                                        telemetry.addLine("Traj Seq Builder ran");
+                                        telemetry.update();
                                     }
-                                    telemetry.addLine(" found");
-                                    telemetry.update();
-                                } else {
+                                }
+
+                                else {
                                     telemetry.addLine("Not found");
                                     telemetry.update();
 
                                 }
+
                                 ID_TAG_OF_INTEREST = STACK;
                                 currentState = state.stack;
 
+                        } // detect for loop end
 
-                            }
-                        }
-                    }
+                    } // if detect not 0 end
                     break;
                 case stack:
 
+            } //switch statement end
 
-            }
 
+            } // opmode loop
 
-            }
-
-        }
+        } // run opmode
         private void initCam(){
 
             //This line retrieves the resource identifier for the camera monitor view. The camera monitor view is typically used to display the camera feed
@@ -249,6 +258,30 @@ public class moreStateTesting extends LinearOpMode {
                         .build();
             }
         }
+    private void telemetryAprilTag() {
+
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("# AprilTags Detected", currentDetections.size());
+
+        // Step through the list of detections and display info for each one.
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.metadata != null) {
+                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+            } else {
+                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+            }
+        }   // end for() loop
+
+        // Add "key" information to telemetry
+        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
+        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
+        telemetry.addLine("RBE = Range, Bearing & Elevation");
+
+    }   // end method telemetryAprilTag()
 
 
     }
