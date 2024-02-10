@@ -58,6 +58,7 @@ public class stateTesting extends LinearOpMode {
     SampleMecanumDrive drive;
     OpenCvCamera camera;
     double boardX, boardY, stack1Y, stackDetectX, stackDetectY;
+    boolean onePixel = false, twoPixels = false;
     //   aprilTagDetection aprilTagDetectionPipeline;
     double fx = 578.272;
     double fy = 578.272;

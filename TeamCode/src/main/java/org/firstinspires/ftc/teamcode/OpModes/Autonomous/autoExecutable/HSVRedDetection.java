@@ -28,11 +28,11 @@ public class HSVRedDetection extends OpenCvPipeline {
 
      */
     static final Rect MIDDLE_ROI = new Rect(
-            new Point(92, 0),
-            new Point(152, 30));
+            new Point(100, 45),
+            new Point(150, 90));
     static final Rect RIGHT_ROI = new Rect(
-            new Point(75, 125),
-            new Point(135, 185));
+            new Point(100, 175),
+            new Point(150, 225));
     static double PERCENT_COLOR_THRESHOLD = 0.25;
 
     public HSVRedDetection(Telemetry t) { telemetry = t; }
