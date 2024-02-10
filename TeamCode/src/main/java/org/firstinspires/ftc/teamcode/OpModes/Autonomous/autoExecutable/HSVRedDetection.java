@@ -28,12 +28,12 @@ public class HSVRedDetection extends OpenCvPipeline {
 
      */
     static final Rect MIDDLE_ROI = new Rect(
-            new Point(50, 170),
-            new Point(110, 210));
+            new Point(92, 0),
+            new Point(152, 30));
     static final Rect RIGHT_ROI = new Rect(
-            new Point(235, 195),
-            new Point(295, 230));
-    static double PERCENT_COLOR_THRESHOLD = 0.18;
+            new Point(75, 125),
+            new Point(135, 185));
+    static double PERCENT_COLOR_THRESHOLD = 0.25;
 
     public HSVRedDetection(Telemetry t) { telemetry = t; }
 
@@ -75,8 +75,6 @@ public class HSVRedDetection extends OpenCvPipeline {
         right.release();
         middle.release();
 
-        telemetry.addData("Right raw value", (int) Core.sumElems(right).val[0]);
-        telemetry.addData("Middle raw value", (int) Core.sumElems(middle).val[0]);
         telemetry.addData("Right percentage", Math.round(rightValue * 100) + "%");
         telemetry.addData("Middle percentage", Math.round(middleValue * 100) + "%");
 

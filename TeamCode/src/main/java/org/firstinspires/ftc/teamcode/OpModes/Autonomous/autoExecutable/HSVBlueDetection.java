@@ -30,12 +30,12 @@ public class HSVBlueDetection extends OpenCvPipeline {
 
      */
     static final Rect MIDDLE_ROI = new Rect(
-            new Point(50, 170),
-            new Point(110, 210));
+            new Point(92, 0),
+            new Point(152, 30));
     static final Rect RIGHT_ROI = new Rect(
-            new Point(235, 195),
-            new Point(295, 230));
-    static double PERCENT_COLOR_THRESHOLD = 0.35;
+            new Point(75, 125),
+            new Point(135, 185));
+    static double PERCENT_COLOR_THRESHOLD = 0.25;
 
     public HSVBlueDetection(Telemetry t) { telemetry = t; }
 
@@ -74,13 +74,11 @@ public class HSVBlueDetection extends OpenCvPipeline {
         middle.release();
         right.release();
 
-        telemetry.addData("middle raw value", (int) Core.sumElems(middle).val[0]);
-        telemetry.addData("right raw value", (int) Core.sumElems(right).val[0]);
         telemetry.addData("middle percentage", Math.round(middleValue * 100) + "%");
         telemetry.addData("right percentage", Math.round(rightValue * 100) + "%");
 
-        boolean tseLeft = middleValue > PERCENT_COLOR_THRESHOLD;
-        boolean tseMiddle = rightValue > PERCENT_COLOR_THRESHOLD;
+        boolean tseMiddle = middleValue > PERCENT_COLOR_THRESHOLD;
+        boolean tseRight = rightValue > PERCENT_COLOR_THRESHOLD;
 
 
         /*
@@ -93,17 +91,17 @@ public class HSVBlueDetection extends OpenCvPipeline {
 
         That's why his code is 'reversed'- he's not actually detecting the Skystone- just the normal ones
          */
-        if (tseLeft) {
+        if (tseMiddle) {
             location = Location.MIDDLE;
-            telemetry.addData("TSE Location: ", "LEFT");
-        }
-        else if(tseMiddle) {
-            location = Location.RIGHT;
             telemetry.addData("TSE Location: ", "MIDDLE");
+        }
+        else if(tseRight) {
+            location = Location.RIGHT;
+            telemetry.addData("TSE Location: ", "RIGHT");
         }
         else {
             location = Location.LEFT;
-            telemetry.addData("TSE not detected; Location: ", "RIGHT");
+            telemetry.addData("TSE not detected; Defaulting to ", "LEFT");
         }
 
         telemetry.update();

@@ -47,14 +47,16 @@ public class FieldCentric extends OpMode {
         bot.setWristPosition(wristState.intaking);
         bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
 
+        bot.setMecanumState(mecanumState.NORMAL);
+
         bot.setLinkagePosition(linkageState.LOW);
         bot.setLidPosition(lidState.open);
 
         // bot.setIntakeSlidePosition(intakeSlidesState.STATION, extensionState.extending);
         // bot.setIntakeSlideState(intakeSlidesState.STATION);
 
-//        
-//        
+//
+//
 //
 //        bot.setLeftClawState(clawState.leftClose);
 //        bot.setRightClawState(clawState.leftClose);
@@ -64,8 +66,10 @@ public class FieldCentric extends OpMode {
         bot.setDrone();
 
         bot.setSlowDownState(slowDownState.FULL);
-    }
 
+    }
+//     bot.driveTrain.drive(driver);
+//        bot.driveTrain.setMotorPower();
     // ---------------------------- LOOPING ---------------------------- //
 
     @Override
@@ -85,6 +89,8 @@ public class FieldCentric extends OpMode {
         telemetry.addLine("Right Arm Decimal Position: " + (1 - bot.arm.getRightArmPosition() / 360) + " decimal.");
         telemetry.addLine("Left Arm Position: " + bot.arm.getLeftArmPosition() + " ticks.");
         telemetry.addLine("Left Arm Decimal Position: " + (1 - bot.arm.getLeftArmPosition() / 360) + " decimal.");
+        bot.driveTrain.driveAngleLock(bot.getMecanumState(), driver);
+        bot.driveTrain.setMotorPower();
 //        telemetry.addLine("DIstance in CM" + bot.getDistanceSensor());
 //      telemetry.addLine("Intake Slide Encoder Tick Count " + intakeSlideCountSubstract);
         telemetry.update();
@@ -93,7 +99,6 @@ public class FieldCentric extends OpMode {
         operator.readButtons();
 
 
-        bot.driveTrain.setMotorPower();
 
         // ---------------------------- DRIVER CODE ---------------------------- //
 
@@ -102,18 +107,24 @@ public class FieldCentric extends OpMode {
         }
 
 //        if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1) {
-//            bot.driveTrain.angleLock(driver, 270);
-//        }
-//        else {
-//            bot.driveTrain.drive(driver, mecanumState.NORMAL);
+//            bot.setSlowDownState(slowDownState.FULL);
+//            bot.driveTrain.setFullPower();
 //        }
 //
 //        if (driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1) {
-//            bot.driveTrain.angleLock(driver, 90);
+//            bot.setSlowDownState(slowDownState.SLOW);
+//            bot.driveTrain.setSlowDownMotorPower();
 //        }
-//        else {
-//            bot.driveTrain.drive(driver, mecanumState.NORMAL);
-//        }
+        if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1) {
+            bot.setMecanumState(mecanumState.TOBLUEBACKBOARD);
+        }
+        if (driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1) {
+            bot.setMecanumState(mecanumState.TOREDBACKBOARD);
+        }
+        if(driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
+            bot.setMecanumState(mecanumState.NORMAL);
+        }
+
 
         if (driver.wasJustPressed(GamepadKeys.Button.A)) {
             if (bot.getActiveIntakeState() != null && (bot.getActiveIntakeState().equals(activeIntakeState.active))) {
@@ -136,13 +147,13 @@ public class FieldCentric extends OpMode {
         }
 
         if (driver.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)) {
-                if (bot.getLidState() != null && bot.getLidState().equals(lidState.close)) {
-                    bot.setLidPosition(lidState.open);
-                }
-                else
-                {
-                    bot.setLidPosition(lidState.close);
-                }
+            if (bot.getLidState() != null && bot.getLidState().equals(lidState.close)) {
+                bot.setLidPosition(lidState.open);
+            }
+            else
+            {
+                bot.setLidPosition(lidState.close);
+            }
         }
 
         if (driver.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
@@ -158,19 +169,6 @@ public class FieldCentric extends OpMode {
             }
 
         }
-        if(driver.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)){
-            bot.setSlowDownState(slowDownState.FULL);
-            bot.driveTrain.setFullPower();
-
-        }
-        if(driver.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)){
-            bot.setSlowDownState(slowDownState.SLOW);
-            bot.driveTrain.setSlowDownMotorPower();
-
-        }
-//        if(driver.wasJustPressed(GamepadKeys.Button.DPAD_UP)){
-//            bot.driveTrain.drive(driver, mecanumState.NORMAL);
-//        }
 
         // --------------------------- OPERATOR CODE --------------------------- //
 
@@ -199,9 +197,9 @@ public class FieldCentric extends OpMode {
 
 
         }
-if(operator.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
-    bot.setLidPosition(lidState.close);
-}
+        if(operator.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
+            bot.setLidPosition(lidState.close);
+        }
         if(operator.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)){
             bot.setWristPosition(wristState.init);
         }

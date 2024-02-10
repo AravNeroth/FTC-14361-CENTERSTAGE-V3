@@ -244,7 +244,7 @@ public class closeRed extends LinearOpMode {
             @Override
             public void onOpened() {
                 camera.showFpsMeterOnViewport(true);
-                camera.startStreaming(320, 240, OpenCvCameraRotation.SENSOR_NATIVE);
+                camera.startStreaming(320, 240, OpenCvCameraRotation.UPSIDE_DOWN);
             }
 
             @Override
