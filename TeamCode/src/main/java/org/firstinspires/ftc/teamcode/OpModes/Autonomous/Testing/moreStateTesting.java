@@ -125,7 +125,7 @@ public class moreStateTesting extends LinearOpMode {
 
                 case tape:
                     List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-                    
+
                     telemetry.addLine("Detections Called & Recieved");
                     telemetry.addData("Detections Found:", currentDetections);
                     telemetry.addLine("Detections Called & Recieved");
