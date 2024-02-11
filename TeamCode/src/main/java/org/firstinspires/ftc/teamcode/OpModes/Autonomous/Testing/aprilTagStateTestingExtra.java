@@ -132,8 +132,9 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
        // drive.followTrajectorySequenceAsync(forward);
         currentState = state.tape;
         while (opModeIsActive() && !isStopRequested()) {
+            closeCamera();
          //   camera.closeCameraDevice();
-            
+
 
             //telemetryAprilTag();
             //telemetry.update();
@@ -230,7 +231,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         } // opmode loop
 
     } // run opmode
-    private void initCam(){
+    private void initCam() {
 
         //This line retrieves the resource identifier for the camera monitor view. The camera monitor view is typically used to display the camera feed
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -268,9 +269,21 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                 telemetry.addLine("Unspecified Error Occurred; Camera Opening");
             }
 
+
         });
 
+
     }
+   public void closeCamera(){
+
+      //  camera.stopStreaming();
+        camera.stopRecordingPipeline();
+        camera.pauseViewport();
+       camera.closeCameraDevice();
+        camera.setViewportRenderer(null);
+   }
+
+
 
 
     /**
