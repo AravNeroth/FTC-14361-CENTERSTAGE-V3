@@ -76,6 +76,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
 
 
+    @Override
     public void runOpMode() {
         robot = new Robot(hardwareMap, telemetry);
         drive = new SampleMecanumDrive(hardwareMap);
@@ -121,12 +122,15 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
             case LEFT:
                 drive.followTrajectorySequenceAsync(centerTape);
                 ID_TAG_OF_INTEREST = MIDDLE;
+                break;
             case RIGHT:
                 drive.followTrajectorySequenceAsync(centerTape);
                 ID_TAG_OF_INTEREST = MIDDLE;
+                break;
             case MIDDLE:
                 drive.followTrajectorySequenceAsync(centerTape);
                 ID_TAG_OF_INTEREST = MIDDLE;
+                break;
         }
 
         if (isStopRequested()) return;
@@ -264,8 +268,9 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
             @Override
             public void onOpened() {
                 camera.showFpsMeterOnViewport(true);
+                camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.SOFTWARE);
                 camera.startStreaming(320, 240, OpenCvCameraRotation.UPSIDE_DOWN);
-                camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.MAXIMIZE_EFFICIENCY);
+                //camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.MAXIMIZE_EFFICIENCY);
             }
 
             @Override
@@ -279,16 +284,30 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
     }
    public void closeCamera(){
+       if (camera != null) {
+           camera.stopStreaming();
+           camera.pauseViewport();
 
+           // release resources?
+           camera.closeCameraDevice();
+
+       } else {
+           telemetry.addLine("Camera is alr null.");
+           telemetry.update();
+       }
+
+<<<<<<< Updated upstream
       //  camera.stopStreaming();
         camera.stopRecordingPipeline();
         camera.pauseViewport();
        camera.closeCameraDevice();
         camera.setViewportRenderer(null);
 
+=======
+>>>>>>> Stashed changes
    }
 /*
-opencv ex
+opencv exception viewport container specified is not empty
  */
 
 
