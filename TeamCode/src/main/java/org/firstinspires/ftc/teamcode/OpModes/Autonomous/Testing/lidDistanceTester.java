@@ -28,37 +28,42 @@ import java.util.List;
 
 @Autonomous(name = "Lid distance testing ", group = "goobTest")
 public class lidDistanceTester extends LinearOpMode {
-
-    DistanceSensor distSensor;
-
-    public void runOpMode() {
-
-        distSensor = new DistanceSensor(hardwareMap);
-        telemetry.addLine("Sensor Status: Initialized.");
-        telemetry.update();
-
-        waitForStart();
-        if (isStopRequested()) return;
-
-        while (opModeIsActive() && !isStopRequested()) {
-
-            backBoardDistanceTelemetry();
-            telemetry.update();
-
-
-        }
+    @Override
+    public void runOpMode() throws InterruptedException {
 
     }
 
 
-    public void backBoardDistanceTelemetry(){
-
-        if(distSensor.getDistance() < 3.5){
-            telemetry.addLine("PIXEL DETECTED!");
-            telemetry.addLine("Space Between Sensor & Pixel: " + distSensor.getDistance());
-        }
-
-        else
-            telemetry.addLine("Space Between Sensor & Board: " + distSensor.getDistance());
-    }
+//    DistanceSensor distSensor;
+//
+//    public void runOpMode() {
+//
+//        distSensor = new DistanceSensor(hardwareMap);
+//        telemetry.addLine("Sensor Status: Initialized.");
+//        telemetry.update();
+//
+//        waitForStart();
+//        if (isStopRequested()) return;
+//
+//        while (opModeIsActive() && !isStopRequested()) {
+//
+//            backBoardDistanceTelemetry();
+//            telemetry.update();
+//
+//
+//        }
+//
+//    }
+//
+//
+//    public void backBoardDistanceTelemetry(){
+//
+//        if(distSensor.getDistance() < 3.5){
+//            telemetry.addLine("PIXEL DETECTED!");
+//            telemetry.addLine("Space Between Sensor & Pixel: " + distSensor.getDistance());
+//        }
+//
+//        else
+//            telemetry.addLine("Space Between Sensor & Board: " + distSensor.getDistance());
+//    }
 }
