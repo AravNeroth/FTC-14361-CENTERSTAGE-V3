@@ -36,6 +36,7 @@ public class Robot {
     public ActiveIntake activeIntake;
     public activeIntakeState activeIntakeState;
     public slowDownState slowDownState;
+   public blinkinLedDriver blinkinLedDriver;
     public Linkage linkage;
     public linkageState linkageState;
     // this is only diff- added VoltMecanum
@@ -57,7 +58,8 @@ public class Robot {
         activeIntake = new ActiveIntake(hardwareMap);
         lid = new Lid(hardwareMap);
         drone = new Drone(hardwareMap);
-       // colorSensor = new colorSensor(hardwareMap);
+        colorSensor = new colorSensor(hardwareMap);
+        blinkinLedDriver = new blinkinLedDriver(hardwareMap);
         // this is only diff- added VoltMecanum
 
         voltMecanum = new VoltMecanum(hardwareMap);
