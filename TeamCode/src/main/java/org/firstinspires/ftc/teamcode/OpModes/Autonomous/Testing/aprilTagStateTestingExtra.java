@@ -18,6 +18,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraBase;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
@@ -71,8 +72,8 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         tape, firstTimeBoard, secondTimeBoard, thirdTimeBoard, stack, idle
     }
 
-    AprilTagDetection lastTOI = null;
-    double initialDistance, y;
+
+
 
 
     public void runOpMode() {
@@ -132,7 +133,8 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
        // drive.followTrajectorySequenceAsync(forward);
         currentState = state.tape;
         while (opModeIsActive() && !isStopRequested()) {
-            closeCamera();
+         //   closeCamera();
+            camera.stopStreaming();
          //   camera.closeCameraDevice();
 
 
@@ -234,7 +236,8 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
     private void initCam() {
 
         //This line retrieves the resource identifier for the camera monitor view. The camera monitor view is typically used to display the camera feed
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        int cameraMonitorViewId = 1;
+                //hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
         webcamName = "Webcam 1";
 
@@ -281,6 +284,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         camera.pauseViewport();
        camera.closeCameraDevice();
         camera.setViewportRenderer(null);
+
    }
 
 
@@ -308,6 +312,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         if (USE_WEBCAM) {
             visionPortal = new VisionPortal.Builder()
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .enableLiveView(false)
                     .addProcessor(aprilTag)
 
 
