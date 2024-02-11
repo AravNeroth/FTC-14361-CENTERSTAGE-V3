@@ -11,10 +11,10 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
-import org.firstinspires.ftc.teamcode.OpModes.Autonomous.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Commands.*;
 import org.firstinspires.ftc.teamcode.Subsystems.*;
-import org.firstinspires.ftc.teamcode.OpModes.Autonomous.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.SampleMecanumDrive;
 
 @Autonomous(name = "longBlueObjectDetect", group = "Auto")
 public class longBlue extends LinearOpMode {
@@ -22,6 +22,7 @@ public class longBlue extends LinearOpMode {
     HSVBlueDetection blueDetection;
     String webcamName;
     Robot bot;
+    boolean blueAlliance, redAlliance;
 
     public void runOpMode() {
         bot = new Robot(hardwareMap, telemetry);

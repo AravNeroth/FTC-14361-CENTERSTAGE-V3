@@ -3,23 +3,17 @@ package org.firstinspires.ftc.teamcode.OpModes.Autonomous.autoExecutable;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
-import org.firstinspires.ftc.teamcode.OpModes.Autonomous.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.Commands.*;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Subsystems.*;
-import org.firstinspires.ftc.teamcode.OpModes.Autonomous.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.SampleMecanumDrive;
 
 @Autonomous(name = "distanceTest", group = "Auto")
 public class distanceSenseTest extends LinearOpMode {
     Robot bot;
-    DistanceSensor distanceSense;
+    distanceSensor distanceSense;
     double xOffset, yOffset;
     public void runOpMode() {
         bot = new Robot(hardwareMap, telemetry);
