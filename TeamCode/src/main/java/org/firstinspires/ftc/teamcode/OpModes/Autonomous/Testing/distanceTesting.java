@@ -28,51 +28,55 @@ import java.util.List;
 
 @Autonomous(name = "stack distance testing ", group = "goobTest")
 public class distanceTesting extends LinearOpMode {
-
-    DistanceSensor distSensor;
-    Robot bot;
-    SampleMecanumDrive drive;
-    Pose2d startPose;
-
-
-    // true is blue, false is red. DONT TOUCH JUST ENTER IT IN!
-    boolean setBlue = true;
-    boolean setRed = false;
-
-    public void runOpMode() {
-
-        distSensor = new DistanceSensor(hardwareMap, setBlue);
-
-        bot = new Robot(hardwareMap, telemetry);
-        drive = new SampleMecanumDrive(hardwareMap);
-        startPose = new Pose2d(-33, 61, Math.toRadians(90));
-
-        drive.setPoseEstimate(startPose);
-
-        telemetry.addLine("Sensor & Drivetrain Initialized");
-        telemetry.update();
-
-        waitForStart();
-        if (isStopRequested()) return;
-
-        while (opModeIsActive() && !isStopRequested()) {
-
-            distanceTelemetry();
-            telemetry.update();
-
-
-        }
+    @Override
+    public void runOpMode() throws InterruptedException {
 
     }
 
-
-    public void distanceTelemetry(){
-        // if true, then blue. if false, red detect
-        if(distSensor.getAlliance())
-            telemetry.addLine("Using Sensor: LEFT");
-        else
-            telemetry.addLine("Using Sensor: RIGHT");
-
-        telemetry.addData("Distance To Wall: ", distSensor.getDistance());
-    }
+//    DistanceSensor distSensor;
+//    Robot bot;
+//    SampleMecanumDrive drive;
+//    Pose2d startPose;
+//
+//
+//    // true is blue, false is red. DONT TOUCH JUST ENTER IT IN!
+//    boolean setBlue = true;
+//    boolean setRed = false;
+//
+//    public void runOpMode() {
+//
+//        distSensor = new DistanceSensor(hardwareMap);
+//
+//        bot = new Robot(hardwareMap, telemetry);
+//        drive = new SampleMecanumDrive(hardwareMap);
+//        startPose = new Pose2d(-33, 61, Math.toRadians(90));
+//
+//        drive.setPoseEstimate(startPose);
+//
+//        telemetry.addLine("Sensor & Drivetrain Initialized");
+//        telemetry.update();
+//
+//        waitForStart();
+//        if (isStopRequested()) return;
+//
+//        while (opModeIsActive() && !isStopRequested()) {
+//
+//            distanceTelemetry();
+//            telemetry.update();
+//
+//
+//        }
+//
+//    }
+//
+//
+//    public void distanceTelemetry(){
+//        // if true, then blue. if false, red detect
+//        if(distSensor.getAlliance())
+//            telemetry.addLine("Using Sensor: LEFT");
+//        else
+//            telemetry.addLine("Using Sensor: RIGHT");
+//
+//        telemetry.addData("Distance To Wall: ", distSensor.getDistance());
+//    }
 }

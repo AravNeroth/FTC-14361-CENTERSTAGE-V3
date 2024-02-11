@@ -24,8 +24,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "moreStateTesting ", group = "goobTest")
-public class moreStateTesting extends LinearOpMode {
+@Autonomous(name = "aprilTagStateTesting ", group = "goobTest")
+public class aprilTagStateTestingExtra extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -38,14 +38,13 @@ public class moreStateTesting extends LinearOpMode {
      * The variable to store our instance of the vision portal.
      */
     private VisionPortal visionPortal;
-    HSVRedDetection redDetection;
 
 
     String webcamName;
     Robot robot;
 
     ElapsedTime timer = new ElapsedTime();
-    Pose2d start = new Pose2d(0, 0, Math.toRadians(180));
+    Pose2d start = new Pose2d(11.5, 62.75, Math.toRadians(90));
     SampleMecanumDrive drive;
     OpenCvCamera camera;
     double boardX, boardY, stack1Y, stackDetectX, stackDetectY;
@@ -58,11 +57,11 @@ public class moreStateTesting extends LinearOpMode {
     int ID_TAG_OF_INTEREST = 4;
     boolean tagFound = false;
 
-    double leftTapeX = 0, leftTapeY = 0, centerTapeX = 0, centerTapeY = 0, rightTapeX = 0, rightTapeY = 0;
+    double leftTapeX = 0, leftTapeY = 0, centerTapeX = 11.5, centerTapeY = 34.5, rightTapeX = 0, rightTapeY = 0;
     double leftBoardX, leftBoardY, centerBoardX, centerBoardY, rightBoardX, rightBoardY;
     double secondTimeBoardX = 0, secondTimeBoardY = 0, thirdTimeBoardX, thirdTimeBoardY;
 
-    HSVBlueDetection blueDetection;
+    HSVRedDetection redDetection;
 
 
     state currentState = state.tape;
@@ -90,11 +89,13 @@ public class moreStateTesting extends LinearOpMode {
 //        TrajectorySequence leftTape = drive.trajectorySequenceBuilder(start)
 //                .lineToConstantHeading(new Vector2d(leftTapeX,leftTapeY))
 //                .build();
-//
-//        TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
-//                .lineToConstantHeading(new Vector2d(centerTapeX,centerTapeY))
-//                .build();
-//
+
+        TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
+                .lineToConstantHeading(new Vector2d(centerTapeX,centerTapeY))
+                .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY +5))
+                .turn(Math.toRadians(-90))
+                .build();
+
 //        TrajectorySequence rightTape = drive.trajectorySequenceBuilder(start)
 //                .lineToConstantHeading(new Vector2d(rightTapeX,rightTapeY))
 //                .build();
@@ -107,37 +108,48 @@ public class moreStateTesting extends LinearOpMode {
 //        TrajectorySequence rightBoard = drive.trajectorySequenceBuilder(start)
 //                .lineToConstantHeading(new Vector2d(rightBoardX,rightBoardY))
 //                .build();
-        TrajectorySequence forward = drive.trajectorySequenceBuilder(start)
 
-                .lineToConstantHeading(new Vector2d(1,1))
-                .build();
 
 
         // initCam();
         TrajectorySequence tag = null;
         waitForStart();
+        initCam();
+        switch (redDetection.getLocation())
+        {
+            case LEFT:
+                drive.followTrajectorySequenceAsync(centerTape);
+                ID_TAG_OF_INTEREST = MIDDLE;
+            case RIGHT:
+                drive.followTrajectorySequenceAsync(centerTape);
+                ID_TAG_OF_INTEREST = MIDDLE;
+            case MIDDLE:
+                drive.followTrajectorySequenceAsync(centerTape);
+                ID_TAG_OF_INTEREST = MIDDLE;
+        }
 
-initCam();
         if (isStopRequested()) return;
-        drive.followTrajectorySequenceAsync(forward);
+       // drive.followTrajectorySequenceAsync(forward);
         currentState = state.tape;
         while (opModeIsActive() && !isStopRequested()) {
-
+         //   camera.closeCameraDevice();
+            
 
             //telemetryAprilTag();
             //telemetry.update();
 
             switch (currentState) {
                 case tape:
+
                     telemetry.addLine("Inside Tape State");
                     telemetry.update();
-                    if (!drive.isBusy()) {
-                        currentState = state.firstTimeBoard;
-                        timer.reset();
-                        initAprilTag();
-
-                        // drive.followTrajectoryAsync(trajectory2);
-                    }
+                    initAprilTag();
+//                    if (!drive.isBusy()) {
+//                        currentState = state.firstTimeBoard;
+//                        timer.reset();
+//
+//                        // drive.followTrajectoryAsync(trajectory2);
+//                    }
                     break;
                 case firstTimeBoard:
 
@@ -255,7 +267,9 @@ initCam();
             public void onError(int errorCode) {
                 telemetry.addLine("Unspecified Error Occurred; Camera Opening");
             }
+
         });
+
     }
 
 
@@ -266,6 +280,7 @@ initCam();
     private void initAprilTag() {
         // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder().build();
+
 
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // eg: Some typical detection data using a Logitech C920 WebCam
@@ -280,8 +295,8 @@ initCam();
         if (USE_WEBCAM) {
             visionPortal = new VisionPortal.Builder()
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                    //.addProcessor(aprilTag)
-                    .addProcessors(aprilTag)
+                    .addProcessor(aprilTag)
+
 
 
 
@@ -289,7 +304,7 @@ initCam();
         } else {
             visionPortal = new VisionPortal.Builder()
                     .setCamera(BuiltinCameraDirection.BACK)
-                    .addProcessors(aprilTag)
+                    .addProcessor(aprilTag)
                     .build();
         }
 

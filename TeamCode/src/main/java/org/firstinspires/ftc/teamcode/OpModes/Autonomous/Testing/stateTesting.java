@@ -103,13 +103,13 @@ public class stateTesting extends LinearOpMode {
                 .lineToConstantHeading(new Vector2d(leftTapeX,leftTapeY))
                 .build();
 
-    TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
-            .lineToConstantHeading(new Vector2d(centerTapeX,centerTapeY))
-            .build();
+        TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
+                .lineToConstantHeading(new Vector2d(centerTapeX,centerTapeY))
+                .build();
 
-    TrajectorySequence rightTape = drive.trajectorySequenceBuilder(start)
-            .lineToConstantHeading(new Vector2d(rightTapeX,rightTapeY))
-            .build();
+        TrajectorySequence rightTape = drive.trajectorySequenceBuilder(start)
+                .lineToConstantHeading(new Vector2d(rightTapeX,rightTapeY))
+                .build();
         TrajectorySequence leftBoard = drive.trajectorySequenceBuilder(start)
                 .lineToConstantHeading(new Vector2d(leftBoardX,leftBoardY))
                 .build();
@@ -135,13 +135,13 @@ public class stateTesting extends LinearOpMode {
                     {
                         case LEFT:
                             drive.followTrajectorySequenceAsync(leftTape);
-                             ID_TAG_OF_INTEREST = LEFT;
+                            ID_TAG_OF_INTEREST = LEFT;
                         case RIGHT:
                             drive.followTrajectorySequenceAsync(rightTape);
-                             ID_TAG_OF_INTEREST = RIGHT;
+                            ID_TAG_OF_INTEREST = RIGHT;
                         case MIDDLE:
                             drive.followTrajectorySequenceAsync(centerTape);
-                             ID_TAG_OF_INTEREST = MIDDLE;
+                            ID_TAG_OF_INTEREST = MIDDLE;
                     }
                     currentState = state.firstTimeBoard;
 
@@ -167,7 +167,7 @@ public class stateTesting extends LinearOpMode {
                             drive.followTrajectorySequenceAsync(tag);
                         }
 
-                        }
+                    }
                     else{
                         switch (blueDetection.getLocation())
                         {
@@ -210,12 +210,12 @@ public class stateTesting extends LinearOpMode {
                         drive.followTrajectorySequenceAsync(tag);
                     }
                     break;
-                    }
-
-
-                    
-
             }
+
+
+
+
+        }
 
 
     }
@@ -316,9 +316,3 @@ public class stateTesting extends LinearOpMode {
     }   // end method telemetryAprilTag()
 
 }   // end class
-
-
-
-
-
-
