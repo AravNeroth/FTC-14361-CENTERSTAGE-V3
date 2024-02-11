@@ -264,7 +264,8 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
             @Override
             public void onOpened() {
                 camera.showFpsMeterOnViewport(true);
-                camera.startStreaming(320, 240, OpenCvCameraRotation.SENSOR_NATIVE);
+                camera.startStreaming(320, 240, OpenCvCameraRotation.UPSIDE_DOWN);
+                camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.MAXIMIZE_EFFICIENCY);
             }
 
             @Override
@@ -286,8 +287,9 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         camera.setViewportRenderer(null);
 
    }
-
-
+/*
+opencv ex
+ */
 
 
     /**
