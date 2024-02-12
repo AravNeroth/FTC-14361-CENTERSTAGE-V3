@@ -113,33 +113,39 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 //                .build();
 
 
-
-        // initCam();
         TrajectorySequence tag = null;
-        waitForStart();
         initCam();
-        switch (redDetection.getLocation())
-        {
-            case LEFT:
-                drive.followTrajectorySequenceAsync(centerTape);
-                ID_TAG_OF_INTEREST = MIDDLE;
-                break;
-            case RIGHT:
-                drive.followTrajectorySequenceAsync(centerTape);
-                ID_TAG_OF_INTEREST = MIDDLE;
-                break;
-            case MIDDLE:
-                drive.followTrajectorySequenceAsync(centerTape);
-                ID_TAG_OF_INTEREST = MIDDLE;
-                break;
-        }
+        telemetry.addLine("Camera Initialized.");
+        telemetry.update();
+
+        waitForStart();
+
+        initAprilTag();
+        telemetry.addLine("AprilTag Initialized.");
+        telemetry.update();
+
+//        switch (redDetection.getLocation())
+//        {
+//            case LEFT:
+//                drive.followTrajectorySequenceAsync(centerTape);
+//                ID_TAG_OF_INTEREST = MIDDLE;
+//                break;
+//            case RIGHT:
+//                drive.followTrajectorySequenceAsync(centerTape);
+//                ID_TAG_OF_INTEREST = MIDDLE;
+//                break;
+//            case MIDDLE:
+//                drive.followTrajectorySequenceAsync(centerTape);
+//                ID_TAG_OF_INTEREST = MIDDLE;
+//                break;
+//        }
 
         if (isStopRequested()) return;
        // drive.followTrajectorySequenceAsync(forward);
         currentState = state.tape;
         while (opModeIsActive() && !isStopRequested()) {
          //   closeCamera();
-            camera.stopStreaming();
+            //camera.stopStreaming();
          //   camera.closeCameraDevice();
 
 
@@ -150,8 +156,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                 case tape:
 
                     telemetry.addLine("Inside Tape State");
-                    telemetry.update();
-                    initAprilTag();
+                    //telemetry.update();
 //                    if (!drive.isBusy()) {
 //                        currentState = state.firstTimeBoard;
 //                        timer.reset();
@@ -171,12 +176,12 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                             if (detection.metadata != null) {
 
                                 telemetry.addLine("Inside Metadata If");
-                                telemetry.update();
+                                //telemetry.update();
 
                                 //  Check to see if we want to track towards this tag.
                                 if ((ID_TAG_OF_INTEREST < 0 || detection.id == ID_TAG_OF_INTEREST)) {
                                     telemetry.addLine("Inside Tag Of Interest If");
-                                    telemetry.update();
+                                    //telemetry.update();
                                     // Yes, we want to use this tag.
                                     tagFound = true;
                                     tagOfInterest = detection;
@@ -184,11 +189,11 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
                                 if (tagFound) {
                                     telemetry.addLine("Inside TagFound If Statement");
-                                    telemetry.update();
+                                    //telemetry.update();
                                     // final double distanceX = tagOfInterest.center.x;
-                                    tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                            .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX()  + tagOfInterest.ftcPose.y - 4.5, drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.x-1.65, Math.toRadians(180)))
-                                            .build();
+//                                    tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+//                                            .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX()  + tagOfInterest.ftcPose.y - 4.5, drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.x-1.65, Math.toRadians(180)))
+//                                            .build();
 
 
 
@@ -198,7 +203,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                                     telemetry.addData("New Pose y: ", drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.y);
 
                                     telemetry.addLine("Traj Seq Builder ran");
-                                    telemetry.update();
+                                    //telemetry.update();
                                 }
                             }
 
@@ -215,22 +220,22 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 //                                .lineToConstantHeading(new Vector2d(1, 1))
 //                                .build();
 //                    }
-                    if (!drive.isBusy()) {
-                        drive.followTrajectorySequenceAsync(tag);
-                        if(tagFound) {
-                            currentState = state.idle;
-
-                        } else if (timer.seconds() > 2.5) {
-                            currentState = state.idle;
-                        }
-
-                        //  currentState = state.firstTimeBoard;
-                    }
+//                    if (!drive.isBusy()) {
+//                        drive.followTrajectorySequenceAsync(tag);
+//                        if(tagFound) {
+//                            currentState = state.idle;
+//
+//                        } else if (timer.seconds() > 2.5) {
+//                            currentState = state.idle;
+//                        }
+//
+//                        //  currentState = state.firstTimeBoard;
+//                    }
 
                     break;
                 case idle:
                     telemetry.addLine("Inside Idle State");
-                    telemetry.update();
+                    //telemetry.update();
                     break;
             } //switch statement end
 
@@ -268,7 +273,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
             @Override
             public void onOpened() {
                 camera.showFpsMeterOnViewport(true);
-                camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.SOFTWARE);
+                //camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.SOFTWARE);
                 camera.startStreaming(320, 240, OpenCvCameraRotation.UPSIDE_DOWN);
                 //camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.MAXIMIZE_EFFICIENCY);
             }
@@ -276,6 +281,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
             @Override
             public void onError(int errorCode) {
                 telemetry.addLine("Unspecified Error Occurred; Camera Opening");
+                telemetry.update();
             }
 
 
