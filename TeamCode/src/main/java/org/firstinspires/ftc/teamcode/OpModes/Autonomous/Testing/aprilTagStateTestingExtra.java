@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.autoExecutable.HSVBlueDetection;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.Subsystems.HSVBlueDetection;
 import org.firstinspires.ftc.teamcode.Subsystems.HSVRedDetection;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.util.AprilTagDetectionPipeline;
@@ -137,8 +137,10 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
        // drive.followTrajectorySequenceAsync(forward);
         currentState = state.tape;
         while (opModeIsActive() && !isStopRequested()) {
-         //   closeCamera();
-            camera.stopStreaming();
+         closeCamera();
+         telemetry.addLine("CamClose");
+
+          //  camera.stopStreaming();
          //   camera.closeCameraDevice();
 
 
@@ -151,9 +153,11 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                     telemetry.addLine("Inside Tape State");
                     telemetry.update();
                     initAprilTag();
-//                    if (!drive.isBusy()) {
-//                        currentState = state.firstTimeBoard;
-//                        timer.reset();
+                    telemetry.addLine("April Tag init");
+                    if (!drive.isBusy()) {
+                        currentState = state.firstTimeBoard;
+                        timer.reset();
+                    }
 //
 //                        // drive.followTrajectoryAsync(trajectory2);
 //                    }
@@ -239,9 +243,9 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
     } // run opmode
     private void initCam() {
 
+
         //This line retrieves the resource identifier for the camera monitor view. The camera monitor view is typically used to display the camera feed
-        int cameraMonitorViewId = 1;
-                //hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
         webcamName = "Webcam 1";
 
@@ -249,6 +253,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         // The camera instance is stored in the camera variable that we can use later
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
 
+        camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.SOFTWARE);
         // initializing our Detection class (details on how it works at the top)
         redDetection = new HSVRedDetection(telemetry);
 
@@ -267,25 +272,29 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                camera.showFpsMeterOnViewport(true);
-                camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.SOFTWARE);
-                camera.startStreaming(320, 240, OpenCvCameraRotation.UPSIDE_DOWN);
+               
+//                camera.showFpsMeterOnViewport(true);
+//
+//                camera.startStreaming(320, 240, OpenCvCameraRotation.UPSIDE_DOWN);
                 //camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.MAXIMIZE_EFFICIENCY);
             }
 
             @Override
             public void onError(int errorCode) {
                 telemetry.addLine("Unspecified Error Occurred; Camera Opening");
+
             }
 
 
         });
+    //    OpenCvCameraFactory.getInstance().splitLayoutForMultipleViewports(cameraMonitorViewId, 2, OpenCvCameraFactory.ViewportSplitMethod.VERTICALLY);
 
-
+camera.closeCameraDevice();
     }
    public void closeCamera(){
        if (camera != null) {
-           camera.stopStreaming();
+           telemetry.addLine("In close camera");
+        //   camera.stopStreaming();
            camera.pauseViewport();
 
            // release resources?
@@ -296,15 +305,15 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
            telemetry.update();
        }
 
-<<<<<<< Updated upstream
+
       //  camera.stopStreaming();
+       telemetry.addLine("Pausing/Stopping");
         camera.stopRecordingPipeline();
         camera.pauseViewport();
        camera.closeCameraDevice();
-        camera.setViewportRenderer(null);
+      //  camera.setViewportRenderer(null);
 
-=======
->>>>>>> Stashed changes
+
    }
 /*
 opencv exception viewport container specified is not empty
@@ -317,6 +326,7 @@ opencv exception viewport container specified is not empty
 
     private void initAprilTag() {
         // Create the AprilTag processor by using a builder.
+        telemetry.addLine("Inside April Tag Init");
         aprilTag = new AprilTagProcessor.Builder().build();
 
 
@@ -331,7 +341,9 @@ opencv exception viewport container specified is not empty
 
         // Create the vision portal by using a builder.
         if (USE_WEBCAM) {
+
             visionPortal = new VisionPortal.Builder()
+
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                     .enableLiveView(false)
                     .addProcessor(aprilTag)
