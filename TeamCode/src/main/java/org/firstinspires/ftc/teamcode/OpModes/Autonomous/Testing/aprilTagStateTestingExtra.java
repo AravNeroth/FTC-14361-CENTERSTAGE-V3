@@ -34,6 +34,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
      * The variable to store our instance of the AprilTag processor.
      */
     private AprilTagProcessor aprilTag;
+    private AprilTagDetectionPipeline aprilPipeline;
 
     /**
      * The variable to store our instance of the vision portal.
@@ -240,8 +241,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
     private void initCam() {
 
         //This line retrieves the resource identifier for the camera monitor view. The camera monitor view is typically used to display the camera feed
-        int cameraMonitorViewId = 1;
-                //hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
         webcamName = "Webcam 1";
 
@@ -313,38 +313,23 @@ opencv exception viewport container specified is not empty
      */
 
     private void initAprilTag() {
-        // Create the AprilTag processor by using a builder.
-        aprilTag = new AprilTagProcessor.Builder().build();
+        aprilPipeline = new AprilTagDetectionPipeline(tagsize, 575.42, 575.42, 398.82, 224.12);
+        camera.setPipeline(aprilPipeline);
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened() {
+                camera.startStreaming(640,480, OpenCvCameraRotation.UPRIGHT);
+                telemetry.addLine("Camera ran into an error during April Tag Detection Initialization");
+                telemetry.update();
+            }
 
-
-        // Adjust Image Decimation to trade-off detection-range for detection-rate.
-        // eg: Some typical detection data using a Logitech C920 WebCam
-        // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
-        // Decimation = 2 ..  Detect 2" Tag from 6  feet away at 22 Frames per second
-        // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second
-        // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
-        // Note: Decimation can be changed on-the-fly to adapt during a match.
-        aprilTag.setDecimation(2);
-
-        // Create the vision portal by using a builder.
-        if (USE_WEBCAM) {
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                    .enableLiveView(false)
-                    .addProcessor(aprilTag)
-
-
-
-
-                    .build();
-        } else {
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(BuiltinCameraDirection.BACK)
-                    .addProcessor(aprilTag)
-                    .build();
-        }
-
-        //   camera.startStreaming(320, 240, OpenCvCameraRotation.SENSOR_NATIVE);
+            @Override
+            public void onError(int errorCode){
+                telemetry.addLine("Camera ran into an error during April Tag Detection Initialization");
+                telemetry.update();
+            }
+        });
 
     }
     private void telemetryAprilTag() {
