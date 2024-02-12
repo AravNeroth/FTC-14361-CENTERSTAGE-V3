@@ -296,15 +296,12 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
            telemetry.update();
        }
 
-<<<<<<< Updated upstream
       //  camera.stopStreaming();
         camera.stopRecordingPipeline();
         camera.pauseViewport();
        camera.closeCameraDevice();
         camera.setViewportRenderer(null);
 
-=======
->>>>>>> Stashed changes
    }
 /*
 opencv exception viewport container specified is not empty
