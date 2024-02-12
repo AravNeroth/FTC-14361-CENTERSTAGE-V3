@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Commands.armExtensionState;
 import org.firstinspires.ftc.teamcode.Commands.clawState;
 import org.firstinspires.ftc.teamcode.Commands.extensionState;
 import org.firstinspires.ftc.teamcode.Commands.lidState;
+import org.firstinspires.ftc.teamcode.Commands.mecanumState;
+
 import org.firstinspires.ftc.teamcode.Commands.linkageState;
 import org.firstinspires.ftc.teamcode.Commands.outtakeSlidesState;
 import org.firstinspires.ftc.teamcode.Commands.slowDownState;
@@ -31,6 +34,7 @@ public class Robot {
     public Lid lid;
     public lidState lidstate;
     public ActiveIntake activeIntake;
+    public mecanumState mecanumState;
     public activeIntakeState activeIntakeState;
     public slowDownState slowDownState;
     public Linkage linkage;
@@ -301,6 +305,18 @@ public class Robot {
 //    public double getDistanceSensor(){
 //       return distanceSensor.getDistance();
 //    }
+
+    //Mecanum
+public void setMecanumState(mecanumState mecanumState){
+    // driveTrain.driveAngleLock(mecanumState, gamepad1);
+    this.mecanumState = mecanumState;
+}
+    public mecanumState getMecanumState(){
+        return mecanumState;
+    }
+    public void runMecanum(mecanumState mecanumState, GamepadEx gamepad1){
+        driveTrain.driveAngleLock(mecanumState, gamepad1);
+    }
 }
 
 
