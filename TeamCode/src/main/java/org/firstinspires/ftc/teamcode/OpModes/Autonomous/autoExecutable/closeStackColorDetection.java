@@ -24,13 +24,11 @@ import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.Sample
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-import java.util.Vector;
-
 @Autonomous(name = "closeBlueStackCD", group = "Auto")
 public class closeStackColorDetection extends LinearOpMode {
     OpenCvCamera camera;
     HSVBlueDetection blueDetection;
-    ColorSensor colorSense;
+    colorSensor colorSense;
     currentState currentStates;
     boolean leftSide, centerSide, rightSide;
     String webcamName;
@@ -215,7 +213,7 @@ public class closeStackColorDetection extends LinearOpMode {
                         .build();
 
                 drive.followTrajectorySequence(stackIntake);
-                
+
                 break;
         }
     }

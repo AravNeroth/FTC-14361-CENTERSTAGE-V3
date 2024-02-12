@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Commands.stackState;
 
-public class ColorSensor
+public class colorSensor
 {
-    com.qualcomm.robotcore.hardware.ColorSensor leftColorSensor, rightColorSensor;
+    ColorSensor leftColorSensor, rightColorSensor;
     double leftRedVal, leftGreenVal, leftBlueVal;
     double rightRedVal, rightGreenVal, rightBlueVal;
     double redTresh, greenTresh, blueTresh;
@@ -18,10 +19,10 @@ public class ColorSensor
     stackState stackStates;
     double timer = 0;
 
-    public ColorSensor(HardwareMap hardwareMap)
+    public colorSensor(HardwareMap hardwareMap)
     {
         leftColorSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.ColorSensor.class, "leftColorSensor");
-        rightColorSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.ColorSensor.class, "colorSensor");
+        rightColorSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.ColorSensor.class, "rightColorSensor");
 
         offset = 2;
     }
@@ -29,13 +30,7 @@ public class ColorSensor
     public stackState align(int numOfAttempts)
     {
         timer = numOfAttempts;
-        distMulti = .5;
         stackStates = stackState.noDetect;
-
-        if(numOfAttempts < 3)
-        {
-            offset = offset * .5;
-        }
 
         if((leftRedVal > redTresh && leftGreenVal > greenTresh && leftBlueVal > blueTresh) && (rightRedVal > redTresh && rightGreenVal > greenTresh && rightBlueVal > blueTresh))
         {
@@ -55,5 +50,35 @@ public class ColorSensor
     public double getOffset()
     {
         return offset;
+    }
+
+    public double getLeftRedVal()
+    {
+        return leftColorSensor.red();
+    }
+
+    public double getLeftGreenVal()
+    {
+        return leftColorSensor.green();
+    }
+
+    public double getLeftBlueVal()
+    {
+        return leftColorSensor.blue();
+    }
+
+    public double getRightRedVal()
+    {
+        return rightColorSensor.red();
+    }
+
+    public double getRightGreenVal()
+    {
+        return rightColorSensor.green();
+    }
+
+    public double getRightBlueVal()
+    {
+        return rightColorSensor.blue();
     }
 }
