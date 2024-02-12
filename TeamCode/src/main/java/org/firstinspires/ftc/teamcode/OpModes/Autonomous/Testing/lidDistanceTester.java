@@ -3,16 +3,16 @@ package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Testing;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Subsystems.distanceSensor;
+import org.firstinspires.ftc.teamcode.Subsystems.DistanceSensor;
 
 @Autonomous(name = "Lid distance testing ", group = "goobTest")
 public class lidDistanceTester extends LinearOpMode {
 
-    distanceSensor distSensor;
+    DistanceSensor distSensor;
 
     public void runOpMode() {
 
-        distSensor = new distanceSensor(hardwareMap);
+        distSensor = new DistanceSensor(hardwareMap);
         telemetry.addLine("Sensor Status: Initialized.");
         telemetry.update();
 

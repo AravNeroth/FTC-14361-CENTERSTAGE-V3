@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
-public class distanceSensor
+public class DistanceSensor
 {
-    DistanceSensor distanceSensor;
+    com.qualcomm.robotcore.hardware.DistanceSensor distanceSensor;
 
     boolean blueSide = false;
     double directionOffset = -1;
@@ -17,20 +16,20 @@ public class distanceSensor
     int robotFrontBackOffset = 9;
     int robotSideOffset = 8;
 
-    public distanceSensor(HardwareMap hardwareMap, boolean alliance)
+    public DistanceSensor(HardwareMap hardwareMap, boolean alliance)
     {
         // If alliance is true, blue side
         // If alliance is false, red side
 
         if(alliance == true)
-            distanceSensor = hardwareMap.get(DistanceSensor.class, "leftDist");
+            distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "leftDist");
         else
-            distanceSensor = hardwareMap.get(DistanceSensor.class, "rightDist");
+            distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "rightDist");
     }
 
-    public distanceSensor(HardwareMap hardwareMap){
+    public DistanceSensor(HardwareMap hardwareMap){
         // If you don't enter an alliance, then it defaults to lid distance sensor
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "lidDist");
+        distanceSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.DistanceSensor.class, "lidDist");
     }
 
     // Remember to account for the distance between the detector and the center of the robot.

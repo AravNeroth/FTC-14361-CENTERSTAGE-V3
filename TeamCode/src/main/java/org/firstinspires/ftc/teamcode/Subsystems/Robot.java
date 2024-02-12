@@ -21,7 +21,7 @@ public class Robot {
     public OuttakeSlide outtakeSlide;
     public Mecanum driveTrain;
     public Wrist wrist;
-    public colorSensor colorSensor;
+    public ColorSensor colorSensor;
     public Arm arm;
     public Drone drone;
     public outtakeSlidesState outtakeSlidesState;
@@ -40,7 +40,7 @@ public class Robot {
     public linkageState linkageState;
     // this is only diff- added VoltMecanum
     public VoltMecanum voltMecanum;
-    public org.firstinspires.ftc.teamcode.Subsystems.distanceSensor distanceSensor;
+    public DistanceSensor distanceSensor;
 
     Telemetry telemetry;
 
@@ -57,7 +57,7 @@ public class Robot {
         activeIntake = new ActiveIntake(hardwareMap);
         lid = new Lid(hardwareMap);
         drone = new Drone(hardwareMap);
-        colorSensor = new colorSensor(hardwareMap);
+        colorSensor = new ColorSensor(hardwareMap);
         // this is only diff- added VoltMecanum
 
         voltMecanum = new VoltMecanum(hardwareMap);
