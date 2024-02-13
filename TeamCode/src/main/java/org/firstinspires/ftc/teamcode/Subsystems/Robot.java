@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Commands.armExtensionState;
 import org.firstinspires.ftc.teamcode.Commands.clawState;
 import org.firstinspires.ftc.teamcode.Commands.extensionState;
+import org.firstinspires.ftc.teamcode.Commands.holderServoState;
 import org.firstinspires.ftc.teamcode.Commands.lidState;
 import org.firstinspires.ftc.teamcode.Commands.linkageState;
 import org.firstinspires.ftc.teamcode.Commands.outtakeSlidesState;
@@ -21,7 +23,6 @@ public class Robot {
     public OuttakeSlide outtakeSlide;
     public Mecanum driveTrain;
     public Wrist wrist;
-    public org.firstinspires.ftc.teamcode.Subsystems.colorSensor colorSensor;
     public Arm arm;
     public Drone drone;
     public outtakeSlidesState outtakeSlidesState;
@@ -40,8 +41,8 @@ public class Robot {
     public linkageState linkageState;
     // this is only diff- added VoltMecanum
     public VoltMecanum voltMecanum;
-    public DistanceSensor distanceSensor;
-
+    public pixelHolderServo holderServo;
+    public holderServoState holderServoState;
     Telemetry telemetry;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -57,53 +58,11 @@ public class Robot {
         activeIntake = new ActiveIntake(hardwareMap);
         lid = new Lid(hardwareMap);
         drone = new Drone(hardwareMap);
-        colorSensor = new colorSensor(hardwareMap);
+        holderServo = new pixelHolderServo(hardwareMap);
         // this is only diff- added VoltMecanum
-
         voltMecanum = new VoltMecanum(hardwareMap);
         //   distanceSensor = new distanceSensor(hardwareMap);
     }
-
-    // ---------------------------- IntakeSlide ---------------------------- //
-
-//    public void setIntakeSlidePosition(intakeSlidesState intakeSlidesState, extensionState extensionState)
-//    {
-//        intakeSlide.setPosition(extensionState,intakeSlidesState);
-//    }
-//    public void setIntakeSlidePosition(int pos)
-//    {
-//        intakeSlide.setPosition(pos);
-//    }
-//    public intakeSlidesState getIntakeSlideState()
-//    {
-//        return intakeSlidesState;
-//    }
-//
-//    public void setIntakeSlideState(intakeSlidesState intakeSlidesState)
-//    {
-//        this.intakeSlidesState = intakeSlidesState;
-//    }
-//
-//    public double getIntakeSlidePosition()
-//    {
-//        return intakeSlide.getIntakeSlidePosition();
-//    }
-
-//    public void setExtensionState(extensionState extensionState)
-//    {
-//        this.extensionState = extensionState;
-//    }
-//
-//    public extensionState getExtensionState()
-//
-//    {
-//        return extensionState;
-//    }
-
-//    public void setInBrake()
-//    {
-//        intakeSlide.setBrakeMode();
-//    }
 
     // ---------------------------- OuttakeSlide ---------------------------- //
 
@@ -169,63 +128,6 @@ public class Robot {
     public void setArmExtensionState(armExtensionState armExtensionState) {
         this.armExtensionState = armExtensionState;
     }
-
-    // ---------------------------- Claw ---------------------------- //
-
-//    public void setClawPosition(clawState clawState)
-//    {
-//        claw.setClawPosition(clawState);
-//    }
-//
-//    public void setOpenLeftClawPosition()
-//    {
-//        claw.leftOpen();
-//    }
-//
-//    public void setOpenRightClawPosition()
-//    {
-//        claw.rightOpen();
-//    }
-//
-//    public void setCloseLeftClawPosition()
-//    {
-//        claw.leftClose();
-//    }
-//
-//    public void setCloseRightClawPosition()
-//    {
-//        claw.rightClose();
-//    }
-//
-//    public void setClawState(clawState clawState)
-//    {
-//        this.clawState = clawState;
-//    }
-//
-//    public void setLeftClawState(clawState leftclawState)
-//    {
-//        this.leftclawState = leftclawState;
-//    }
-//
-//    public void setRightClawState(clawState rightclawState)
-//    {
-//        this.rightclawState = rightclawState;
-//    }
-//
-//    public clawState getClawState()
-//    {
-//        return clawState;
-//    }
-//
-//    public clawState getLeftClawState()
-//    {
-//        return leftclawState;
-//    }
-//
-//    public clawState getRightClawState()
-//    {
-//        return rightclawState;
-//    }
 
     // ---------------------------- ActiveIntake ---------------------------- //
 
@@ -300,11 +202,25 @@ public class Robot {
         lid.setLidCustomPosition(position);
     }
 
-//---------------------------- DistanceSensor ---------------------------- //
+    //---------------------------- Holder Servo ---------------------------- //
+    public void setHolderServoState(holderServoState holderState) {
 
-    //    public double getDistanceSensor(){
-//       return distanceSensor.getDistance();
-//    }
+        this.holderServoState = holderState;
+    }
+
+    public void setHolderServoPosition(holderServoState holderState) {
+        holderServo.setHolderServoPosition(holderState);
+        this.holderServoState = holderState;
+    }
+
+    public holderServoState getHolderState() {
+        return holderServoState;
+    }
+
+    public void setHolderServoCustomPosition(double position) {
+        holderServo.setHolderServoCustomPosition(position);
+    }
+
     //---------------------------- Mecanum ---------------------------- //
     public void setMecanumState(mecanumState mecanumState){
         // driveTrain.driveAngleLock(mecanumState, gamepad1);

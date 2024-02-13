@@ -141,4 +141,9 @@ public class robotConstants
         public static double droneReset = .6;
     }
 
+    public static class holderServo{
+            public static double open = .5;
+            public static double close = 0;
+    }
+
 }

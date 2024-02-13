@@ -8,19 +8,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Commands.activeIntakeState;
 import org.firstinspires.ftc.teamcode.Commands.armExtensionState;
-import org.firstinspires.ftc.teamcode.Commands.clawState;
 import org.firstinspires.ftc.teamcode.Commands.extensionState;
+import org.firstinspires.ftc.teamcode.Commands.holderServoState;
 import org.firstinspires.ftc.teamcode.Commands.lidState;
 import org.firstinspires.ftc.teamcode.Commands.linkageState;
 import org.firstinspires.ftc.teamcode.Commands.mecanumState;
 import org.firstinspires.ftc.teamcode.Commands.outtakeSlidesState;
 import org.firstinspires.ftc.teamcode.Commands.slowDownState;
-import org.firstinspires.ftc.teamcode.Commands.armExtensionState;
 import org.firstinspires.ftc.teamcode.Commands.armState;
 import org.firstinspires.ftc.teamcode.Commands.wristState;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
-import org.firstinspires.ftc.teamcode.Subsystems.colorSensor;
-import org.firstinspires.ftc.teamcode.util.robotConstants;
+import org.firstinspires.ftc.teamcode.Subsystems.distanceSensor;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 
@@ -28,7 +26,7 @@ public class FieldCentric extends OpMode {
     private ElapsedTime runTime;
     private GamepadEx driver, operator;
     private Robot bot;
-    colorSensor colorSense;
+    distanceSensor colorSense;
     ColorSensor leftColor, rightColor;
 
     @Override
@@ -37,10 +35,7 @@ public class FieldCentric extends OpMode {
         driver = new GamepadEx(gamepad1);
         operator = new GamepadEx(gamepad2);
         bot = new Robot(hardwareMap, telemetry);
-        colorSense = new colorSensor(hardwareMap);
-
-        leftColor = hardwareMap.get(ColorSensor.class, "leftColorSensor");
-        rightColor = hardwareMap.get(ColorSensor.class, "rightColorSensor");
+        colorSense = new distanceSensor(hardwareMap);
 
         telemetry.addLine("It's goobin time");
         telemetry.addLine("Time taken: " + getRuntime() + " seconds.");
@@ -73,13 +68,13 @@ public class FieldCentric extends OpMode {
         telemetry.addLine("Wrist Position: " + bot.wrist.getWristPosition());
         telemetry.addLine("State of V4B: init / " + bot.arm.getArmExtensionState());
 
-        telemetry.addLine("Left Color Sensor Red: " + leftColor.red());
-        telemetry.addLine("Left Color Sensor Green: " + leftColor.green());
-        telemetry.addLine("Left Color Sensor Blue: " + leftColor.blue());
-
-        telemetry.addLine("Right Color Sensor Red: " + rightColor.red());
-        telemetry.addLine("Right Color Sensor Green: " + rightColor.green());
-        telemetry.addLine("Right Color Sensor Blue: " + rightColor.blue());
+//        telemetry.addLine("Left Color Sensor Red: " + leftColor.red());
+//        telemetry.addLine("Left Color Sensor Green: " + leftColor.green());
+//        telemetry.addLine("Left Color Sensor Blue: " + leftColor.blue());
+//
+//        telemetry.addLine("Right Color Sensor Red: " + rightColor.red());
+//        telemetry.addLine("Right Color Sensor Green: " + rightColor.green());
+//        telemetry.addLine("Right Color Sensor Blue: " + rightColor.blue());
 
         telemetry.addLine("Right Arm Position: " + bot.arm.getRightArmPosition() + " ticks.");
         telemetry.addLine("Right Arm Decimal Position: " + (1 - bot.arm.getRightArmPosition() / 360) + " decimal.");
@@ -93,23 +88,12 @@ public class FieldCentric extends OpMode {
         driver.readButtons();
         operator.readButtons();
 
-
-
         // ---------------------------- DRIVER CODE ---------------------------- //
 
         if (driver.wasJustPressed(GamepadKeys.Button.START)) {
             bot.driveTrain.resetIMU();
         }
 
-//        if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1) {
-//            bot.setSlowDownState(slowDownState.FULL);
-//            bot.driveTrain.setFullPower();
-//        }
-//
-//        if (driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1) {
-//            bot.setSlowDownState(slowDownState.SLOW);
-//            bot.driveTrain.setSlowDownMotorPower();
-//        }
         if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1) {
             bot.setMecanumState(mecanumState.TOBLUEBACKBOARD);
         }
@@ -119,7 +103,6 @@ public class FieldCentric extends OpMode {
         if(driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
             bot.setMecanumState(mecanumState.NORMAL);
         }
-
 
         if (driver.wasJustPressed(GamepadKeys.Button.A)) {
             if (bot.getActiveIntakeState() != null && (bot.getActiveIntakeState().equals(activeIntakeState.active))) {
@@ -148,6 +131,16 @@ public class FieldCentric extends OpMode {
             else
             {
                 bot.setLidPosition(lidState.close);
+            }
+        }
+
+        if (driver.wasJustPressed(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
+            if (bot.getHolderState() != null && bot.getHolderState().equals(holderServoState.close)) {
+                bot.setHolderServoPosition(holderServoState.open);
+            }
+            else
+            {
+                bot.setHolderServoPosition(holderServoState.close);
             }
         }
 
