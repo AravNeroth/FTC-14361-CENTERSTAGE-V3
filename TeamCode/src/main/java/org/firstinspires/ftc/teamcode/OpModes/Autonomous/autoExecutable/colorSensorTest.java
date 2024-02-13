@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.Commands.currentState;
 import org.openftc.easyopencv.OpenCvCamera;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import org.firstinspires.ftc.teamcode.Subsystems.*;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.SampleMecanumDrive;
@@ -20,11 +21,15 @@ public class colorSensorTest extends LinearOpMode {
     String webcamName;
     Robot bot;
 
+    ColorSensor leftColorSensor, rightColorSensor;
+
     public void runOpMode() throws InterruptedException {
         bot = new Robot(hardwareMap, telemetry);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(15, 61, Math.toRadians(90));
-        colorSense = new colorSensor(hardwareMap);
+
+        leftColorSensor = hardwareMap.get(ColorSensor.class, "leftColorSensor");
+        rightColorSensor = hardwareMap.get(ColorSensor.class, "rightColorSensor");
 
         drive.setPoseEstimate(startPose);
 
@@ -36,20 +41,24 @@ public class colorSensorTest extends LinearOpMode {
 
         while (opModeIsActive() && !isStopRequested())
         {
-            colorTelemetry();
+            telemetry.addLine("Left Color Sensor Red: " + colorTelemetry());
+            telemetry.addLine("Left Color Sensor Green: " + colorTelemetry());
+            telemetry.addLine("Left Color Sensor Blue: " + colorTelemetry());
+
+            telemetry.addLine("Right Color Sensor Red: " + rightColorSensor.red());
+            telemetry.addLine("Right Color Sensor Green: " + rightColorSensor.green());
+            telemetry.addLine("Right Color Sensor Blue: " + rightColorSensor.blue());
+
             telemetry.update();
         }
     }
 
-    public void colorTelemetry()
+    public String colorTelemetry()
     {
-        telemetry.addLine("Left Color Sensor Red: " + colorSense.getLeftRedVal());
-        telemetry.addLine("Left Color Sensor Green: " + colorSense.getLeftGreenVal());
-        telemetry.addLine("Left Color Sensor Blue: " + colorSense.getLeftBlueVal());
-
-        telemetry.addLine("Right Color Sensor Red: " + colorSense.getRightRedVal());
-        telemetry.addLine("Right Color Sensor Green: " + colorSense.getRightGreenVal());
-        telemetry.addLine("Right Color Sensor Blue: " + colorSense.getRightBlueVal());
-
+        if(leftColorSensor.red() > 255 && leftColorSensor.green() > 255 && leftColorSensor.blue() > 255)
+        {
+            return "white";
+        }
+        return "not Left White";
     }
 }

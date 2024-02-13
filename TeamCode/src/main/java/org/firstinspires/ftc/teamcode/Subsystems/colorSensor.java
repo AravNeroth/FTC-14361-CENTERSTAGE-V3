@@ -21,8 +21,8 @@ public class colorSensor
 
     public colorSensor(HardwareMap hardwareMap)
     {
-        leftColorSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.ColorSensor.class, "leftColorSensor");
-        rightColorSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.ColorSensor.class, "rightColorSensor");
+        leftColorSensor = hardwareMap.get(ColorSensor.class, "leftColorSensor");
+        rightColorSensor = hardwareMap.get(ColorSensor.class, "rightColorSensor");
 
         offset = 2;
     }
@@ -52,32 +52,32 @@ public class colorSensor
         return offset;
     }
 
-    public double getLeftRedVal()
+    public int getLeftRedVal()
     {
         return leftColorSensor.red();
     }
 
-    public double getLeftGreenVal()
+    public int getLeftGreenVal()
     {
         return leftColorSensor.green();
     }
 
-    public double getLeftBlueVal()
+    public int getLeftBlueVal()
     {
         return leftColorSensor.blue();
     }
 
-    public double getRightRedVal()
+    public int getRightRedVal()
     {
         return rightColorSensor.red();
     }
 
-    public double getRightGreenVal()
+    public int getRightGreenVal()
     {
         return rightColorSensor.green();
     }
 
-    public double getRightBlueVal()
+    public int getRightBlueVal()
     {
         return rightColorSensor.blue();
     }
