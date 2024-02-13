@@ -29,6 +29,7 @@ public class FieldCentric extends OpMode {
     private GamepadEx driver, operator;
     private Robot bot;
     colorSensor colorSense;
+    ColorSensor leftColor, rightColor;
 
     @Override
     public void init() {
@@ -37,6 +38,9 @@ public class FieldCentric extends OpMode {
         operator = new GamepadEx(gamepad2);
         bot = new Robot(hardwareMap, telemetry);
         colorSense = new colorSensor(hardwareMap);
+
+        leftColor = hardwareMap.get(ColorSensor.class, "leftColorSensor");
+        rightColor = hardwareMap.get(ColorSensor.class, "rightColorSensor");
 
         telemetry.addLine("It's goobin time");
         telemetry.addLine("Time taken: " + getRuntime() + " seconds.");
@@ -69,13 +73,13 @@ public class FieldCentric extends OpMode {
         telemetry.addLine("Wrist Position: " + bot.wrist.getWristPosition());
         telemetry.addLine("State of V4B: init / " + bot.arm.getArmExtensionState());
 
-        telemetry.addLine("Left Color Sensor Red: " + colorSense.getLeftRedVal());
-        telemetry.addLine("Left Color Sensor Green: " + colorSense.getLeftGreenVal());
-        telemetry.addLine("Left Color Sensor Blue: " + colorSense.getLeftBlueVal());
+        telemetry.addLine("Left Color Sensor Red: " + leftColor.red());
+        telemetry.addLine("Left Color Sensor Green: " + leftColor.green());
+        telemetry.addLine("Left Color Sensor Blue: " + leftColor.blue());
 
-        telemetry.addLine("Right Color Sensor Red: " + colorSense.getRightRedVal());
-        telemetry.addLine("Right Color Sensor Green: " + colorSense.getRightGreenVal());
-        telemetry.addLine("Right Color Sensor Blue: " + colorSense.getRightBlueVal());
+        telemetry.addLine("Right Color Sensor Red: " + rightColor.red());
+        telemetry.addLine("Right Color Sensor Green: " + rightColor.green());
+        telemetry.addLine("Right Color Sensor Blue: " + rightColor.blue());
 
         telemetry.addLine("Right Arm Position: " + bot.arm.getRightArmPosition() + " ticks.");
         telemetry.addLine("Right Arm Decimal Position: " + (1 - bot.arm.getRightArmPosition() / 360) + " decimal.");
