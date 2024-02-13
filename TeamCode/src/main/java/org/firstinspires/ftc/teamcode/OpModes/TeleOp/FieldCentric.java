@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Commands.activeIntakeState;
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.teamcode.Commands.armExtensionState;
 import org.firstinspires.ftc.teamcode.Commands.armState;
 import org.firstinspires.ftc.teamcode.Commands.wristState;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
+import org.firstinspires.ftc.teamcode.Subsystems.colorSensor;
 import org.firstinspires.ftc.teamcode.util.robotConstants;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -26,7 +28,7 @@ public class FieldCentric extends OpMode {
     private ElapsedTime runTime;
     private GamepadEx driver, operator;
     private Robot bot;
-    public int outtakeSlideCount = 0;
+    colorSensor colorSense;
 
     @Override
     public void init() {
@@ -34,16 +36,14 @@ public class FieldCentric extends OpMode {
         driver = new GamepadEx(gamepad1);
         operator = new GamepadEx(gamepad2);
         bot = new Robot(hardwareMap, telemetry);
+        colorSense = new colorSensor(hardwareMap);
 
         telemetry.addLine("It's goobin time");
         telemetry.addLine("Time taken: " + getRuntime() + " seconds.");
 
-
         telemetry.update();
 
         bot.setArmPosition(armState.intaking, armExtensionState.extending);
-
-
 
         bot.setWristPosition(wristState.intaking);
         bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
@@ -53,24 +53,12 @@ public class FieldCentric extends OpMode {
         bot.setLinkagePosition(linkageState.LOW);
         bot.setLidPosition(lidState.open);
 
-        // bot.setIntakeSlidePosition(intakeSlidesState.STATION, extensionState.extending);
-        // bot.setIntakeSlideState(intakeSlidesState.STATION);
-
-//
-//
-//
-//        bot.setLeftClawState(clawState.leftClose);
-//        bot.setRightClawState(clawState.leftClose);
-
-        // bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
-
         bot.setDrone();
 
         bot.setSlowDownState(slowDownState.FULL);
 
     }
-//     bot.driveTrain.drive(driver);
-//        bot.driveTrain.setMotorPower();
+
     // ---------------------------- LOOPING ---------------------------- //
 
     @Override
@@ -78,26 +66,24 @@ public class FieldCentric extends OpMode {
         telemetry.addLine("Total Runtime: " + getRuntime() + " seconds.");
         telemetry.addLine("Left Slide Position: " + bot.getOuttakeLeftSlidePosition() + " ticks");
         telemetry.addLine("Right Slide Position: " + bot.getOuttakeRightSlidePosition() + " ticks");
-//      telemetry.addLine("Intake Slide Position" + bot.getIntakeSlidePosition());
-//      telemetry.addLine("Intake Slide Count " + intakeSlideCountAdd);
-//      telemetry.addLine("Intake Slide Subtract Count " + intakeSlideCountSubstract);
-
         telemetry.addLine("Wrist Position: " + bot.wrist.getWristPosition());
         telemetry.addLine("State of V4B: init / " + bot.arm.getArmExtensionState());
-//        telemetry.addLine("Red Value " + bot.colorSensor.getRedValue());
-//        telemetry.addLine("Blue Value " + bot.colorSensor.getBlueValue());
-//        telemetry.addLine("Green Value " + bot.colorSensor.getGreenValue());
-//        telemetry.addLine("Alpha Value " + bot.colorSensor.getAlphaValue());
-//        telemetry.addLine("Right Claw Position: " + bot.claw.getRightClawPosition());
-//        telemetry.addLine("Left Claw Position: " + bot.claw.getLeftClawPosition());
+
+        telemetry.addLine("Left Color Sensor Red: " + colorSense.getLeftRedVal());
+        telemetry.addLine("Left Color Sensor Green: " + colorSense.getLeftGreenVal());
+        telemetry.addLine("Left Color Sensor Blue: " + colorSense.getLeftBlueVal());
+
+        telemetry.addLine("Right Color Sensor Red: " + colorSense.getRightRedVal());
+        telemetry.addLine("Right Color Sensor Green: " + colorSense.getRightGreenVal());
+        telemetry.addLine("Right Color Sensor Blue: " + colorSense.getRightBlueVal());
+
         telemetry.addLine("Right Arm Position: " + bot.arm.getRightArmPosition() + " ticks.");
         telemetry.addLine("Right Arm Decimal Position: " + (1 - bot.arm.getRightArmPosition() / 360) + " decimal.");
         telemetry.addLine("Left Arm Position: " + bot.arm.getLeftArmPosition() + " ticks.");
         telemetry.addLine("Left Arm Decimal Position: " + (1 - bot.arm.getLeftArmPosition() / 360) + " decimal.");
         bot.driveTrain.driveAngleLock(bot.getMecanumState(), driver);
         bot.driveTrain.setMotorPower();
-//        telemetry.addLine("DIstance in CM" + bot.getDistanceSensor());
-//      telemetry.addLine("Intake Slide Encoder Tick Count " + intakeSlideCountSubstract);
+
         telemetry.update();
 
         driver.readButtons();
