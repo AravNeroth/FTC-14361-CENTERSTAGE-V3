@@ -28,10 +28,9 @@ public class colorSensorTest extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(15, 61, Math.toRadians(90));
 
-        leftColorSensor = hardwareMap.get(ColorSensor.class, "leftColorSensor");
-        rightColorSensor = hardwareMap.get(ColorSensor.class, "rightColorSensor");
-
         drive.setPoseEstimate(startPose);
+
+        colorSense = new colorSensor(hardwareMap);
 
         telemetry.addLine("Sensor & Drivetrain Initialized");
         telemetry.update();
@@ -41,7 +40,7 @@ public class colorSensorTest extends LinearOpMode {
 
         while (opModeIsActive() && !isStopRequested())
         {
-            telemetry.addLine("Left Color Sensor Red: " + colorTelemetry());
+            telemetry.addLine("Left Color Sensor Red: " + colorsense.getLeftRedVal());
             telemetry.addLine("Left Color Sensor Green: " + colorTelemetry());
             telemetry.addLine("Left Color Sensor Blue: " + colorTelemetry());
 
