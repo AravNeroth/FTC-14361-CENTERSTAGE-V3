@@ -25,20 +25,29 @@ public class colorSensor {
     }
     public String getColor(){
 
-        if((ColorSensorr.red() > 250 && ColorSensorr.red() < 350)&& (ColorSensorr.blue() > 100 && ColorSensorr.blue() < 200) && (ColorSensorr.green() > 450 && ColorSensorr.green() <550)){
+        if((ColorSensorr.red() > 350 && ColorSensorr.red() < 750)&& (ColorSensorr.blue() > 300 && ColorSensorr.blue() < 700) && (ColorSensorr.green() > 500 && ColorSensorr.green() <900)){
             return "Yellow";
-        } else if ((ColorSensorr.red() > 80 && ColorSensorr.red() < 180) && (ColorSensorr.blue() > 150 && ColorSensorr.blue() < 250) && (ColorSensorr.green() > 315 && ColorSensorr.green() <415)  ) {
+        } else if ((ColorSensorr.red() > 200 && ColorSensorr.red() < 400) && (ColorSensorr.blue() > 250 && ColorSensorr.blue() < 550) && (ColorSensorr.green() > 500 && ColorSensorr.green() <700)  ) {
             return "Green";
         }
-        else if((ColorSensorr.red() > 225 && ColorSensorr.red() < 325 ) && (ColorSensorr.blue() > 475 && ColorSensorr.blue() < 575 )&& (ColorSensorr.green() > 365 && ColorSensorr.green() <465) ){
+        else if((ColorSensorr.red() > 300 && ColorSensorr.red() < 600 ) && (ColorSensorr.blue() > 600 && ColorSensorr.blue() < 1000 )&& (ColorSensorr.green() > 530 && ColorSensorr.green() <930) ){
             return "Purple";
         }
-        else if((ColorSensorr.red() > 450 && ColorSensorr.red() < 550 ) && (ColorSensorr.blue() > 800 && ColorSensorr.blue() < 900 )&& (ColorSensorr.green() > 900 && ColorSensorr.green() <1000)){
+        else if((ColorSensorr.red() > 800 && ColorSensorr.red() < 1200 ) && (ColorSensorr.blue() > 1400 && ColorSensorr.blue() < 1800 )&& (ColorSensorr.green() > 1200 && ColorSensorr.green() <1600)){
             return "White";
         }
         else{
            return "Pixel Not Detected";
         }
+    }
+    public String proportionalColorDetect(){
+        int green = ColorSensorr.green()/100;
+        int red = ColorSensorr.red()/100;
+        int blue = ColorSensorr.green()/100;
+        if(red/3 ==2 && green/3 ==3 && blue/4 ==3){
+            return "Purple";
+        }
+        else return "White";
     }
 
 }

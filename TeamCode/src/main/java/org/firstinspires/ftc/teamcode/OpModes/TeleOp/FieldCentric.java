@@ -84,28 +84,27 @@ public class FieldCentric extends OpMode {
 //      telemetry.addLine("Intake Slide Count " + intakeSlideCountAdd);
 //      telemetry.addLine("Intake Slide Subtract Count " + intakeSlideCountSubstract);
 
-
-        telemetry.addLine("Red Value " + bot.colorSensor.getRedValue());
-        telemetry.addLine("Blue Value " + bot.colorSensor.getBlueValue());
-        telemetry.addLine("Green Value " + bot.colorSensor.getGreenValue());
-        telemetry.addLine("Alpha Value " + bot.colorSensor.getAlphaValue());
-        telemetry.addLine("Color " + bot.colorSensor.getColor());
+if((bot.getArmState()!= null && bot.getArmState() == armState.outtaking) && (bot.getWristState()!= null && bot.getWristState().equals(wristState.outtaking))) {
+    telemetry.addLine("Red Value " + bot.colorSensor.getRedValue());
+    telemetry.addLine("Blue Value " + bot.colorSensor.getBlueValue());
+    telemetry.addLine("Green Value " + bot.colorSensor.getGreenValue());
+    telemetry.addLine("Alpha Value " + bot.colorSensor.getAlphaValue());
+    telemetry.addLine("Color " + bot.colorSensor.getColor());
+}
 //        telemetry.addLine("Right Claw Position: " + bot.claw.getRightClawPosition());
 //        telemetry.addLine("Left Claw Position: " + bot.claw.getLeftClawPosition());
-        if(bot.colorSensor.getColor().equals("Yellow")){
-            bot.blinkinLedDriver.setPatternYellow();
-        }
-        else if (bot.colorSensor.getColor().equals("Green")) {
-            bot.blinkinLedDriver.setPatternGreen();
-        }
-        else if (bot.colorSensor.getColor().equals("Purple")) {
-            bot.blinkinLedDriver.setPatternPurple();
-        }
-        else if (bot.colorSensor.getColor().equals("White")) {
-            bot.blinkinLedDriver.setPatternWhite();
-        }
-        else{
-            bot.blinkinLedDriver.setPatternRainbowOcean();
+        if((bot.getArmState()!= null && bot.getArmState() == armState.outtaking) && (bot.getWristState()!= null && bot.getWristState().equals(wristState.outtaking))) {
+            if (bot.colorSensor.getColor().equals("Yellow")) {
+                bot.blinkinLedDriver.setPatternYellow();
+            } else if (bot.colorSensor.getColor().equals("Green")) {
+                bot.blinkinLedDriver.setPatternGreen();
+            } else if (bot.colorSensor.getColor().equals("Purple")) {
+                bot.blinkinLedDriver.setPatternPurple();
+            } else if (bot.colorSensor.getColor().equals("White")) {
+                bot.blinkinLedDriver.setPatternWhite();
+            } else {
+                bot.blinkinLedDriver.setPatternRainbowOcean();
+            }
         }
         bot.driveTrain.driveAngleLock(bot.getMecanumState(), driver);
         bot.driveTrain.setMotorPower();
