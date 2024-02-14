@@ -45,11 +45,13 @@ public class FieldCentric extends OpMode {
         bot.setArmPosition(armState.intaking, armExtensionState.extending);
 
         bot.setWristPosition(wristState.intaking);
+
         bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
 
         bot.setMecanumState(mecanumState.NORMAL);
 
         bot.setLinkagePosition(linkageState.LOW);
+
         bot.setLidPosition(lidState.open);
 
         bot.setDrone();
@@ -67,14 +69,6 @@ public class FieldCentric extends OpMode {
         telemetry.addLine("Right Slide Position: " + bot.getOuttakeRightSlidePosition() + " ticks");
         telemetry.addLine("Wrist Position: " + bot.wrist.getWristPosition());
         telemetry.addLine("State of V4B: init / " + bot.arm.getArmExtensionState());
-
-//        telemetry.addLine("Left Color Sensor Red: " + leftColor.red());
-//        telemetry.addLine("Left Color Sensor Green: " + leftColor.green());
-//        telemetry.addLine("Left Color Sensor Blue: " + leftColor.blue());
-//
-//        telemetry.addLine("Right Color Sensor Red: " + rightColor.red());
-//        telemetry.addLine("Right Color Sensor Green: " + rightColor.green());
-//        telemetry.addLine("Right Color Sensor Blue: " + rightColor.blue());
 
         telemetry.addLine("Right Arm Position: " + bot.arm.getRightArmPosition() + " ticks.");
         telemetry.addLine("Right Arm Decimal Position: " + (1 - bot.arm.getRightArmPosition() / 360) + " decimal.");
@@ -172,7 +166,6 @@ public class FieldCentric extends OpMode {
                 bot.setWristPosition(wristState.intaking);
                 bot.setWristState(wristState.intaking);
             }
-            // bot.wrist.setWristCustomPosition(.95);
         }
         if (operator.wasJustPressed(GamepadKeys.Button.BACK)) {
             bot.setOuttakeSlidePosition(outtakeSlidesState.HIGHOUT, extensionState.extending);
@@ -206,11 +199,6 @@ public class FieldCentric extends OpMode {
             bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
             bot.setOuttakeSlideState(outtakeSlidesState.STATION);
         }
-
-//        if (operator.wasJustPressed(GamepadKeys.Button.B)) {
-//            intakeSlideCountAdd += 5;
-//            bot.intakeSlide.setPosition(intakeSlide.retracted + intakeSlideCountAdd);
-//        }
 
         if (operator.wasJustPressed(GamepadKeys.Button.Y)) {
             bot.setWristState(wristState.outtaking);
@@ -256,8 +244,5 @@ public class FieldCentric extends OpMode {
             bot.outtakeSlide.setLeftOuttakeSlidePosition((int) bot.outtakeSlide.getLeftOuttakeSlideMotorPosition() - (int) (operator.getRightY() * 10));
             bot.outtakeSlide.setRightouttakeSlidePosition((int) bot.outtakeSlide.getRightOuttakeSlideMotorPosition() - (int) (operator.getRightY() * 10));
         }
-
-
-
     }
 }

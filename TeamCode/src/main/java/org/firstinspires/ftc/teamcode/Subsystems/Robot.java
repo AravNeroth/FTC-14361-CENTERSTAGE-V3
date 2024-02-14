@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Commands.armExtensionState;
-import org.firstinspires.ftc.teamcode.Commands.clawState;
 import org.firstinspires.ftc.teamcode.Commands.extensionState;
 import org.firstinspires.ftc.teamcode.Commands.holderServoState;
 import org.firstinspires.ftc.teamcode.Commands.lidState;
@@ -19,7 +17,6 @@ import org.firstinspires.ftc.teamcode.Commands.activeIntakeState;
 import org.firstinspires.ftc.teamcode.Commands.mecanumState;
 
 public class Robot {
-    //public IntakeSlide intakeSlide;
     public OuttakeSlide outtakeSlide;
     public Mecanum driveTrain;
     public Wrist wrist;
@@ -27,7 +24,6 @@ public class Robot {
     public Drone drone;
     public outtakeSlidesState outtakeSlidesState;
     public wristState wristState;
-    public clawState clawState, leftclawState, rightclawState;
     public armState armState;
     public armExtensionState armExtensionState;
     public extensionState extensionState;
@@ -39,29 +35,25 @@ public class Robot {
     public slowDownState slowDownState;
     public Linkage linkage;
     public linkageState linkageState;
-    // this is only diff- added VoltMecanum
     public VoltMecanum voltMecanum;
-    public pixelHolderServo holderServo;
+    public holderServo holderServo;
     public holderServoState holderServoState;
     Telemetry telemetry;
 
-    public Robot(HardwareMap hardwareMap, Telemetry telemetry) {
+    public Robot(HardwareMap hardwareMap, Telemetry telemetry)
+    {
         this.telemetry = telemetry;
 
         driveTrain = new Mecanum(hardwareMap);
         linkage = new Linkage(hardwareMap);
-//        claw = new Claw(hardwareMap);
         wrist = new Wrist(hardwareMap);
         arm = new Arm(hardwareMap);
         outtakeSlide = new OuttakeSlide(hardwareMap);
-        //intakeSlide = new IntakeSlide(hardwareMap);
         activeIntake = new ActiveIntake(hardwareMap);
         lid = new Lid(hardwareMap);
         drone = new Drone(hardwareMap);
-        holderServo = new pixelHolderServo(hardwareMap);
-        // this is only diff- added VoltMecanum
+        holderServo = new holderServo(hardwareMap);
         voltMecanum = new VoltMecanum(hardwareMap);
-        //   distanceSensor = new distanceSensor(hardwareMap);
     }
 
     // ---------------------------- OuttakeSlide ---------------------------- //

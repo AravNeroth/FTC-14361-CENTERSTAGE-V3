@@ -6,14 +6,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Commands.holderServoState;
-import org.firstinspires.ftc.teamcode.Commands.lidState;
 import org.firstinspires.ftc.teamcode.util.robotConstants;
 
-public class pixelHolderServo
+public class holderServo
 {
     private ServoEx holderServo;
     double minAngle = 0, maxAngle= 360;
-    public pixelHolderServo(HardwareMap hardwareMap)
+    public holderServo(HardwareMap hardwareMap)
     {
         holderServo = new SimpleServo(hardwareMap, "lidServo", minAngle, maxAngle, AngleUnit.DEGREES);
     }
