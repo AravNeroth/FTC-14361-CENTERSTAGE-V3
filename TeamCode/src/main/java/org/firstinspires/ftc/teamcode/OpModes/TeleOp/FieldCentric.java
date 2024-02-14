@@ -26,8 +26,6 @@ public class FieldCentric extends OpMode {
     private ElapsedTime runTime;
     private GamepadEx driver, operator;
     private Robot bot;
-    distanceSensor colorSense;
-    ColorSensor leftColor, rightColor;
 
     @Override
     public void init() {
@@ -35,7 +33,6 @@ public class FieldCentric extends OpMode {
         driver = new GamepadEx(gamepad1);
         operator = new GamepadEx(gamepad2);
         bot = new Robot(hardwareMap, telemetry);
-        colorSense = new distanceSensor(hardwareMap);
 
         telemetry.addLine("It's goobin time");
         telemetry.addLine("Time taken: " + getRuntime() + " seconds.");
@@ -57,7 +54,6 @@ public class FieldCentric extends OpMode {
         bot.setDrone();
 
         bot.setSlowDownState(slowDownState.FULL);
-
     }
 
     // ---------------------------- LOOPING ---------------------------- //
@@ -119,21 +115,29 @@ public class FieldCentric extends OpMode {
         }
 
         if (driver.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)) {
-            if (bot.getLidState() != null && bot.getLidState().equals(lidState.close)) {
+            if (bot.getLidState() != null && bot.getLidState().equals(lidState.close) && bot.getHolderState() != null && bot.getHolderState().equals(holderServoState.close)) {
                 bot.setLidPosition(lidState.open);
-            }
-            else
-            {
-                bot.setLidPosition(lidState.close);
-            }
-        }
-
-        if (driver.wasJustPressed(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
-            if (bot.getHolderState() != null && bot.getHolderState().equals(holderServoState.close)) {
                 bot.setHolderServoPosition(holderServoState.open);
             }
             else
             {
+                bot.setLidPosition(lidState.close);
+                bot.setHolderServoPosition(holderServoState.close);
+            }
+        }
+
+        if (driver.wasJustPressed(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
+            if(bot.getLidState() != null && bot.getLidState().equals(lidState.close) && bot.getHolderState() != null && bot.getHolderState().equals(holderServoState.close))
+            {
+                bot.setLidPosition(lidState.open);
+            }
+            else if(bot.getLidState() != null && bot.getLidState().equals(lidState.open) && bot.getHolderState() != null && bot.getHolderState().equals(holderServoState.close))
+            {
+                bot.setHolderServoPosition(holderServoState.open);
+            }
+            else
+            {
+                bot.setLidPosition(lidState.close);
                 bot.setHolderServoPosition(holderServoState.close);
             }
         }
@@ -175,19 +179,19 @@ public class FieldCentric extends OpMode {
         if (operator.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
             bot.setOuttakeSlidePosition(outtakeSlidesState.MEDIUMOUT, extensionState.extending);
             bot.setOuttakeSlideState(outtakeSlidesState.MEDIUMOUT);
-
-
         }
+
         if(operator.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
             bot.setLidPosition(lidState.close);
+            bot.setHolderServoPosition(holderServoState.close);
         }
+
         if(operator.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)){
             bot.setWristPosition(wristState.init);
         }
         if (operator.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
             bot.setOuttakeSlidePosition(outtakeSlidesState.LOWMED, extensionState.extending);
             bot.setOuttakeSlideState(outtakeSlidesState.LOWMED);
-
         }
 
         if (operator.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
