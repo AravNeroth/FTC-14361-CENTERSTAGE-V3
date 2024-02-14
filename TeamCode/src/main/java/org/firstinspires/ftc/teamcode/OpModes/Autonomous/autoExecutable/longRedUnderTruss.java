@@ -21,8 +21,6 @@ import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.Sample
 @Autonomous(name = "longRedUnderTruss", group = "Auto")
 public class longRedUnderTruss extends LinearOpMode {
     OpenCvCamera camera;
-
-
     HSVRedDetection redDetection;
     String webcamName;
     Robot bot;
@@ -58,8 +56,6 @@ public class longRedUnderTruss extends LinearOpMode {
                     bot.outtakeSlide.setPosition(800);
                 })
 
-
-
                 //Lining up with back board
                 .lineToConstantHeading(new Vector2d(51.2, -20.25))
 
@@ -82,7 +78,6 @@ public class longRedUnderTruss extends LinearOpMode {
                     bot.setWristPosition(wristState.init);
                     bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
                 })
-
 
                 .lineToLinearHeading(new Pose2d(46 ,-55, Math.toRadians(90)))
 
@@ -109,12 +104,10 @@ public class longRedUnderTruss extends LinearOpMode {
                 .lineToConstantHeading(new Vector2d(-43,-33.5))
                 //Move left of tape
                 .lineToConstantHeading(new Vector2d(-43,-42))
+
                 .lineToLinearHeading(new Pose2d(-43,-55, Math.toRadians(180)))
-                //      .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL,DriveConstants.TRACK_WIDTH))
+
                 .lineToLinearHeading(new Pose2d(43, -55, Math.toRadians(180)))
-                //     .splineToConstantHeading(new Vector2d(40,-56), Math.toRadians(180))
-
-
 
                 .lineToConstantHeading(new Vector2d(40,-53))
                 .addDisplacementMarker( () -> {
@@ -158,10 +151,6 @@ public class longRedUnderTruss extends LinearOpMode {
                 .lineToConstantHeading(new Vector2d(52,-55))
 
                 .build();
-
-        //Moving to gate
-
-
 
         // ---------------------------- Right ---------------------------- //
 
