@@ -203,10 +203,11 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
                                 //  Check to see if we want to track towards this tag.
                                 if ((ID_TAG_OF_INTEREST < 0 || detection.id == ID_TAG_OF_INTEREST)) {
+                                    drive.breakFollowing();
                                     telemetry.addLine("Inside Tag Of Interest If");
                                     telemetry.update();
                                     // Yes, we want to use this tag.
-                                    drive.breakFollowing();
+
                                     tagFound = true;
                                     tagOfInterest = detection;
                                 }
@@ -217,7 +218,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                                     timer.reset();
                                     // final double distanceX = tagOfInterest.center.x;
                                     tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                            .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX()  + tagOfInterest.ftcPose.y +5, drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.x-1.65, Math.toRadians(180)))
+                                            .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX()  + tagOfInterest.ftcPose.y +3, drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.x+4))
                                             .build();
 
 
