@@ -34,7 +34,7 @@ public class HSVRedDetection extends OpenCvPipeline {
 
     /*
     These create the rectangles that your TSE should be in.
-    See what the camera does by using the camera str    eam in the menu of the driver station WHILE the bot is active
+    See what the camera does by using the camera stream in the menu of the driver station WHILE the bot is active
     Adjust the camera or the boxes so your TSE is inside it
 
      */
@@ -132,6 +132,7 @@ public class HSVRedDetection extends OpenCvPipeline {
 
         return mat;
     }
+
 
     public Location getLocation() {
         return location;

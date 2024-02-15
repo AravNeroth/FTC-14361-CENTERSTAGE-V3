@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.autoExecutable.NewVision;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Subsystems.HSVBlueDetection;
@@ -39,6 +40,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
      * The variable to store our instance of the vision portal.
      */
     private VisionPortal visionPortal;
+    NewVision newVision;
 
 
     String webcamName;
@@ -48,6 +50,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
     Pose2d start = new Pose2d(11.5, 62.75, Math.toRadians(90));
     SampleMecanumDrive drive;
     OpenCvCamera camera;
+    boolean cameraOn = false, aprilTagOn = false;
     double boardX, boardY, stack1Y, stackDetectX, stackDetectY;
     boolean onePixel = false, twoPixels = false;
     //   aprilTagDetection aprilTagDetectionPipeline;
@@ -62,7 +65,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
     double leftBoardX, leftBoardY, centerBoardX, centerBoardY, rightBoardX, rightBoardY;
     double secondTimeBoardX = 0, secondTimeBoardY = 0, thirdTimeBoardX, thirdTimeBoardY;
 
-    HSVRedDetection redDetection;
+
 
 
     state currentState = state.tape;
@@ -84,6 +87,21 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
 
         telemetry.addLine("April Tag Initialized.");
+        newColorDetect();
+        telemetry.addLine("portal state " + visionPortal.getCameraState());
+     //   telemetry.addLine("portal active " + visionPortal.getActiveCamera());
+        switch (newVision.getLocation()){
+            case LEFT:
+                telemetry.addLine("left");
+                break;
+            case RIGHT:
+                telemetry.addLine("right");
+                break;
+            case MIDDLE:
+                telemetry.addLine("middle");
+                break;
+        }
+
         telemetry.update();
 
 //
@@ -115,26 +133,14 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         // initCam();
         TrajectorySequence tag = null;
         waitForStart();
-        initCam();
-        switch (redDetection.getLocation())
-        {
-            case LEFT:
-                drive.followTrajectorySequenceAsync(centerTape);
-                ID_TAG_OF_INTEREST = MIDDLE;
-            case RIGHT:
-                drive.followTrajectorySequenceAsync(centerTape);
-                ID_TAG_OF_INTEREST = MIDDLE;
-            case MIDDLE:
-                drive.followTrajectorySequenceAsync(centerTape);
-                ID_TAG_OF_INTEREST = MIDDLE;
-        }
+
 
         if (isStopRequested()) return;
        // drive.followTrajectorySequenceAsync(forward);
         currentState = state.tape;
         while (opModeIsActive() && !isStopRequested()) {
          //   closeCamera();
-            camera.stopStreaming();
+            //camera.stopStreaming();
          //   camera.closeCameraDevice();
 
 
@@ -143,13 +149,25 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
             switch (currentState) {
                 case tape:
-
-                    telemetry.addLine("Inside Tape State");
+                if(!cameraOn){
+                    newColorDetect();
+                    telemetry.addLine("into disalbe");
+                    telemetry.update();
+                    cameraOn = true;
+                    timer.reset();
+                }
+                if(!aprilTagOn){
+                    telemetry.addLine("into april tag disable");
                     telemetry.update();
                     initAprilTag();
-//                    if (!drive.isBusy()) {
-//                        currentState = state.firstTimeBoard;
-//                        timer.reset();
+                    aprilTagOn = true;
+                }
+
+
+                    if (!drive.isBusy()) {
+                        currentState = state.firstTimeBoard;
+                        timer.reset();
+                    }
 //
 //                        // drive.followTrajectoryAsync(trajectory2);
 //                    }
@@ -182,7 +200,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                                     telemetry.update();
                                     // final double distanceX = tagOfInterest.center.x;
                                     tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                            .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX()  + tagOfInterest.ftcPose.y - 4.5, drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.x-1.65, Math.toRadians(180)))
+                                            .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX()  + tagOfInterest.ftcPose.y - 4.5, drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.x-1.65, Math.toRadians(180)))
                                             .build();
 
 
@@ -233,67 +251,26 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         } // opmode loop
 
     } // run opmode
-    private void initCam() {
-
-        //This line retrieves the resource identifier for the camera monitor view. The camera monitor view is typically used to display the camera feed
-        int cameraMonitorViewId = 1;
-                //hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-
-        webcamName = "Webcam 1";
-
-        // This line creates a webcam instance using the OpenCvCameraFactor with the webcam name (webcamName) and the camera monitor view ID.
-        // The camera instance is stored in the camera variable that we can use later
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
-
-        // initializing our Detection class (details on how it works at the top)
-        redDetection = new HSVRedDetection(telemetry);
-
-        // yeah what this does is it gets the thing which uses the thing so we can get the thing
-        /*
-        (fr tho idk what pipeline does, but from what I gathered,
-         we basically passthrough our detection into the camera
-         and we feed the streaming camera frames into our Detection algorithm)
-         */
-        camera.setPipeline(redDetection);
-
-        /*
-        this starts the camera streaming, with 2 possible combinations
-        it starts streaming at a chosen res, or if something goes wrong it throws an error
-         */
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                camera.showFpsMeterOnViewport(true);
-                camera.startStreaming(320, 240, OpenCvCameraRotation.SENSOR_NATIVE);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-                telemetry.addLine("Unspecified Error Occurred; Camera Opening");
-            }
 
 
-        });
 
+    private void newColorDetect(){
+        if(opModeIsActive()){
+            visionPortal.stopStreaming();
+        }
+        else {
+            newVision = new NewVision(telemetry);
+            visionPortal = new VisionPortal.Builder()
+                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .addProcessor(newVision)
+                    .enableLiveView(false)
+                    // .addProcessor(newVision)
+                    .build();
 
+//        visionPortal = VisionPortal.easyCreateWithDefaults(
+//                hardwareMap.get(WebcamName.class, "Webcam 1"), newVision);
+        }
     }
-   public void closeCamera(){
-
-      //  camera.stopStreaming();
-        camera.stopRecordingPipeline();
-        camera.pauseViewport();
-       camera.closeCameraDevice();
-        camera.setViewportRenderer(null);
-
-   }
-
-
-
-
-    /**
-     * Add telemetry about AprilTag detections.
-     */
-
     private void initAprilTag() {
         // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder().build();
@@ -308,16 +285,14 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         // Note: Decimation can be changed on-the-fly to adapt during a match.
         aprilTag.setDecimation(2);
 
+
         // Create the vision portal by using a builder.
+
         if (USE_WEBCAM) {
             visionPortal = new VisionPortal.Builder()
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                     .enableLiveView(false)
-                    .addProcessor(aprilTag)
-
-
-
-
+                    .addProcessors(aprilTag)
                     .build();
         } else {
             visionPortal = new VisionPortal.Builder()
@@ -326,33 +301,13 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                     .build();
         }
 
+
         //   camera.startStreaming(320, 240, OpenCvCameraRotation.SENSOR_NATIVE);
 
     }
-    private void telemetryAprilTag() {
 
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        telemetry.addData("# AprilTags Detected", currentDetections.size());
 
-        // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
-                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
-            } else {
-                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
-                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
-            }
-        }   // end for() loop
 
-        // Add "key" information to telemetry
-        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
-        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
-        telemetry.addLine("RBE = Range, Bearing & Elevation");
-
-    }   // end method telemetryAprilTag()
 
 
 }
