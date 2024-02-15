@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.autoExecutable.NewVision;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.autoExecutable.TestNewVision;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Subsystems.HSVBlueDetection;
@@ -41,6 +42,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
      */
     private VisionPortal visionPortal;
     NewVision newVision;
+    TestNewVision testNewVision;
 
 
     String webcamName;
@@ -97,23 +99,24 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
 
         telemetry.addLine("April Tag Initialized.");
-        newColorDetect();
+     //   newColorDetect();
+        newNewColorVision();
         telemetry.addLine("portal state " + visionPortal.getCameraState());
      //   telemetry.addLine("portal active " + visionPortal.getActiveCamera());
-        switch (newVision.getLocation()){
-            case LEFT:
-                drive.followTrajectorySequenceAsync(centerTape);
-                ID_TAG_OF_INTEREST = LEFT;
-                break;
-            case RIGHT:
-                drive.followTrajectorySequenceAsync(centerTape);
-                ID_TAG_OF_INTEREST = LEFT;
-                break;
-            case MIDDLE:
-                drive.followTrajectorySequenceAsync(centerTape);
-                ID_TAG_OF_INTEREST = LEFT;
-                break;
-        }
+//        switch (newVision.getLocation()){
+//            case LEFT:
+//                drive.followTrajectorySequenceAsync(centerTape);
+//                ID_TAG_OF_INTEREST = LEFT;
+//                break;
+//            case RIGHT:
+//                drive.followTrajectorySequenceAsync(centerTape);
+//                ID_TAG_OF_INTEREST = LEFT;
+//                break;
+//            case MIDDLE:
+//                drive.followTrajectorySequenceAsync(centerTape);
+//                ID_TAG_OF_INTEREST = LEFT;
+//                break;
+//        }
 
         telemetry.update();
 
@@ -145,7 +148,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
         if (isStopRequested()) return;
        // drive.followTrajectorySequenceAsync(forward);
-        currentState = state.tape;
+       // currentState = state.tape;
         while (opModeIsActive() && !isStopRequested()) {
          //   closeCamera();
             //camera.stopStreaming();
@@ -158,7 +161,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
             switch (currentState) {
                 case tape:
                 if(!cameraOn){
-                    newColorDetect();
+                    //newColorDetect();
                     telemetry.addLine("into disalbe");
                     telemetry.update();
                     cameraOn = true;
@@ -173,10 +176,10 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
 
 
-                    if (!drive.isBusy()) {
-                        currentState = state.firstTimeBoard;
-                        timer.reset();
-                    }
+//                    if (!drive.isBusy()) {
+//                        currentState = state.firstTimeBoard;
+//                        timer.reset();
+//                    }
 //
 //                        // drive.followTrajectoryAsync(trajectory2);
 //                    }
@@ -283,6 +286,23 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
             visionPortal = new VisionPortal.Builder()
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                     .addProcessor(newVision)
+                    .enableLiveView(false)
+                    // .addProcessor(newVision)
+                    .build();
+
+//        visionPortal = VisionPortal.easyCreateWithDefaults(
+//                hardwareMap.get(WebcamName.class, "Webcam 1"), newVision);
+        }
+    }
+    private void newNewColorVision(){
+        if(opModeIsActive()){
+            visionPortal.stopStreaming();
+        }
+        else {
+            testNewVision = new TestNewVision(telemetry);
+            visionPortal = new VisionPortal.Builder()
+                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .addProcessor(testNewVision)
                     .enableLiveView(false)
                     // .addProcessor(newVision)
                     .build();

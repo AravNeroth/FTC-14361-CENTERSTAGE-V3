@@ -100,6 +100,7 @@ public class NewVision implements VisionProcessor{
         // depending on where the TSEe is, or where it isn't, the color of the rectangle will change
         Imgproc.rectangle(mat, RIGHT_ROI, location == NewVision.Location.RIGHT? tseDetected:noTSE);
         Imgproc.rectangle(mat, MIDDLE_ROI, location == NewVision.Location.MIDDLE? tseDetected:noTSE);
+
     }
 
 
