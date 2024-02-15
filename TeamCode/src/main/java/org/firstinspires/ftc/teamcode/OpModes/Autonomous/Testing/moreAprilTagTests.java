@@ -29,8 +29,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "aprilTagStateTesting ", group = "goobTest")
-public class aprilTagStateTestingExtra extends LinearOpMode {
+@Autonomous(name = "More April Tag Testing", group = "goobTest")
+public class moreAprilTagTests extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -38,7 +38,6 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
      * The variable to store our instance of the AprilTag processor.
      */
     private AprilTagProcessor aprilTag;
-    boolean aprilTagOn = false;
     TagDetection aprilTagDetect;
 
     /**
@@ -51,8 +50,8 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
     Robot robot;
 
     ElapsedTime timer = new ElapsedTime();
-    Pose2d start = new Pose2d(11.5, -62.75, Math.toRadians(270));
- //Pose2d start = new Pose2d(0, 0, Math.toRadians(90));
+    Pose2d start = new Pose2d(0, 0, Math.toRadians(90));
+    //Pose2d start = new Pose2d(0, 0, Math.toRadians(90));
     SampleMecanumDrive drive;
     OpenCvCamera camera;
     double boardX, boardY, stack1Y, stackDetectX, stackDetectY;
@@ -65,7 +64,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
     int ID_TAG_OF_INTEREST = 4;
     boolean tagFound = false;
 
-    double leftTapeX = 0, leftTapeY = 0, centerTapeX = 11.5, centerTapeY = -34.5, rightTapeX = 0, rightTapeY = 0;
+    double leftTapeX = 0, leftTapeY = 0, centerTapeX = 11.5, centerTapeY = 34.5, rightTapeX = 0, rightTapeY = 0;
     double leftBoardX, leftBoardY, centerBoardX, centerBoardY, rightBoardX, rightBoardY;
     double secondTimeBoardX = 0, secondTimeBoardY = 0, thirdTimeBoardX, thirdTimeBoardY;
 
@@ -87,8 +86,8 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         drive.setPoseEstimate(start);
 
 
-       // telemetry.addLine("April Tag Initialized.");
-      //  telemetry.update();
+        // telemetry.addLine("April Tag Initialized.");
+        //  telemetry.update();
 
 //
 //        TrajectorySequence leftTape = drive.trajectorySequenceBuilder(start)
@@ -96,14 +95,9 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 //                .build();
 
         TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
-                .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY))
-                .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY - 5))
+                .lineToConstantHeading(new Vector2d(0, -10))
+                .lineToConstantHeading(new Vector2d(0, -10 + 5))
                 .turn(Math.toRadians(-90))
-                .build();
-        TrajectorySequence goTowardsAprilTags = drive.trajectorySequenceBuilder(centerTape.end())
-                .lineToConstantHeading(new Vector2d(centerTapeX + 10, centerTapeY - 5))
-                .strafeRight(5)
-                .waitSeconds(2.5)
                 .build();
 
 //        TrajectorySequence rightTape = drive.trajectorySequenceBuilder(start)
@@ -122,77 +116,37 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
         // initCam();
         TrajectorySequence tag = null;
-        initCam();
-       // telemetry.addLine("camera init ??? hello");
-        switch (redDetection.getLocation()) {
-            case LEFT:
-                drive.followTrajectorySequenceAsync(centerTape);
-                ID_TAG_OF_INTEREST = LEFT;
-               // telemetry.addLine("LEFT");
-                break;
-            case RIGHT:
-                drive.followTrajectorySequenceAsync(centerTape);
-                ID_TAG_OF_INTEREST = LEFT;
-               // telemetry.addLine("RIGHT");
-                break;
-            case MIDDLE:
-                drive.followTrajectorySequenceAsync(centerTape);
-                ID_TAG_OF_INTEREST = LEFT;
-               // telemetry.addLine("MIDDLE");
-                break;
-        }
-        waitForStart();
+        // telemetry.addLine("camera init ??? hello");
 
 
         if (isStopRequested()) return;
         // drive.followTrajectorySequenceAsync(forward);
-
+initCam();
+waitForStart();
         currentState = state.tape;
         while (opModeIsActive() && !isStopRequested()) {
-           // closeCamera();
-
-
-            //  camera.stopStreaming();
-            //   camera.closeCameraDevice();
-
-
-            //telemetryAprilTag();
-            //telemetry.update();
 
             switch (currentState) {
                 case tape:
 
                     telemetry.addLine("Inside Tape State");
                     telemetry.update();
-                   // camera.stopStreaming();
-                    if(!aprilTagOn){
-
-                        initAprilTag();
-                        aprilTagOn = true;
-                    }
-
-
-
                     if (!drive.isBusy()) {
-
+                        //camera.stopStreaming();
+                        initAprilTag();
                         currentState = state.firstTimeBoard;
                         timer.reset();
                     }
                     break;
                 case firstTimeBoard:
-
-                     telemetry.addLine("BOARD");
-                     telemetry.addLine("timer" + timer.seconds());
-                     telemetry.update();
-                     if(timer.seconds()<.2){
-                         drive.followTrajectorySequenceAsync(goTowardsAprilTags);
-                     }
-
+                    telemetry.addLine("BOARD");
+                    telemetry.addLine("timer" + timer.seconds());
+                    telemetry.update();
 
                     ArrayList<AprilTagDetection> currentDetections = aprilTagDetect.getLatestDetections();
 
                     if (currentDetections.size() != 0) {
-                    telemetry.addLine("inside current detections");
+
 
                         for (AprilTagDetection detection : currentDetections) {
 
@@ -208,16 +162,15 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                             if (tagFound) {
                                 telemetry.addLine("Inside TagFound If Statement");
                                 telemetry.update();
-                              //  double xPos =
                                 // final double distanceX = tagOfInterest.center.x;
                                 tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                        .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX() + tagOfInterest.pose.y -1, drive.getPoseEstimate().getY() + tagOfInterest.pose.x - .5, Math.toRadians(270)))
+                                        .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX() + tagOfInterest.pose.y - 4.5, drive.getPoseEstimate().getY() + tagOfInterest.pose.x - 1.65, Math.toRadians(0)))
                                         .build();
 
-                                telemetry.addData("FTC Pose x: ", tagOfInterest.pose.y);
-                                telemetry.addData("FTC Pose y: ", tagOfInterest.pose.x);
-                                telemetry.addData("New Pose x: ", drive.getPoseEstimate().getX() + tagOfInterest.pose.x);
-                                telemetry.addData("New Pose y: ", drive.getPoseEstimate().getY() + tagOfInterest.pose.y);
+                                telemetry.addData("FTC Pose x: ", tagOfInterest.pose.x);
+                                telemetry.addData("FTC Pose y: ", tagOfInterest.pose.y);
+                                telemetry.addData("New Pose x: ", drive.getPoseEstimate().getX() + 100* tagOfInterest.pose.x);
+                                telemetry.addData("New Pose y: ", drive.getPoseEstimate().getY() + 100* tagOfInterest.pose.y);
 
                                 telemetry.addLine("Traj Seq Builder ran");
                                 telemetry.update();
@@ -239,13 +192,13 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                     if (!drive.isBusy()) {
 
                         if (tagFound) {
-                           drive.followTrajectorySequenceAsync(tag);
-                            currentState = state.idle;
-                            tagFound =false;
-
-                        } else if (timer.seconds() > 4) {
-                            currentState = state.idle;
+                      //      drive.followTrajectorySequenceAsync(tag);
                         }
+//                            currentState = state.idle;
+//
+//                        } else if (timer.seconds() > 2.5) {
+//                            currentState = state.idle;
+//                        }
 
                         //  currentState = state.firstTimeBoard;
                     }
@@ -261,94 +214,69 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         }
     } // opmode loop
 
-        // run opmode
-        private void initCam (){
+    // run opmode
+    private void initCam (){
 
 
-            //This line retrieves the resource identifier for the camera monitor view. The camera monitor view is typically used to display the camera feed
-            int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        //This line retrieves the resource identifier for the camera monitor view. The camera monitor view is typically used to display the camera feed
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
-            webcamName = "Webcam 1";
+        webcamName = "Webcam 1";
 
-            // This line creates a webcam instance using the OpenCvCameraFactor with the webcam name (webcamName) and the camera monitor view ID.
-            // The camera instance is stored in the camera variable that we can use later
-            camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
+        // This line creates a webcam instance using the OpenCvCameraFactor with the webcam name (webcamName) and the camera monitor view ID.
+        // The camera instance is stored in the camera variable that we can use later
+        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
 
-            camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.SOFTWARE);
-            // initializing our Detection class (details on how it works at the top)
-            redDetection = new HSVRedDetection(telemetry);
+        camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.SOFTWARE);
+        // initializing our Detection class (details on how it works at the top)
+        redDetection = new HSVRedDetection(telemetry);
 
-            // yeah what this does is it gets the thing which uses the thing so we can get the thing
+        // yeah what this does is it gets the thing which uses the thing so we can get the thing
         /*
         (fr tho idk what pipeline does, but from what I gathered,
          we basically passthrough our detection into the camera
          and we feed the streaming camera frames into our Detection algorithm)
          */
-            camera.setPipeline(redDetection);
+        camera.setPipeline(redDetection);
 
         /*
         this starts the camera streaming, with 2 possible combinations
         it starts streaming at a chosen res, or if something goes wrong it throws an error
          */
-            camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                @Override
-                public void onOpened() {
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
 
                 camera.showFpsMeterOnViewport(true);
 
                 camera.startStreaming(320, 240, OpenCvCameraRotation.UPSIDE_DOWN);
                 telemetry.addLine("Camera Streaming");
-          //          camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.MAXIMIZE_EFFICIENCY);
-                }
+                //          camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.MAXIMIZE_EFFICIENCY);
+            }
 
-                @Override
-                public void onError(int errorCode) {
-                    telemetry.addLine("Unspecified Error Occurred; Camera Opening");
+            @Override
+            public void onError(int errorCode) {
+                telemetry.addLine("Unspecified Error Occurred; Camera Opening");
 
-                }
-
-
-            });
-            //    OpenCvCameraFactory.getInstance().splitLayoutForMultipleViewports(cameraMonitorViewId, 2, OpenCvCameraFactory.ViewportSplitMethod.VERTICALLY);
+            }
 
 
-        } // init cam end
+        });
+        //    OpenCvCameraFactory.getInstance().splitLayoutForMultipleViewports(cameraMonitorViewId, 2, OpenCvCameraFactory.ViewportSplitMethod.VERTICALLY);
+
+
+    } // init cam end
 
 
 
-        private void initAprilTag () {
-            // Create the AprilTag processor by using a builder.
-            aprilTagDetect = new TagDetection(tagsize, 578.272, 578.272, 402.145, 221.506);
-            aprilTagDetect.setDecimation(3);
-            camera.setPipeline(aprilTagDetect);
-          //  camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.SOFTWARE);
-            camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                @Override
-                public void onOpened() {
-                    camera.startStreaming(800, 448, OpenCvCameraRotation.UPSIDE_DOWN);
-
-                }
-
-                @Override
-                public void onError(int errorCode) {
-
-                }
-            });
-            telemetry.setMsTransmissionInterval(50);
-
-            //   camera.startStreaming(320, 240, OpenCvCameraRotation.SENSOR_NATIVE);
-
-        }
-    private void farAwayAprilTagInit () {
+    private void initAprilTag () {
         // Create the AprilTag processor by using a builder.
         aprilTagDetect = new TagDetection(tagsize, 578.272, 578.272, 402.145, 221.506);
-        aprilTagDetect.setDecimation(1);
         camera.setPipeline(aprilTagDetect);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                camera.startStreaming(800, 448, OpenCvCameraRotation.UPSIDE_DOWN);
-
+                camera.startStreaming(800, 448, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -361,9 +289,20 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         //   camera.startStreaming(320, 240, OpenCvCameraRotation.SENSOR_NATIVE);
 
     }
-
-
+    void detectTags() {
+        ArrayList<AprilTagDetection> currentDetections = aprilTagDetect.getLatestDetections();
+        if (currentDetections.size() != 0) {
+            tagFound = false;
+            for (AprilTagDetection tag : currentDetections) {
+                if (tag.id == ID_TAG_OF_INTEREST) {
+                    tagOfInterest = tag;
+                    //telemetry.addLine("FOUND!!");
+                    tagFound = true;
+                    break;
+                }
+            }
+        }
     }
 
-
+}
 // end class
