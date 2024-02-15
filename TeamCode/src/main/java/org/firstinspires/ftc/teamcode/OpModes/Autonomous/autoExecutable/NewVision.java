@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.OpModes.Autonomous.autoExecutable;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -14,93 +16,129 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-public class NewVision implements VisionProcessor{
-  //g  private DrawRectangleProcessor drawRectangleProcessor;
+public class NewVision implements VisionProcessor {
+    //g  private DrawRectangleProcessor drawRectangleProcessor;
     Telemetry telemetry;
+    private Rect rectLeft = new Rect(40, 230, 80, 100);
+    private Rect rectMiddle = new Rect(240, 200, 180, 80);
 
-    public enum Location {
-        LEFT,
-        RIGHT,
-        MIDDLE
-    }
-    public NewVision(Telemetry t){
-        telemetry = t;
-    }
-    private volatile NewVision.Location location = NewVision.Location.RIGHT;
-    Mat mat = new Mat();
-    static double PERCENT_COLOR_THRESHOLD = 0.18;
-    static final Rect MIDDLE_ROI = new Rect(
-            new Point(30, 135),
-            new Point(90, 175));
-    static final Rect RIGHT_ROI = new Rect(
-            new Point(140, 135),
-            new Point(200, 175));
-    private VisionPortal visionPortal;
+    private Rect rectRight = new Rect(520, 230, 80, 100);
 
+
+    StartingPosition selection = StartingPosition.NONE;
+
+    Mat submat = new Mat();
+    Mat hsvMat = new Mat();
+
+    public NewVision(Telemetry telem) {
+        telemetry = telem;
+    }
+
+    @Override
     public void init(int width, int height, CameraCalibration calibration) {
 
     }
 
-
+    @Override
     public Object processFrame(Mat frame, long captureTimeNanos) {
-        Imgproc.cvtColor(frame, mat, Imgproc.COLOR_RGB2HSV);
-        Scalar lowHSV = new Scalar(173, 150, 75);
-        Scalar highHSV = new Scalar(179, 255, 255);
-        Core.inRange(mat, lowHSV, highHSV, mat);
-        Mat right = mat.submat(RIGHT_ROI);
-        Mat middle = mat.submat(MIDDLE_ROI);
+        Imgproc.cvtColor(frame, hsvMat, Imgproc.COLOR_RGB2HSV);
+        telemetry.addLine("converted to HSV");
 
-        double rightValue = Core.sumElems(right).val[0] / RIGHT_ROI.area() / 255;
-        double middleValue = Core.sumElems(middle).val[0] / MIDDLE_ROI.area() / 255;
-
-        right.release();
-        middle.release();
+        double satRectLeft = getAvgSaturation(hsvMat, rectLeft);
+        double satRectMiddle = getAvgSaturation(hsvMat, rectMiddle);
+        double satRectRight = getAvgSaturation(hsvMat, rectRight);
+        telemetry.addLine("updated rectangle vars");
 
 
-        boolean tseRight = rightValue > PERCENT_COLOR_THRESHOLD;
-        boolean tseMiddle = middleValue > PERCENT_COLOR_THRESHOLD;
-        if (tseRight) {
-             location = NewVision.Location.RIGHT;
-            telemetry.addData("TSE Location: ", "RIGHT");
+        if ((satRectLeft > satRectMiddle) && (satRectLeft > satRectRight)) {
+            selection = StartingPosition.LEFT;
+
+        } else if ((satRectMiddle > satRectLeft) && (satRectMiddle > satRectRight)) {
+            selection = StartingPosition.CENTER;
+
+        } else if ((satRectRight > satRectMiddle) && (satRectRight > satRectLeft)) {
+            selection = StartingPosition.RIGHT;
+        } else {
+
+            selection = StartingPosition.NONE;
         }
-        else if(tseMiddle) {
-            location = NewVision.Location.MIDDLE;
-            telemetry.addData("TSE Location: ", "MIDDLE");
-        }
-        else {
-            location = NewVision.Location.LEFT;
-            telemetry.addData("TSE not detected; Location: ", "LEFT");
-        }
-
+        telemetry.addLine("Selection decided");
         telemetry.update();
 
-
-        // change the img back to RGB
-        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_GRAY2RGB);
-
-        // below will make the boxes Red if no TSE exists, and Green if it does within the rectangle box
-        Scalar noTSE = new Scalar(255, 0, 0);
-        Scalar tseDetected = new Scalar(0, 255, 0);
-
-        // depending on where the TSEe is, or where it isn't, the color of the rectangle will change
-        Imgproc.rectangle(mat, RIGHT_ROI, location == NewVision.Location.RIGHT? tseDetected:noTSE);
-        Imgproc.rectangle(mat, MIDDLE_ROI, location == NewVision.Location.MIDDLE? tseDetected:noTSE);
-
-        return mat;
-    }
-    public Location getLocation() {
-
-        return location;
+        return selection;
     }
 
+
+    protected double getAvgSaturation(Mat input, Rect rect) {
+        submat = input.submat(rect);
+        Scalar color = Core.mean(submat);
+        return color.val[1];
+    }
+
+    private android.graphics.Rect makeGraphicsRect(Rect rect, float scaleBmpPxToCanvasPx) {
+        int left = Math.round(rect.x * scaleBmpPxToCanvasPx);
+
+        int top = Math.round(rect.y * scaleBmpPxToCanvasPx);
+        int right = left + Math.round(rect.width * scaleBmpPxToCanvasPx);
+
+        int bottom = top + Math.round(rect.height * scaleBmpPxToCanvasPx);
+
+        return new android.graphics.Rect(left, top, right, bottom);
+    }
+
+    @Override
     public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
-        Scalar noTSE = new Scalar(255, 0, 0);
-        Scalar tseDetected = new Scalar(0, 255, 0);
+        Paint selectedPaint = new Paint();
+        selectedPaint.setColor(Color.RED);
+        selectedPaint.setStyle(Paint.Style.STROKE);
+        selectedPaint.setStrokeWidth(scaleCanvasDensity * 4);
 
-        // depending on where the TSEe is, or where it isn't, the color of the rectangle will change
-        Imgproc.rectangle(mat, RIGHT_ROI, location == NewVision.Location.RIGHT? tseDetected:noTSE);
-        Imgproc.rectangle(mat, MIDDLE_ROI, location == NewVision.Location.MIDDLE? tseDetected:noTSE);
+        Paint nonSelected = new Paint();
+        nonSelected.setStrokeWidth(scaleCanvasDensity * 4);
+        nonSelected.setStyle(Paint.Style.STROKE);
+        nonSelected.setColor(Color.GREEN);
+
+        android.graphics.Rect drawRectangleLeft = makeGraphicsRect(rectLeft, scaleBmpPxToCanvasPx);
+        android.graphics.Rect drawRectangleMiddle = makeGraphicsRect(rectMiddle, scaleBmpPxToCanvasPx);
+        android.graphics.Rect drawRectangleRight = makeGraphicsRect(rectRight, scaleBmpPxToCanvasPx);
+
+        selection = (StartingPosition) userContext;
+
+        switch (selection) {
+            case LEFT:
+                canvas.drawRect(drawRectangleLeft, selectedPaint);
+                canvas.drawRect(drawRectangleMiddle, nonSelected);
+                canvas.drawRect(drawRectangleRight, nonSelected);
+                break;
+
+            case RIGHT:
+                canvas.drawRect(drawRectangleLeft, nonSelected);
+                canvas.drawRect(drawRectangleMiddle, nonSelected);
+                canvas.drawRect(drawRectangleRight, selectedPaint);
+                break;
+            case CENTER:
+                canvas.drawRect(drawRectangleLeft, nonSelected);
+                canvas.drawRect(drawRectangleMiddle, selectedPaint);
+                canvas.drawRect(drawRectangleRight, nonSelected);
+                break;
+            case NONE:
+                canvas.drawRect(drawRectangleLeft, nonSelected);
+                canvas.drawRect(drawRectangleMiddle, nonSelected);
+                canvas.drawRect(drawRectangleRight, nonSelected);
+                break;
+
+        }
+
     }
 
+    public StartingPosition getStartingPosition() {
+        return selection;
+    }
 
+    public enum StartingPosition {
+        NONE,
+        LEFT,
+        RIGHT,
+        CENTER
+    }
 }
