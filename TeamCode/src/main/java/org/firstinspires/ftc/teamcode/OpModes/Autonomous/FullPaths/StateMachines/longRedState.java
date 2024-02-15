@@ -31,7 +31,7 @@ public class longRedState extends LinearOpMode {
     public void runOpMode() {
         bot = new Robot(hardwareMap, telemetry);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(-31, 61, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-40.5, -61, Math.toRadians(270));
         initCam();
 
         drive.setPoseEstimate(startPose);
@@ -48,81 +48,81 @@ public class longRedState extends LinearOpMode {
         // ---------------------------- Tape ---------------------------- //
 
         TrajectorySequence leftTape = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-36, 55))
-                .lineToLinearHeading(new Pose2d(-37,32,Math.toRadians(180)))
-                .lineToConstantHeading(new Vector2d(-33, 32))
-                .lineToConstantHeading(new Vector2d(-37, 32))
-                .lineToConstantHeading(new Vector2d(-37, 14))
-                .lineToConstantHeading(new Vector2d(39, 14))
+                .lineToConstantHeading(new Vector2d(-47,-52))
+                .lineToConstantHeading(new Vector2d(-48.25, -44))
+                .lineToConstantHeading(new Vector2d(-48.25, -50))
+                .lineToConstantHeading(new Vector2d(-38.5,-50))
+                .lineToConstantHeading(new Vector2d(-38.5,-9))
+                .lineToLinearHeading(new Pose2d(40,-9, Math.toRadians(180)))
                 .build();
 
         TrajectorySequence centerTape = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-36, 55))
-                .lineToConstantHeading(new Vector2d(-36, 32))
-                .lineToConstantHeading(new Vector2d(-36,39))
-                .lineToConstantHeading(new Vector2d(-40,42))
-                .lineToConstantHeading(new Vector2d(-49,42))
-                .lineToLinearHeading(new Pose2d(-49,14,Math.toRadians(180)))
-                .lineToConstantHeading(new Vector2d(39, 14))
+                .lineToConstantHeading(new Vector2d(-40, -55))
+                .waitSeconds(.25)
+                .lineToConstantHeading(new Vector2d(-40,-33.75))
+                .lineToConstantHeading(new Vector2d(-40,-42))
+                .lineToLinearHeading(new Pose2d(-50,-42,Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(-50,-10))
+                .lineToConstantHeading(new Vector2d(40, -10))
                 .build();
 
         TrajectorySequence rightTape = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-45,50))
-                .lineToConstantHeading(new Vector2d(-45, 42))
-                .lineToConstantHeading(new Vector2d(-45, 47.5))
-                .lineToConstantHeading(new Vector2d(-35,47.5))
-                .lineToConstantHeading(new Vector2d(-35,12))
-                .lineToConstantHeading(new Vector2d(40,12))
-                .lineToLinearHeading(new Pose2d(35,43.5, Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(-34, -55))
+                .lineToLinearHeading(new Pose2d(-36,-33,Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(-34, -33))
+                .lineToConstantHeading(new Vector2d(-38, -33))
+                .lineToConstantHeading(new Vector2d(-47, -11))
+                .lineToConstantHeading(new Vector2d(39, -11))
                 .build();
 
         // ---------------------------- Board ---------------------------- //
 
         TrajectorySequence leftBoard = drive.trajectorySequenceBuilder(boardPose)
-                .lineToConstantHeading(new Vector2d(40, 43))
-                .lineToConstantHeading(new Vector2d(52, 43))
+                .lineToConstantHeading(new Vector2d(35,-23))
+                .lineToConstantHeading(new Vector2d(51.3, -23))
                 .addDisplacementMarker(() -> {
                     bot.setLidPosition(lidState.open);
                 })
-                .lineToConstantHeading(new Vector2d(51.8, 43))
-                .addDisplacementMarker(() -> {
-                    bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending);
-                })
-                .lineToConstantHeading(new Vector2d(40,43))
-                .build();
-
-        TrajectorySequence centerBoard = drive.trajectorySequenceBuilder(boardPose)
-                .lineToConstantHeading(new Vector2d(40, 36.5))
-                .lineToConstantHeading(new Vector2d(52, 36.5))
-                .addDisplacementMarker( () -> {
-                    bot.setLidPosition(lidState.open);
-                })
-                .lineToConstantHeading(new Vector2d(51.8, 36.5))
-                .addDisplacementMarker(() -> {
-                    bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending);
-                })
-                .lineToConstantHeading(new Vector2d(40, 36.5))
-                .build();
-
-        TrajectorySequence rightBoard = drive.trajectorySequenceBuilder(boardPose)
-                .lineToConstantHeading(new Vector2d(54,43.5))
-                .addDisplacementMarker(() -> {
-                    bot.setLidPosition(lidState.open);
-                })
-                .lineToConstantHeading(new Vector2d(53.8,43.5))
+                .waitSeconds(.25)
+                .lineToConstantHeading(new Vector2d(51.2, -23))
                 .addDisplacementMarker(() -> {
                     bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT,extensionState.extending);
                 })
-                .lineToConstantHeading(new Vector2d(48,43.5))
+                .lineToConstantHeading(new Vector2d(45,-23))
+                .build();
+
+        TrajectorySequence centerBoard = drive.trajectorySequenceBuilder(boardPose)
+                .lineToConstantHeading(new Vector2d(40, -30.5))
+                .lineToConstantHeading(new Vector2d(51.2, -30.5))
+                .addDisplacementMarker( () -> {
+                    bot.setLidPosition(lidState.open);
+                })
+                .lineToConstantHeading(new Vector2d(51.1, -30.5))
+                .addDisplacementMarker(() -> {
+                    bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending);
+                })
+                .lineToConstantHeading(new Vector2d(40, -30.5))
+                .build();
+
+        TrajectorySequence rightBoard = drive.trajectorySequenceBuilder(boardPose)
+                .lineToConstantHeading(new Vector2d(46.5, -35.75))
+                .lineToConstantHeading(new Vector2d(52, -37))
+                .waitSeconds(.25)
+                .addDisplacementMarker(() -> {
+                    bot.setLidPosition(lidState.open);})
+                .lineToConstantHeading(new Vector2d(51.8, -36.75))
+                .addDisplacementMarker(() -> {
+                    bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending);
+                })
+                .lineToConstantHeading(new Vector2d(40,-36.75))
                 .build();
 
         // ---------------------------- Park ---------------------------- //
 
         TrajectorySequence park = drive.trajectorySequenceBuilder(parkPose)
-                .lineToConstantHeading(new Vector2d(40,39))
-                .lineToLinearHeading(new Pose2d(44 ,12, Math.toRadians(270)))
-                .lineToConstantHeading(new Vector2d(45, 12))
-                .lineToConstantHeading(new Vector2d(52,12))
+                .lineToConstantHeading(new Vector2d(46,-29))
+                .lineToLinearHeading(new Pose2d(46 ,-8, Math.toRadians(90)))
+                .lineToConstantHeading(new Vector2d(52,-8))
                 .build();
 
         // ------------------------ Runner ------------------------- //
@@ -153,7 +153,7 @@ public class longRedState extends LinearOpMode {
                 break;
 
             case board:
-                bot.outtakeSlide.setPosition(500);
+                bot.outtakeSlide.setPosition(600);
                 bot.setArmPosition(armState.outtaking, armExtensionState.extending);
                 bot.setWristPosition(wristState.outtaking);
 

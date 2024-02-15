@@ -8,10 +8,6 @@ public class robotConstants
         public static double I = 0.0;
         public static double D = 0.0;
 
-        public static double pulleyCircumference = 0.0;
-        public static double ticksPerRevolution = 0.0;
-
-
         public static int MOSTHIGHLEFT = 1585;
         public static int MOSTHIGHRIGHT = 1585;
 

@@ -153,7 +153,7 @@ public class longBlueState extends LinearOpMode {
                 break;
 
             case board:
-                bot.outtakeSlide.setPosition(500);
+                bot.outtakeSlide.setPosition(600);
                 bot.setArmPosition(armState.outtaking, armExtensionState.extending);
                 bot.setWristPosition(wristState.outtaking);
 
