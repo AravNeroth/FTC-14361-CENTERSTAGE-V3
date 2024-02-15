@@ -47,21 +47,21 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
     Robot robot;
 
     ElapsedTime timer = new ElapsedTime();
-    Pose2d start = new Pose2d(11.5, 62.75, Math.toRadians(90));
+    Pose2d start = new Pose2d(11.5, -62.75, Math.toRadians(270));
     SampleMecanumDrive drive;
     OpenCvCamera camera;
-    boolean cameraOn = false, aprilTagOn = false;
+    boolean cameraOn = false, aprilTagOn = false, toAprilTag1 = false;
     double boardX, boardY, stack1Y, stackDetectX, stackDetectY;
     boolean onePixel = false, twoPixels = false;
     //   aprilTagDetection aprilTagDetectionPipeline;
     double tagsize = 0.166;
     // AprilTagDetectionPipeline aprilTagDetectionPipeline;
     AprilTagDetection tagOfInterest = null;
-    int LEFT = 1, MIDDLE = 2, RIGHT = 3, REDSTACK = 7;
+    int LEFT = 4, MIDDLE = 5, RIGHT = 6, REDSTACK = 7;
     int ID_TAG_OF_INTEREST = 4;
     boolean tagFound = false;
 
-    double leftTapeX = 0, leftTapeY = 0, centerTapeX = 11.5, centerTapeY = 34.5, rightTapeX = 0, rightTapeY = 0;
+    double leftTapeX = 0, leftTapeY = 0, centerTapeX = 11.5, centerTapeY = -34.5, rightTapeX = 0, rightTapeY = 0;
     double leftBoardX, leftBoardY, centerBoardX, centerBoardY, rightBoardX, rightBoardY;
     double secondTimeBoardX = 0, secondTimeBoardY = 0, thirdTimeBoardX, thirdTimeBoardY;
 
@@ -79,11 +79,21 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
 
 
+
     public void runOpMode() {
         robot = new Robot(hardwareMap, telemetry);
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(start);
+        TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
+                .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY))
+                .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY - 5))
+                .turn(Math.toRadians(-90))
 
+                .build();
+        TrajectorySequence goTowardsAprilTags = drive.trajectorySequenceBuilder(centerTape.end())
+                .lineToConstantHeading(new Vector2d(centerTapeX + 3, centerTapeY - 5))
+                .strafeRight(3)
+                .build();
 
 
         telemetry.addLine("April Tag Initialized.");
@@ -92,13 +102,16 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
      //   telemetry.addLine("portal active " + visionPortal.getActiveCamera());
         switch (newVision.getLocation()){
             case LEFT:
-                telemetry.addLine("left");
+                drive.followTrajectorySequenceAsync(centerTape);
+                ID_TAG_OF_INTEREST = LEFT;
                 break;
             case RIGHT:
-                telemetry.addLine("right");
+                drive.followTrajectorySequenceAsync(centerTape);
+                ID_TAG_OF_INTEREST = LEFT;
                 break;
             case MIDDLE:
-                telemetry.addLine("middle");
+                drive.followTrajectorySequenceAsync(centerTape);
+                ID_TAG_OF_INTEREST = LEFT;
                 break;
         }
 
@@ -109,11 +122,6 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 //                .lineToConstantHeading(new Vector2d(leftTapeX,leftTapeY))
 //                .build();
 
-        TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
-                .lineToConstantHeading(new Vector2d(centerTapeX,centerTapeY))
-                .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY +5))
-                .turn(Math.toRadians(-90))
-                .build();
 
 //        TrajectorySequence rightTape = drive.trajectorySequenceBuilder(start)
 //                .lineToConstantHeading(new Vector2d(rightTapeX,rightTapeY))
@@ -164,6 +172,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                 }
 
 
+
                     if (!drive.isBusy()) {
                         currentState = state.firstTimeBoard;
                         timer.reset();
@@ -173,6 +182,12 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 //                    }
                     break;
                 case firstTimeBoard:
+                    if(!toAprilTag1){
+                        drive.followTrajectorySequenceAsync(goTowardsAprilTags);
+                        toAprilTag1 = false;
+
+                    }
+
 
                     List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
@@ -191,6 +206,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                                     telemetry.addLine("Inside Tag Of Interest If");
                                     telemetry.update();
                                     // Yes, we want to use this tag.
+                                    drive.breakFollowing();
                                     tagFound = true;
                                     tagOfInterest = detection;
                                 }
@@ -198,9 +214,10 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                                 if (tagFound) {
                                     telemetry.addLine("Inside TagFound If Statement");
                                     telemetry.update();
+                                    timer.reset();
                                     // final double distanceX = tagOfInterest.center.x;
                                     tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                            .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX()  + tagOfInterest.ftcPose.y - 4.5, drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.x-1.65, Math.toRadians(180)))
+                                            .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX()  + tagOfInterest.ftcPose.y +5, drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.x-1.65, Math.toRadians(180)))
                                             .build();
 
 
@@ -229,9 +246,11 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 //                                .build();
 //                    }
                     if (!drive.isBusy()) {
-                        drive.followTrajectorySequenceAsync(tag);
-                        if(tagFound) {
+
+                        if (tagFound) {
+                            drive.followTrajectorySequenceAsync(tag);
                             currentState = state.idle;
+                            tagFound =false;
 
                         } else if (timer.seconds() > 2.5) {
                             currentState = state.idle;
@@ -283,7 +302,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second
         // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
         // Note: Decimation can be changed on-the-fly to adapt during a match.
-        aprilTag.setDecimation(2);
+        aprilTag.setDecimation(3);
 
 
         // Create the vision portal by using a builder.

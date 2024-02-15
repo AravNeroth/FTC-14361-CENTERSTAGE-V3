@@ -134,8 +134,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(
-                follower, HEADING_PID, batteryVoltageSensor,
-                lastEncPositions, lastEncVels, lastTrackingEncPositions, lastTrackingEncVels
+                follower, HEADING_PID
         );
     }
 
@@ -281,6 +280,9 @@ public class SampleMecanumDrive extends MecanumDrive {
             wheelVelocities.add(encoderTicksToInches(vel));
         }
         return wheelVelocities;
+    }
+    public void breakFollowing() {
+        trajectorySequenceRunner.breakFollowing();
     }
 
     @Override

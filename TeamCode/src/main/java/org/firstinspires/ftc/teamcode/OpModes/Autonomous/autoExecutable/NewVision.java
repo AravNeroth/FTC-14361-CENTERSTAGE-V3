@@ -94,7 +94,12 @@ public class NewVision implements VisionProcessor{
     }
 
     public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
+        Scalar noTSE = new Scalar(255, 0, 0);
+        Scalar tseDetected = new Scalar(0, 255, 0);
 
+        // depending on where the TSEe is, or where it isn't, the color of the rectangle will change
+        Imgproc.rectangle(mat, RIGHT_ROI, location == NewVision.Location.RIGHT? tseDetected:noTSE);
+        Imgproc.rectangle(mat, MIDDLE_ROI, location == NewVision.Location.MIDDLE? tseDetected:noTSE);
     }
 
 
