@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autonomous.autoExecutable;
+package org.firstinspires.ftc.teamcode.OpModes.Autonomous.FullPaths.StateMachines;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -16,13 +16,18 @@ import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.trajectoryse
 import org.firstinspires.ftc.teamcode.Commands.*;
 import org.firstinspires.ftc.teamcode.Subsystems.*;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.Commands.currentState;
 
-@Autonomous(name = "closeBlueObjectDetect", group = "Auto")
-public class closeBlue extends LinearOpMode {
+@Autonomous(name = "closeBlueState", group = "Auto")
+public class closeBlueState extends LinearOpMode {
     OpenCvCamera camera;
     HSVBlueDetection blueDetection;
     String webcamName;
     Robot bot;
+    currentState currentStates;
+    boardState boardStates;
+    Pose2d boardPose, parkPose;
+
     public void runOpMode() {
         bot = new Robot(hardwareMap, telemetry);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -36,28 +41,35 @@ public class closeBlue extends LinearOpMode {
         bot.setArmPosition(armState.intaking, armExtensionState.extending);
         bot.setWristPosition(wristState.intaking);
         bot.setWristState(wristState.intaking);
+        bot.setLidPosition(lidState.close);
 
+        currentStates = currentState.tape;
 
+        // ---------------------------- Tape ---------------------------- //
 
-        // ---------------------------- Left ---------------------------- //
-
-        TrajectorySequence left = drive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence leftTape = drive.trajectorySequenceBuilder(startPose)
                 .lineToConstantHeading(new Vector2d(22.25,55))
-                .addDisplacementMarker(() -> {
-                    bot.setWristPosition(wristState.init);
-                    bot.setArmPosition(armState.init, armExtensionState.extending);
-                    bot.setLidPosition(lidState.close);
-                })
-
                 .lineToConstantHeading(new Vector2d(22.25,42))
-
                 .lineToConstantHeading(new Vector2d(22.25,50))
-                .addDisplacementMarker( () -> {
-                    bot.outtakeSlide.setPosition(500);
-                    bot.setArmPosition(armState.outtaking, armExtensionState.extending);
-                    bot.setWristPosition(wristState.outtaking);
-                })
-                .lineToLinearHeading(new Pose2d(48 ,42.5, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(42 ,42.5, Math.toRadians(180)))
+                .build();
+
+        TrajectorySequence centerTape = drive.trajectorySequenceBuilder(startPose)
+                .lineToConstantHeading(new Vector2d(10, 38))
+                .lineToLinearHeading(new Pose2d(40 ,38, Math.toRadians(180)))
+                .build();
+
+        TrajectorySequence rightTape = drive.trajectorySequenceBuilder(startPose)
+                .lineToConstantHeading(new Vector2d(15, 54))
+                .lineToLinearHeading(new Pose2d(15,32, Math.toRadians(0)))
+                .lineToConstantHeading(new Vector2d(8.5,32))
+                .lineToConstantHeading(new Vector2d(14,32))
+                .lineToLinearHeading(new Pose2d(30,30,Math.toRadians(180)))
+                .build();
+
+        // ---------------------------- Board ---------------------------- //
+
+        TrajectorySequence leftBoard = drive.trajectorySequenceBuilder(boardPose)
                 .lineToConstantHeading(new Vector2d(52,42.5))
                 .addDisplacementMarker( () -> {
                     bot.setLidPosition(lidState.open);
@@ -66,121 +78,104 @@ public class closeBlue extends LinearOpMode {
                 .addDisplacementMarker( () -> {
                     bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending);
                 })
-
                 .lineToConstantHeading(new Vector2d(43, 42.5))
-                .addDisplacementMarker( () -> {
-                    bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
-                    bot.setArmPosition(armState.intaking, armExtensionState.extending);
-                    bot.setWristPosition(wristState.intaking);
-                })
-                .lineToConstantHeading(new Vector2d(43, 47))
-                .lineToLinearHeading(new Pose2d(49 ,58, Math.toRadians(270)))
-
                 .build();
 
-        // ---------------------------- Center ---------------------------- //
-
-        TrajectorySequence center = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(10,55))
-                .addDisplacementMarker(() -> {
-                    bot.setWristPosition(wristState.init);
-                    bot.setArmPosition(armState.init, armExtensionState.extending);
-                    bot.setLidPosition(lidState.close);
-                })
-
-                .lineToConstantHeading(new Vector2d(10, 33.5))
-
-                .lineToConstantHeading(new Vector2d(10, 38))
-                .lineToLinearHeading(new Pose2d(40 ,38, Math.toRadians(180)))
-                .addDisplacementMarker( () -> {
-                    bot.outtakeSlide.setPosition(500);
-                    bot.setArmPosition(armState.outtaking, armExtensionState.extending);
-                  bot.setWristPosition(wristState.outtaking);
-                })
-
-                .lineToConstantHeading(new Vector2d(52,35))
-                .addDisplacementMarker( () -> {
-                    bot.setLidPosition(lidState.open);
-                })
-                .waitSeconds(.25)
-                .lineToConstantHeading(new Vector2d(51.8, 35))
-                .addDisplacementMarker( () -> {
-                    bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending);
-                })
-                .lineToConstantHeading(new Vector2d(43, 35))
-                .addDisplacementMarker( () -> {
-                    bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
-                    bot.setArmPosition(armState.intaking, armExtensionState.extending);
-                    bot.setWristPosition(wristState.intaking);
-                })
-                .lineToConstantHeading(new Vector2d(43, 47))
-                .lineToLinearHeading(new Pose2d(49 ,58, Math.toRadians(270)))
-
-                .build();
-
-        // ---------------------------- Right ---------------------------- //
-
-        TrajectorySequence right = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(15, 54))
-
-                .addDisplacementMarker( () -> {
-                    bot.setWristPosition(wristState.init);
-                    bot.setArmPosition(armState.init, armExtensionState.extending);
-                    bot.setLidPosition(lidState.close);
-                })
-                .lineToLinearHeading(new Pose2d(15,32, Math.toRadians(0)))
-
-                .lineToConstantHeading(new Vector2d(8.5,32))
-                .lineToConstantHeading(new Vector2d(14,32))
-
-                .lineToLinearHeading(new Pose2d(30,30,Math.toRadians(180)))
-                .addDisplacementMarker( () -> {
-                    bot.outtakeSlide.setPosition(500);
-                    bot.setArmPosition(armState.outtaking, armExtensionState.extending);
-                    bot.setWristPosition(wristState.outtaking);
-                })
-
+        TrajectorySequence centerBoard = drive.trajectorySequenceBuilder(boardPose)
                 .lineToConstantHeading(new Vector2d(53,31))
                 .addDisplacementMarker(() -> {
-                   bot.setLidPosition(lidState.open);
+                    bot.setLidPosition(lidState.open);
                 })
                 .lineToConstantHeading(new Vector2d(52.8,31))
                 .addDisplacementMarker(() -> {
                     bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending);
                 })
-
                 .lineToConstantHeading(new Vector2d(43,31))
+                .build();
+
+        TrajectorySequence rightBoard = drive.trajectorySequenceBuilder(boardPose)
+                .lineToConstantHeading(new Vector2d(53,31))
                 .addDisplacementMarker(() -> {
-                    bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
-                    bot.setArmPosition(armState.intaking, armExtensionState.extending);
-                    bot.setWristPosition(wristState.intaking);
+                    bot.setLidPosition(lidState.open);
                 })
+                .lineToConstantHeading(new Vector2d(52.8,31))
+                .addDisplacementMarker(() -> {
+                    bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending);
+                })
+                .lineToConstantHeading(new Vector2d(43,31))
+                .build();
+
+        // ---------------------------- Park ---------------------------- //
+
+        TrajectorySequence park = drive.trajectorySequenceBuilder(parkPose)
                 .lineToConstantHeading(new Vector2d(47, 32))
                 .lineToLinearHeading(new Pose2d(47 ,58, Math.toRadians(270)))
                 .build();
 
-        // ---------------------------- Camera Initialization ---------------------------- //
+        // ------------------------ Runner ------------------------- //
 
         waitForStart();
         camera.stopStreaming();
         if (isStopRequested()) return;
 
-        switch (blueDetection.getLocation())
+        switch (currentStates)
         {
-            case LEFT:
-                drive.followTrajectorySequence(left);
-
+            case tape:
+                switch (blueDetection.getLocation())
+                {
+                    case LEFT:
+                        drive.followTrajectorySequence(leftTape);
+                        boardStates = boardState.left;
+                        break;
+                    case RIGHT:
+                        drive.followTrajectorySequence(rightTape);
+                        boardStates = boardState.right;
+                        break;
+                    case MIDDLE:
+                        drive.followTrajectorySequence(centerTape);
+                        boardStates = boardState.center;
+                        break;
+                }
+                currentStates = currentState.board;
                 break;
-            case RIGHT:
-                drive.followTrajectorySequence(right);
 
+            case board:
+                bot.outtakeSlide.setPosition(500);
+                bot.setArmPosition(armState.outtaking, armExtensionState.extending);
+                bot.setWristPosition(wristState.outtaking);
+
+                if(boardStates == boardState.left)
+                {
+                    boardPose = leftTape.end();
+                    drive.followTrajectorySequence(leftBoard);
+                    parkPose = leftBoard.end();
+                }
+                else if(boardStates == boardState.center)
+                {
+                    boardPose = centerTape.end();
+                    drive.followTrajectorySequence(centerBoard);
+                    parkPose = centerBoard.end();
+                }
+                else
+                {
+                    boardPose = rightTape.end();
+                    drive.followTrajectorySequence(rightBoard);
+                    parkPose = rightBoard.end();
+                }
+                currentStates = currentState.park;
                 break;
-            case MIDDLE:
-                drive.followTrajectorySequence(center);
 
+            case park:
+                bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
+                bot.setArmPosition(armState.intaking, armExtensionState.extending);
+                bot.setWristPosition(wristState.intaking);
+
+                drive.followTrajectorySequence(park);
                 break;
         }
     }
+
+    // ------------------------ Camera Initialization ------------------------- //
 
     private void initCam() {
 

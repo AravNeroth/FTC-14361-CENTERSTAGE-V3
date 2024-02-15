@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autonomous.autoExecutable;
+package org.firstinspires.ftc.teamcode.OpModes.Autonomous.FullPaths;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -54,9 +54,9 @@ public class longBlue extends LinearOpMode {
 
                 //Set slides, arm, and wrist to outtake position
                 .addDisplacementMarker( () -> {
+                    bot.outtakeSlide.setPosition(800);
                     bot.setArmPosition(armState.outtaking, armExtensionState.extending);
                     bot.setWristPosition(wristState.outtaking);
-                    bot.outtakeSlide.setPosition(800);
                 })
 
                 //Lining up in front of back board
