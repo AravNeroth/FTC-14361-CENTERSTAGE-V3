@@ -103,21 +103,15 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 //     //   telemetry.addLine("portal active " + visionPortal.getActiveCamera());
         switch (newVision.getStartingPosition()){
             case LEFT:
-                drive.followTrajectorySequenceAsync(centerTape);
-                telemetry.addLine("left.");
-                telemetry.update();
+                //drive.followTrajectorySequenceAsync(centerTape);
                 ID_TAG_OF_INTEREST = LEFT;
                 break;
             case RIGHT:
-                drive.followTrajectorySequenceAsync(centerTape);
-                telemetry.addLine("right.");
-                telemetry.update();
+                //drive.followTrajectorySequenceAsync(centerTape);
                 ID_TAG_OF_INTEREST = RIGHT;
                 break;
             case CENTER:
-                drive.followTrajectorySequenceAsync(centerTape);
-                telemetry.addLine("center.");
-                telemetry.update();
+                //drive.followTrajectorySequenceAsync(centerTape);
                 ID_TAG_OF_INTEREST = MIDDLE;
                 break;
         }
@@ -164,19 +158,19 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
             switch (currentState) {
                 case tape:
-                if(!cameraOn){
-                    newColorDetect();
-                    telemetry.addLine("into disalbe");
-                    telemetry.update();
-                    cameraOn = true;
-                    timer.reset();
-                }
-                if(!aprilTagOn){
-                    telemetry.addLine("into april tag enable");
-                    telemetry.update();
-                    initAprilTag();
-                    aprilTagOn = true;
-                }
+
+                    if(!cameraOn){
+                        newColorDetect();
+                        telemetry.addLine("into disalbe");
+                        cameraOn = true;
+                        timer.reset();
+                    }
+
+                    if(!aprilTagOn){
+                        telemetry.addLine("into april tag enable");
+                        initAprilTag();
+                        aprilTagOn = true;
+                    }
 
 
 
@@ -184,10 +178,13 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                         currentState = state.firstTimeBoard;
                         timer.reset();
                     }
+
+                    telemetry.update();
+                    break;
+
 //
 //                        // drive.followTrajectoryAsync(trajectory2);
 //                    }
-                    break;
                 case firstTimeBoard:
 //                    if(!toAprilTag1){
 //                        drive.followTrajectorySequenceAsync(goTowardsAprilTags);
@@ -205,13 +202,11 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                             if (detection.metadata != null) {
 
                                 telemetry.addLine("Inside Metadata If");
-                                telemetry.update();
 
                                 //  Check to see if we want to track towards this tag.
                                 if ((ID_TAG_OF_INTEREST < 0 || detection.id == ID_TAG_OF_INTEREST)) {
                                     drive.breakFollowing();
                                     telemetry.addLine("Inside Tag Of Interest If");
-                                    telemetry.update();
                                     // Yes, we want to use this tag.
 
                                     tagFound = true;
@@ -220,7 +215,6 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
                                 if (tagFound) {
                                     telemetry.addLine("Inside TagFound If Statement");
-                                    telemetry.update();
                                     timer.reset();
                                     // final double distanceX = tagOfInterest.center.x;
                                     tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
@@ -255,7 +249,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                     if (!drive.isBusy()) {
 
                         if (tagFound) {
-                            drive.followTrajectorySequenceAsync(tag);
+                            //drive.followTrajectorySequenceAsync(tag);
                             currentState = state.idle;
                             tagFound =false;
 
@@ -267,10 +261,11 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                     }
 
                     break;
-                case idle:
-                    telemetry.addLine("Inside Idle State");
-                    telemetry.update();
-                    break;
+
+                    case idle:
+                        telemetry.addLine("Inside Idle State");
+                        telemetry.update();
+                        break;
             } //switch statement end
 
             drive.update();
