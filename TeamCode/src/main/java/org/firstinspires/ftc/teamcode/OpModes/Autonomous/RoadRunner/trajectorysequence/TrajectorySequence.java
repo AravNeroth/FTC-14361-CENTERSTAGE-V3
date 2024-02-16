@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.trajectorys
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.trajectorysequence.EmptySequenceException;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.trajectorysequence.sequencesegment.SequenceSegment;
 
 import java.util.Collections;

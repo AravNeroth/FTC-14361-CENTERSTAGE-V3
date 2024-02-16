@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Commands.extensionState;
 import org.firstinspires.ftc.teamcode.Commands.outtakeSlidesState;
 import org.firstinspires.ftc.teamcode.Commands.wristState;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Detection.HSVBlueDetection;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Detection.NewVision;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
@@ -34,21 +35,21 @@ public class closeBlueAprilTag extends LinearOpMode {
     private AprilTagProcessor aprilTag;
 
     private VisionPortal visionPortal;
-
+    NewVision newVision;
     String webcamName;
     Robot bot;
-    HSVBlueDetection blueDetection;
     ElapsedTime timer = new ElapsedTime();
     SampleMecanumDrive drive;
     OpenCvCamera camera;
     currentState currentStates;
     Pose2d startPose = new Pose2d(12, 61, Math.toRadians(90));
+    boolean cameraOn = false, aprilTagOn = false, toAprilTag1 = false;
     double boardX, boardY, stack1Y, stackDetectX, stackDetectY;
     boolean onePixel = false, twoPixels = false;
     double tagsize = 0.166;
     AprilTagDetection tagOfInterest = null;
     int LEFT = 1, MIDDLE = 2, RIGHT = 3;
-    int ID_TAG_OF_INTEREST = 4;
+    int ID_TAG_OF_INTEREST = 1;
     boolean tagFound = false;
 
     double leftTapeX = 22.25, leftTapeY = 55, centerTapeX = 11.5, centerTapeY = 34.5, rightTapeX = 8.5, rightTapeY = 32;
@@ -89,39 +90,50 @@ public class closeBlueAprilTag extends LinearOpMode {
 
         // ---------------------------- Runner ---------------------------- //
 
-
         TrajectorySequence tag = null;
         waitForStart();
-        initCam();
 
-        switch (blueDetection.getLocation()) {
+        telemetry.addLine("New Vision Initialized.");
+        newColorDetect();
+
+        switch (newVision.getStartingPosition()) {
             case LEFT:
+                telemetry.addLine("Left");
+                telemetry.update();
+
                 drive.followTrajectorySequenceAsync(leftTape);
                 ID_TAG_OF_INTEREST = LEFT;
                 break;
             case RIGHT:
-                drive.followTrajectorySequenceAsync(centerTape);
-                ID_TAG_OF_INTEREST = MIDDLE;
-                break;
-            case MIDDLE:
+                telemetry.addLine("Right");
+                telemetry.update();
+
                 drive.followTrajectorySequenceAsync(rightTape);
                 ID_TAG_OF_INTEREST = RIGHT;
+                break;
+            case CENTER:
+                telemetry.addLine("Center");
+                telemetry.update();
+
+                drive.followTrajectorySequenceAsync(centerTape);
+                ID_TAG_OF_INTEREST = MIDDLE;
                 break;
         }
 
         if (isStopRequested()) return;
 
         while (opModeIsActive() && !isStopRequested()) {
-            closeCamera();
-
             switch (currentStates) {
                 case tape:
                     telemetry.addLine("Inside Tape State");
                     telemetry.update();
 
-                    initAprilTag();
-                    telemetry.addLine("April Tag init");
-                    telemetry.update();
+                    if(!aprilTagOn){
+                        telemetry.addLine("April Tag Enabled");
+                        telemetry.update();
+                        initAprilTag();
+                        aprilTagOn = true;
+                    }
 
                     if (!drive.isBusy()) {
                         currentStates = currentState.firstTimeBoard;
@@ -136,21 +148,18 @@ public class closeBlueAprilTag extends LinearOpMode {
                         for (AprilTagDetection detection : currentDetections) {
 
                             if (detection.metadata != null) {
-
                                 telemetry.addLine("Inside Metadata If");
-                                telemetry.update();
 
-                                //  Check to see if we want to track towards this tag.
                                 if ((ID_TAG_OF_INTEREST < 0 || detection.id == ID_TAG_OF_INTEREST)) {
+                                    drive.breakFollowing();
                                     telemetry.addLine("Inside Tag Of Interest If");
-                                    telemetry.update();
+
                                     tagFound = true;
                                     tagOfInterest = detection;
                                 }
 
                                 if (tagFound) {
                                     telemetry.addLine("Inside TagFound If Statement");
-                                    telemetry.update();
 
                                     tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                             .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y - 4.5, drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.x - 1.65, Math.toRadians(180)))
@@ -174,16 +183,19 @@ public class closeBlueAprilTag extends LinearOpMode {
 
                     if (!drive.isBusy())
                     {
-                        drive.followTrajectorySequenceAsync(tag);
                         if (tagFound)
                         {
+                            drive.followTrajectorySequenceAsync(tag);
                             currentStates = currentState.idle;
+                            tagFound = false;
                         }
                         else if (timer.seconds() > 2.5)
                         {
                             currentStates = currentState.idle;
                         }
                     }
+
+                    telemetry.update();
                     break;
 
                 case idle:
@@ -208,48 +220,27 @@ public class closeBlueAprilTag extends LinearOpMode {
         }
     }
 
-    private void initCam() {
-        //This line retrieves the resource identifier for the camera monitor view. The camera monitor view is typically used to display the camera feed
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+    private void newColorDetect(){
+        if(opModeIsActive() && !isStopRequested()){
+            visionPortal.stopStreaming();
+        }
+        else
+        {
+            newVision = new NewVision(telemetry);
+            visionPortal = new VisionPortal.Builder()
+                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .setCamera(BuiltinCameraDirection.BACK)
+                    .addProcessor(newVision)
+                    .enableLiveView(false)
+                    .build();
 
-        webcamName = "Webcam 1";
+            NewVision.StartingPosition startingPos = NewVision.StartingPosition.LEFT;
 
-        // This line creates a webcam instance using the OpenCvCameraFactor with the webcam name (webcamName) and the camera monitor view ID.
-        // The camera instance is stored in the camera variable that we can use later
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
-
-        camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.SOFTWARE);
-        // initializing our Detection class (details on how it works at the top)
-        blueDetection = new HSVBlueDetection(telemetry);
-
-        // yeah what this does is it gets the thing which uses the thing so we can get the thing
-        /*
-        (fr tho idk what pipeline does, but from what I gathered,
-         we basically passthrough our detection into the camera
-         and we feed the streaming camera frames into our Detection algorithm)
-         */
-        camera.setPipeline(blueDetection);
-
-        /*
-        this starts the camera streaming, with 2 possible combinations
-        it starts streaming at a chosen res, or if something goes wrong it throws an error
-         */
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-
-//                camera.showFpsMeterOnViewport(true);
-//
-//                camera.startStreaming(320, 240, OpenCvCameraRotation.UPSIDE_DOWN);
-                //camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.MAXIMIZE_EFFICIENCY);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-                telemetry.addLine("Unspecified Error Occurred; Camera Opening");
-            }
-        });
-        camera.closeCameraDevice();
+            telemetry.addLine("Vision portal built");
+            telemetry.addData("Starting position: ", startingPos);
+            startingPos = newVision.getStartingPosition();
+            telemetry.addData("Called NewVision - returned: ", startingPos);
+        }
     }
 
     public void closeCamera() {
@@ -259,7 +250,6 @@ public class closeBlueAprilTag extends LinearOpMode {
             camera.pauseViewport();
 
             camera.closeCameraDevice();
-
         } else {
             telemetry.addLine("Camera is alr null.");
             telemetry.update();
