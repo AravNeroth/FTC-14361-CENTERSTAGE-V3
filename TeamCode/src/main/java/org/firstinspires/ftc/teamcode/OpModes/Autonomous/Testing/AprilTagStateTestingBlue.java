@@ -100,7 +100,7 @@ public class AprilTagStateTestingBlue extends LinearOpMode {
         newColorDetect();
         telemetry.addLine("portal state " + visionPortal.getCameraState());
         //   telemetry.addLine("portal active " + visionPortal.getActiveCamera());
-        switch (newVision.getLocation()){
+        switch (newVision.getStartingPosition()){
             case LEFT:
                 drive.followTrajectorySequenceAsync(centerTape);
                 ID_TAG_OF_INTEREST = LEFT;
@@ -109,7 +109,7 @@ public class AprilTagStateTestingBlue extends LinearOpMode {
                 drive.followTrajectorySequenceAsync(centerTape);
                 ID_TAG_OF_INTEREST = LEFT;
                 break;
-            case MIDDLE:
+            case CENTER:
                 drive.followTrajectorySequenceAsync(centerTape);
                 ID_TAG_OF_INTEREST = LEFT;
                 break;

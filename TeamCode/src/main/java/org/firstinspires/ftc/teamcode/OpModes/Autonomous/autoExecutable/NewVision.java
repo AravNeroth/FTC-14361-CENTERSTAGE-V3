@@ -19,7 +19,7 @@ import org.opencv.imgproc.Imgproc;
 public class NewVision implements VisionProcessor {
     //g  private DrawRectangleProcessor drawRectangleProcessor;
     Telemetry telemetry;
-    private Rect rectLeft = new Rect(40, 230, 80, 100);
+   // private Rect rectLeft = new Rect(40, 230, 80, 100);
     private Rect rectMiddle = new Rect(349, 325, 90, 110);
 
     private Rect rectRight = new Rect(366, 25, 100, 80);
@@ -123,7 +123,7 @@ public class NewVision implements VisionProcessor {
                 canvas.drawRect(drawRectangleMiddle, selectedPaint);
                 canvas.drawRect(drawRectangleRight, nonSelected);
                 break;
-            case NONE:
+            case LEFT:
                 canvas.drawRect(drawRectangleMiddle, nonSelected);
                 canvas.drawRect(drawRectangleRight, nonSelected);
                 break;

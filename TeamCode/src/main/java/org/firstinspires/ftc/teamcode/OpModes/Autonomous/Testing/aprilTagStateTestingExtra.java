@@ -58,7 +58,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
     // AprilTagDetectionPipeline aprilTagDetectionPipeline;
     AprilTagDetection tagOfInterest = null;
     int LEFT = 4, MIDDLE = 5, RIGHT = 6, REDSTACK = 7;
-    int ID_TAG_OF_INTEREST = 4;
+    int ID_TAG_OF_INTEREST = -1;
     boolean tagFound = false;
 
     double leftTapeX = 0, leftTapeY = 0, centerTapeX = 11.5, centerTapeY = -34.5, rightTapeX = 0, rightTapeY = 0;
@@ -86,12 +86,13 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
         TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
                 .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY))
-                .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY - 5))
-                .turn(Math.toRadians(-90))
+                .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY - 7))
+
 
                 .build();
         TrajectorySequence goTowardsAprilTags = drive.trajectorySequenceBuilder(centerTape.end())
-                .lineToConstantHeading(new Vector2d(centerTapeX + 3, centerTapeY - 5))
+              //  .turn(Math.toRadians(-90))
+                .lineToConstantHeading(new Vector2d(centerTapeX + 3, centerTapeY - 7))
                 .strafeRight(3)
                 .build();
 
@@ -100,20 +101,26 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         newColorDetect();
 //        telemetry.addLine("portal state " + visionPortal.getCameraState());
 //     //   telemetry.addLine("portal active " + visionPortal.getActiveCamera());
-//        switch (newVision.getStartingPosition()){
-//            case LEFT:
-//                drive.followTrajectorySequenceAsync(centerTape);
-//                ID_TAG_OF_INTEREST = LEFT;
-//                break;
-//            case RIGHT:
-//                drive.followTrajectorySequenceAsync(centerTape);
-//                ID_TAG_OF_INTEREST = LEFT;
-//                break;
-////            case MIDDLE:
-////                drive.followTrajectorySequenceAsync(centerTape);
-////                ID_TAG_OF_INTEREST = LEFT;
-////                break;
-//        }
+        switch (newVision.getStartingPosition()){
+            case LEFT:
+                drive.followTrajectorySequenceAsync(centerTape);
+                telemetry.addLine("left.");
+                telemetry.update();
+                ID_TAG_OF_INTEREST = LEFT;
+                break;
+            case RIGHT:
+                drive.followTrajectorySequenceAsync(centerTape);
+                telemetry.addLine("right.");
+                telemetry.update();
+                ID_TAG_OF_INTEREST = RIGHT;
+                break;
+            case CENTER:
+                drive.followTrajectorySequenceAsync(centerTape);
+                telemetry.addLine("center.");
+                telemetry.update();
+                ID_TAG_OF_INTEREST = MIDDLE;
+                break;
+        }
 
         telemetry.update();
 
@@ -165,7 +172,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                     timer.reset();
                 }
                 if(!aprilTagOn){
-                    telemetry.addLine("into april tag disable");
+                    telemetry.addLine("into april tag enable");
                     telemetry.update();
                     initAprilTag();
                     aprilTagOn = true;
@@ -182,11 +189,10 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 //                    }
                     break;
                 case firstTimeBoard:
-                    if(!toAprilTag1){
-                        drive.followTrajectorySequenceAsync(goTowardsAprilTags);
-                        toAprilTag1 = false;
-
-                    }
+//                    if(!toAprilTag1){
+//                        drive.followTrajectorySequenceAsync(goTowardsAprilTags);
+//                        toAprilTag1 = true;
+//                    }
 
 
                     List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -275,10 +281,11 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
 
     private void newColorDetect(){
-        if(opModeIsActive()){
+        if(opModeIsActive() && !isStopRequested()){
             visionPortal.stopStreaming();
         }
-        else {
+        else
+        {
             newVision = new NewVision(telemetry);
             visionPortal = new VisionPortal.Builder()
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
