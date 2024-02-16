@@ -159,12 +159,6 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 //                    }
                     break;
                 case firstTimeBoard:
-//                    if(!toAprilTag1){
-//                        drive.followTrajectorySequenceAsync(goTowardsAprilTags);
-//                        toAprilTag1 = true;
-//                    }
-
-
                     List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
                     if (currentDetections.size() != 0) {

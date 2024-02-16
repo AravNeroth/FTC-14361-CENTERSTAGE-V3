@@ -36,7 +36,6 @@ public class closeBlueAprilTag extends LinearOpMode {
 
     private VisionPortal visionPortal;
     NewVision newVision;
-    String webcamName;
     Robot bot;
     ElapsedTime timer = new ElapsedTime();
     SampleMecanumDrive drive;
@@ -62,36 +61,32 @@ public class closeBlueAprilTag extends LinearOpMode {
         drive.setPoseEstimate(startPose);
         currentStates = currentState.tape;
 
-        telemetry.addLine("April Tag Initialized.");
+        telemetry.addLine("OpMode Initialized.");
         telemetry.update();
 
         // ---------------------------- Tape ---------------------------- //
 
         TrajectorySequence leftTape = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(leftTapeX, leftTapeY))
-                .lineToConstantHeading(new Vector2d(leftTapeX, leftTapeY - 13))
-                .lineToConstantHeading(new Vector2d(leftTapeX, leftTapeY - 5))
-                .lineToLinearHeading(new Pose2d(leftTapeX + 20.75, leftTapeY - 12.5, Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(22.25,55))
+                .lineToConstantHeading(new Vector2d(22.25,42))
+                .lineToConstantHeading(new Vector2d(22.25,50))
+                .lineToLinearHeading(new Pose2d(42 ,42.5, Math.toRadians(180)))
                 .build();
 
         TrajectorySequence centerTape = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY))
-                .lineToConstantHeading(new Vector2d(centerTapeX + 28.5, centerTapeY + 3.5))
-                .turn(Math.toRadians(-90))
+                .lineToConstantHeading(new Vector2d(10, 38))
+                .lineToLinearHeading(new Pose2d(40 ,38, Math.toRadians(180)))
                 .build();
 
         TrajectorySequence rightTape = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(rightTapeX + 6.5, rightTapeY + 22))
-                .lineToLinearHeading(new Pose2d(rightTapeX + 6.5, rightTapeY, Math.toRadians(0)))
-                .lineToConstantHeading(new Vector2d(rightTapeX, rightTapeY))
-                .lineToConstantHeading(new Vector2d(rightTapeX + 5.5, rightTapeY))
-                .lineToLinearHeading(new Pose2d(rightTapeX + 21.5, rightTapeY - 2, Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(15, 54))
+                .lineToLinearHeading(new Pose2d(15,32, Math.toRadians(0)))
+                .lineToConstantHeading(new Vector2d(8.5,32))
+                .lineToConstantHeading(new Vector2d(14,32))
+                .lineToLinearHeading(new Pose2d(30,30,Math.toRadians(180)))
                 .build();
 
         // ---------------------------- Runner ---------------------------- //
-
-        TrajectorySequence tag = null;
-        waitForStart();
 
         telemetry.addLine("New Vision Initialized.");
         newColorDetect();
@@ -120,6 +115,9 @@ public class closeBlueAprilTag extends LinearOpMode {
                 break;
         }
 
+        TrajectorySequence tag = null;
+        waitForStart();
+
         if (isStopRequested()) return;
 
         while (opModeIsActive() && !isStopRequested()) {
@@ -128,8 +126,15 @@ public class closeBlueAprilTag extends LinearOpMode {
                     telemetry.addLine("Inside Tape State");
                     telemetry.update();
 
+                    if(!cameraOn){
+                        newColorDetect();
+                        telemetry.addLine("Into disable");
+                        telemetry.update();
+                        cameraOn = true;
+                        timer.reset();
+                    }
                     if(!aprilTagOn){
-                        telemetry.addLine("April Tag Enabled");
+                        telemetry.addLine("Into april tag enable");
                         telemetry.update();
                         initAprilTag();
                         aprilTagOn = true;
@@ -236,35 +241,19 @@ public class closeBlueAprilTag extends LinearOpMode {
 
             NewVision.StartingPosition startingPos = NewVision.StartingPosition.LEFT;
 
-            telemetry.addLine("Vision portal built");
-            telemetry.addData("Starting position: ", startingPos);
+            telemetry.addLine("vision portal built");
+            telemetry.addData("starting position: ", startingPos);
             startingPos = newVision.getStartingPosition();
-            telemetry.addData("Called NewVision - returned: ", startingPos);
-        }
-    }
+            telemetry.addData("called NewVision- returned: ", startingPos);
 
-    public void closeCamera() {
-        if (camera != null) {
-            telemetry.addLine("In close camera");
-
-            camera.pauseViewport();
-
-            camera.closeCameraDevice();
-        } else {
-            telemetry.addLine("Camera is alr null.");
-            telemetry.update();
         }
 
-        telemetry.addLine("Pausing/Stopping");
-        camera.stopRecordingPipeline();
-        camera.pauseViewport();
-        camera.closeCameraDevice();
-    }
 
+    }
     private void initAprilTag() {
         // Create the AprilTag processor by using a builder.
-        telemetry.addLine("Inside April Tag Init");
         aprilTag = new AprilTagProcessor.Builder().build();
+
 
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // eg: Some typical detection data using a Logitech C920 WebCam
@@ -273,15 +262,16 @@ public class closeBlueAprilTag extends LinearOpMode {
         // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second
         // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
         // Note: Decimation can be changed on-the-fly to adapt during a match.
-        aprilTag.setDecimation(2);
+        aprilTag.setDecimation(3);
+
 
         // Create the vision portal by using a builder.
+
         if (USE_WEBCAM) {
             visionPortal = new VisionPortal.Builder()
-
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                     .enableLiveView(false)
-                    .addProcessor(aprilTag)
+                    .addProcessors(aprilTag)
                     .build();
         } else {
             visionPortal = new VisionPortal.Builder()
@@ -289,31 +279,5 @@ public class closeBlueAprilTag extends LinearOpMode {
                     .addProcessor(aprilTag)
                     .build();
         }
-
-    }
-
-    private void telemetryAprilTag() {
-
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        telemetry.addData("# AprilTags Detected", currentDetections.size());
-
-        // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
-                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
-            } else {
-                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
-                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
-            }
-        }   // end for() loop
-
-        // Add "key" information to telemetry
-        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
-        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
-        telemetry.addLine("RBE = Range, Bearing & Elevation");
-
     }
 }
