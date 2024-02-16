@@ -8,10 +8,6 @@ public class robotConstants
         public static double I = 0.0;
         public static double D = 0.0;
 
-        public static double pulleyCircumference = 0.0;
-        public static double ticksPerRevolution = 0.0;
-
-
         public static int MOSTHIGHLEFT = 1585;
         public static int MOSTHIGHRIGHT = 1585;
 
@@ -139,6 +135,11 @@ public class robotConstants
     public static class drone{
         public static double droneLaunch = .4;
         public static double droneReset = .6;
+    }
+
+    public static class holderServo{
+            public static double open = .5;
+            public static double close = 0;
     }
 
 }
