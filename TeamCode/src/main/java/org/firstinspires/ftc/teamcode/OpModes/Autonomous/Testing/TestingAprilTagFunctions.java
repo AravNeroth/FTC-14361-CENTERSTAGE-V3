@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Testing;
 
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -8,14 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Commands.armExtensionState;
-import org.firstinspires.ftc.teamcode.Commands.armState;
-import org.firstinspires.ftc.teamcode.Commands.extensionState;
-import org.firstinspires.ftc.teamcode.Commands.lidState;
-import org.firstinspires.ftc.teamcode.Commands.outtakeSlidesState;
-import org.firstinspires.ftc.teamcode.Commands.wristState;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Detection.NewVision;
-import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Detection.HSVBlueDetection;
@@ -33,9 +27,9 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "aprilTagStateTesting ", group = "goobTest")
-public class aprilTagStateTestingExtra extends LinearOpMode {
-
+import java.util.List;
+@Autonomous(name = "testingAprilTagFunctions ", group = "goobTest")
+public class TestingAprilTagFunctions extends LinearOpMode{
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
     /**
@@ -48,95 +42,58 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
      */
     private VisionPortal visionPortal;
     NewVision newVision;
+    double tagY = 0;
 
 
     String webcamName;
-    Robot bot;
+    Robot robot;
 
     ElapsedTime timer = new ElapsedTime();
-    ElapsedTime temporalMarkerTimer = new ElapsedTime();
     Pose2d start = new Pose2d(11.5, -62.75, Math.toRadians(270));
     SampleMecanumDrive drive;
     OpenCvCamera camera;
     boolean cameraOn = false, aprilTagOn = false, toAprilTag1 = false, initCam = false, randomTag = false;
     double boardX, boardY, stack1Y, stackDetectX, stackDetectY;
     boolean onePixel = false, twoPixels = false;
-    double tagY = 0;
     //   aprilTagDetection aprilTagDetectionPipeline;
     double tagsize = 0.166;
     // AprilTagDetectionPipeline aprilTagDetectionPipeline;
     AprilTagDetection tagOfInterest = null;
     int LEFT = 4, MIDDLE = 5, RIGHT = 6, REDSTACK = 7;
-    int ID_TAG_OF_INTEREST = 4;
+    int ID_TAG_OF_INTEREST = 5;
     boolean tagFound = false;
 
     double leftTapeX = 0, leftTapeY = 0, centerTapeX = 11.5, centerTapeY = -34.5, rightTapeX = 0, rightTapeY = 0;
     double leftBoardX, leftBoardY, centerBoardX, centerBoardY, rightBoardX, rightBoardY;
     double secondTimeBoardX = 0, secondTimeBoardY = 0, thirdTimeBoardX, thirdTimeBoardY;
 
-    state currentState = state.tape;
+    aprilTagStateTestingExtra.state currentState = aprilTagStateTestingExtra.state.tape;
 
     enum state {
         tape, firstTimeBoard, secondTimeBoard, thirdTimeBoard, stack, idle
     }
 
     public void runOpMode() {
-        bot = new Robot(hardwareMap, telemetry);
+        robot = new Robot(hardwareMap, telemetry);
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(start);
 
         TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
                 //.lineToConstantHeading(new Vector2d(19,-55))
-                .lineToConstantHeading(new Vector2d(11.5, -37))
-                .addTemporalMarker(.05,() -> {
-                   bot.setLidPosition(lidState.close);
-                })
-                .addTemporalMarker(.15,() -> {
-                   bot.setArmPosition(armState.init, armExtensionState.extending);
-                   bot.setWristPosition(wristState.intaking);
-                })
-                .lineToConstantHeading(new Vector2d(11.5, -40))
-
-                .lineToLinearHeading(new Pose2d(25 ,-40, Math.toRadians(180)))
-                .addTemporalMarker(() -> {
-                    bot.setArmPosition(armState.outtaking, armExtensionState.extending);
-                    bot.setWristPosition(wristState.outtaking);
-                })
+                .lineToConstantHeading(new Vector2d(11.5, -39))
+                .lineToLinearHeading(new Pose2d(30, -34, Math.toRadians(180)))
                 .build();
 
-        TrajectorySequence goToCenterAprilTag = drive.trajectorySequenceBuilder(centerTape.end())
-                .lineToConstantHeading(new Vector2d(25, -31.5))
-             //   .strafeRight(3)
+        TrajectorySequence goTowardsAprilTags = drive.trajectorySequenceBuilder(centerTape.end())
+                .lineToConstantHeading(new Vector2d(centerTapeX + 3, centerTapeY - 7))
+                .strafeRight(3)
                 .build();
 
-        telemetry.addLine("New Vision Initialized.");
-        newColorDetect();
-        
-        telemetry.addLine("portal state " + visionPortal.getCameraState());
 
-        switch (newVision.getStartingPosition()){
-            case LEFT:
-                temporalMarkerTimer.reset();
-                drive.followTrajectorySequenceAsync(centerTape);
-                telemetry.addLine("left.");
-                telemetry.update();
-                ID_TAG_OF_INTEREST = LEFT;
-                break;
-            case RIGHT:
-                temporalMarkerTimer.reset();
-                drive.followTrajectorySequenceAsync(centerTape);
-                telemetry.addLine("right.");
-                telemetry.update();
-                ID_TAG_OF_INTEREST = RIGHT;
-                break;
-            case CENTER:
-                temporalMarkerTimer.reset();
-                drive.followTrajectorySequenceAsync(centerTape);
-                telemetry.addLine("center.");
-                telemetry.update();
-                ID_TAG_OF_INTEREST = MIDDLE;
-                break;
-        }
+
+
+      //  telemetry.addLine("portal state " + visionPortal.getCameraState());
+        initAprilTag();
 
         telemetry.update();
 
@@ -145,41 +102,13 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
 
         if (isStopRequested()) return;
-        currentState = state.tape;
+        currentState = aprilTagStateTestingExtra.state.tape;
         while (opModeIsActive() && !isStopRequested()) {
 
             switch (currentState) {
                 case tape:
-                    if(!cameraOn){
-                       // newColorDetect();
-                        telemetry.addLine("Into disalbe");
-                        telemetry.update();
-                        cameraOn = true;
-                        timer.reset();
 
-
-                    }
-                    if(!aprilTagOn){
-                        telemetry.addLine("into april tag enable");
-                        telemetry.update();
-                        initAprilTag();
-                        aprilTagOn = true;
-                    }
-
-
-
-                    if (!drive.isBusy()) {
-                        drive.followTrajectorySequenceAsync(goToCenterAprilTag);
-                        currentState = state.firstTimeBoard;
-                        temporalMarkerTimer.reset();
-                        timer.reset();
-                    }
-//
-//                        // drive.followTrajectoryAsync(trajectory2);
-//                    }
-                    break;
-                case firstTimeBoard:
-                    List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
                     if (currentDetections.size() != 0) {
 
@@ -197,73 +126,70 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                                     telemetry.addLine("Inside Tag Of Interest If");
                                     telemetry.update();
                                     // Yes, we want to use this tag.
-                                    if(drive.getPoseEstimate().getY() - detection.metadata.fieldPosition.get(1) > 0){
-                                        tagY = drive.getPoseEstimate().getY() - (-detection.ftcPose.x);
-                                    }
-                                    else {
-                                        tagY = drive.getPoseEstimate().getY() + (-detection.ftcPose.x);
-                                    }
+
                                     tagFound = true;
                                     tagOfInterest = detection;
+                                    if(drive.getPoseEstimate().getY() - detection.metadata.fieldPosition.get(1) > 0){
+                                        tagY = drive.getPoseEstimate().getY() - tagOfInterest.ftcPose.x;
+                                    }
+                                    else {
+                                        tagY = drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.x;
+                                    }
+
                                 }
-//                                else if(!randomTag){
+//                                else if (!randomTag) {
 //                                    TrajectorySequence turnToAprilTag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-//                                            .turn(detection.ftcPose.elevation)
+//                                            .turn(detection.ftcPose.bearing)
 //                                            .build();
 //                                    drive.followTrajectorySequenceAsync(turnToAprilTag);
 //                                    randomTag = true;
 //                                }
+                            }
+
+                            if (tagFound) {
+                                telemetry.addLine("Inside TagFound If Statement");
+                                telemetry.update();
+                                timer.reset();
+                                // final double distanceX = tagOfInterest.center.x;
+//                                tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+//                                        .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y + 3, drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.x + 4))
+                                    //    .build();
+
+
+                                telemetry.addData("FTC Pose y: ", tagY);
+                                telemetry.addData("FTC Pose x: ", tagOfInterest.ftcPose.y);
+                                telemetry.addData("Field Pose ", tagOfInterest.metadata.fieldPosition);
+                                telemetry.addData("New Pose x: ", drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y);
+                                telemetry.addData("New Pose y: ", drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.x);
+
+                                telemetry.addLine("Traj Seq Builder ran");
+                                telemetry.update();
+                            } else {
+                                telemetry.addData("Different Tag Found", detection.id);
+                                telemetry.addData("Different Tag X", detection.ftcPose.y);
+                                telemetry.addData("Different Tag Y", detection.ftcPose.x);
+                                telemetry.addData("Bearing", detection.ftcPose.bearing);
+                                telemetry.addData("Elevation", detection.ftcPose.elevation);
+                                if(detection.metadata!= null){
+                                    telemetry.addData("Field Pose ", detection.metadata.fieldPosition);
                                 }
 
-                                if (tagFound) {
-                                    telemetry.addLine("Inside TagFound If Statement");
-                                    telemetry.update();
-                                    timer.reset();
-                                    temporalMarkerTimer.reset();
-                                    // final double distanceX = tagOfInterest.center.x;
-
-                                //   tagY = drive.getPoseEstimate().getX() - tagOfInterest.ftcPose.y-3;
-                                    tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                            .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(25, 45, DriveConstants.TRACK_WIDTH))
-
-                                            .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3, tagY - 3.75))
-
-                                            .addDisplacementMarker( 1, () -> {
-                                               bot.outtakeSlide.setPosition(500);
-                                            })
-                                            .addTemporalMarker( () -> {
-                                                bot.setLidPosition(lidState.open);
-                                                bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending);
-                                            })
-
-                                            .build();
-
-
-                                    telemetry.addData("FTC Pose x: ", tagOfInterest.ftcPose.x);
-                                    telemetry.addData("FTC Pose y: ", tagOfInterest.ftcPose.y);
-                                    telemetry.addData("Field Pose ", tagOfInterest.metadata.fieldPosition);
-                                    telemetry.addData("New Pose x: ", drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.x);
-                                    telemetry.addData("New Pose y: ", drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.y);
-
-                                    telemetry.addLine("Traj Seq Builder ran");
-                                    telemetry.update();
-                                } else{
-                                    telemetry.addData("Different Tag Found", detection.id);
-                                    telemetry.addData("Different Tag X", detection.ftcPose.y);
-                                    telemetry.addData("Different Tag Y", detection.ftcPose.x);
-                                    telemetry.addData("Bearing", detection.ftcPose.bearing);
-                                    telemetry.update();
-                                }
+                                telemetry.update();
+                            }
                         }
 
 
+                        //    ID_TAG_OF_INTEREST = REDSTACK;
 
-                            //    ID_TAG_OF_INTEREST = REDSTACK;
+
+                    } // detect for loop end
+//                        // drive.followTrajectoryAsync(trajectory2);
+//                    }
+                    break;
+                case firstTimeBoard:
 
 
-                        } // detect for loop end
-
-                     // if detect not 0 end
+                    // if detect not 0 end
 //                    else{
 //                        tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
 //                                .lineToConstantHeading(new Vector2d(1, 1))
@@ -273,11 +199,11 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
                         if (tagFound) {
                             drive.followTrajectorySequenceAsync(tag);
-                            currentState = state.idle;
-                            tagFound =false;
+                            currentState = aprilTagStateTestingExtra.state.idle;
+                            tagFound = false;
 
                         } else if (timer.seconds() > 3.5) {
-                            currentState = state.idle;
+                            currentState = aprilTagStateTestingExtra.state.idle;
                         }
 
                         //  currentState = state.firstTimeBoard;
@@ -296,20 +222,17 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
     } // run opmode
 
 
-
-    private void newColorDetect(){
-        if(initCam){
+    private void newColorDetect() {
+        if (initCam) {
             visionPortal.stopStreaming();
-        }
-        else
-        {
+        } else {
             newVision = new NewVision(telemetry);
             visionPortal = new VisionPortal.Builder()
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                     .addProcessor(newVision)
-                   // .setCamera(BuiltinCameraDirection.BACK)
+                    // .setCamera(BuiltinCameraDirection.BACK)
 
-                  //  .enableLiveView(false)
+                    //  .enableLiveView(false)
                     // .addProcessor(newVision)
                     .build();
 
@@ -323,10 +246,11 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
             startingPos = newVision.getStartingPosition();
             telemetry.addData("called NewVision- returned: ", startingPos);
             initCam = true;
-       }
+        }
 
 
     }
+
     private void initAprilTag() {
         // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder().build();
