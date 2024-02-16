@@ -58,7 +58,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
     // AprilTagDetectionPipeline aprilTagDetectionPipeline;
     AprilTagDetection tagOfInterest = null;
     int LEFT = 4, MIDDLE = 5, RIGHT = 6, REDSTACK = 7;
-    int ID_TAG_OF_INTEREST = -1;
+    int ID_TAG_OF_INTEREST = 4;
     boolean tagFound = false;
 
     double leftTapeX = 0, leftTapeY = 0, centerTapeX = 11.5, centerTapeY = -34.5, rightTapeX = 0, rightTapeY = 0;
@@ -67,40 +67,30 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
     state currentState = state.tape;
 
-
     enum state {
         tape, firstTimeBoard, secondTimeBoard, thirdTimeBoard, stack, idle
     }
-
-
-
-
-
 
     public void runOpMode() {
         robot = new Robot(hardwareMap, telemetry);
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(start);
 
-
-
         TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
                 .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY))
                 .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY - 7))
-
-
                 .build();
+
         TrajectorySequence goTowardsAprilTags = drive.trajectorySequenceBuilder(centerTape.end())
-                //  .turn(Math.toRadians(-90))
                 .lineToConstantHeading(new Vector2d(centerTapeX + 3, centerTapeY - 7))
                 .strafeRight(3)
                 .build();
 
-
         telemetry.addLine("New Vision Initialized.");
         newColorDetect();
-//        telemetry.addLine("portal state " + visionPortal.getCameraState());
-//     //   telemetry.addLine("portal active " + visionPortal.getActiveCamera());
+        
+        telemetry.addLine("portal state " + visionPortal.getCameraState());
+
         switch (newVision.getStartingPosition()){
             case LEFT:
                 drive.followTrajectorySequenceAsync(centerTape);
