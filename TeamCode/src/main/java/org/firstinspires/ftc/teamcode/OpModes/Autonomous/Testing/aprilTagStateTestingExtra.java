@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.autoExecutable.NewVision;
-import org.firstinspires.ftc.teamcode.OpModes.Autonomous.autoExecutable.TestNewVision;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Subsystems.HSVBlueDetection;
@@ -42,7 +41,6 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
      */
     private VisionPortal visionPortal;
     NewVision newVision;
-    TestNewVision testNewVision;
 
 
     String webcamName;
@@ -67,9 +65,6 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
     double leftBoardX, leftBoardY, centerBoardX, centerBoardY, rightBoardX, rightBoardY;
     double secondTimeBoardX = 0, secondTimeBoardY = 0, thirdTimeBoardX, thirdTimeBoardY;
 
-
-
-
     state currentState = state.tape;
 
 
@@ -86,6 +81,9 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
         robot = new Robot(hardwareMap, telemetry);
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(start);
+
+
+
         TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
                 .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY))
                 .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY - 5))
@@ -98,12 +96,11 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
                 .build();
 
 
-        telemetry.addLine("April Tag Initialized.");
-     //   newColorDetect();
-        newNewColorVision();
-        telemetry.addLine("portal state " + visionPortal.getCameraState());
-     //   telemetry.addLine("portal active " + visionPortal.getActiveCamera());
-//        switch (newVision.getLocation()){
+        telemetry.addLine("New Vision Initialized.");
+        newColorDetect();
+//        telemetry.addLine("portal state " + visionPortal.getCameraState());
+//     //   telemetry.addLine("portal active " + visionPortal.getActiveCamera());
+//        switch (newVision.getStartingPosition()){
 //            case LEFT:
 //                drive.followTrajectorySequenceAsync(centerTape);
 //                ID_TAG_OF_INTEREST = LEFT;
@@ -112,10 +109,10 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 //                drive.followTrajectorySequenceAsync(centerTape);
 //                ID_TAG_OF_INTEREST = LEFT;
 //                break;
-//            case MIDDLE:
-//                drive.followTrajectorySequenceAsync(centerTape);
-//                ID_TAG_OF_INTEREST = LEFT;
-//                break;
+////            case MIDDLE:
+////                drive.followTrajectorySequenceAsync(centerTape);
+////                ID_TAG_OF_INTEREST = LEFT;
+////                break;
 //        }
 
         telemetry.update();
@@ -148,7 +145,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
         if (isStopRequested()) return;
        // drive.followTrajectorySequenceAsync(forward);
-       // currentState = state.tape;
+        currentState = state.tape;
         while (opModeIsActive() && !isStopRequested()) {
          //   closeCamera();
             //camera.stopStreaming();
@@ -161,7 +158,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
             switch (currentState) {
                 case tape:
                 if(!cameraOn){
-                    //newColorDetect();
+                    newColorDetect();
                     telemetry.addLine("into disalbe");
                     telemetry.update();
                     cameraOn = true;
@@ -176,10 +173,10 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
 
 
-//                    if (!drive.isBusy()) {
-//                        currentState = state.firstTimeBoard;
-//                        timer.reset();
-//                    }
+                    if (!drive.isBusy()) {
+                        currentState = state.firstTimeBoard;
+                        timer.reset();
+                    }
 //
 //                        // drive.followTrajectoryAsync(trajectory2);
 //                    }
@@ -285,6 +282,7 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
             newVision = new NewVision(telemetry);
             visionPortal = new VisionPortal.Builder()
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .setCamera(BuiltinCameraDirection.BACK)
                     .addProcessor(newVision)
                     .enableLiveView(false)
                     // .addProcessor(newVision)
@@ -292,24 +290,16 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 
 //        visionPortal = VisionPortal.easyCreateWithDefaults(
 //                hardwareMap.get(WebcamName.class, "Webcam 1"), newVision);
-        }
-    }
-    private void newNewColorVision(){
-        if(opModeIsActive()){
-            visionPortal.stopStreaming();
-        }
-        else {
-            testNewVision = new TestNewVision(telemetry);
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                    .addProcessor(testNewVision)
-                    .enableLiveView(false)
-                    // .addProcessor(newVision)
-                    .build();
 
-//        visionPortal = VisionPortal.easyCreateWithDefaults(
-//                hardwareMap.get(WebcamName.class, "Webcam 1"), newVision);
+            NewVision.StartingPosition startingPos = NewVision.StartingPosition.NONE;
+
+            telemetry.addLine("vision portal built");
+            telemetry.addData("starting position: ", startingPos);
+            telemetry.addData("called NewVision- returned: ", newVision.getStartingPosition());
+
         }
+
+
     }
     private void initAprilTag() {
         // Create the AprilTag processor by using a builder.
