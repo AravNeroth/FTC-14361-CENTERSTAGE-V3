@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Detection.HSVBlueDetection;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.DriveConstants;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Commands.*;
 import org.firstinspires.ftc.teamcode.Subsystems.*;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.SampleMecanumDrive;
 
-@Autonomous(name = "closeBlueObjectDetect", group = "Auto")
+@Autonomous(name = "closeBlue", group = "Auto")
 public class closeBlue extends LinearOpMode {
     OpenCvCamera camera;
     HSVBlueDetection blueDetection;
@@ -26,7 +27,7 @@ public class closeBlue extends LinearOpMode {
     public void runOpMode() {
         bot = new Robot(hardwareMap, telemetry);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(15, 61, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(12, 62.5, Math.toRadians(90));
         initCam();
 
         drive.setPoseEstimate(startPose);
@@ -42,6 +43,7 @@ public class closeBlue extends LinearOpMode {
         // ---------------------------- Left ---------------------------- //
 
         TrajectorySequence left = drive.trajectorySequenceBuilder(startPose)
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(50, 45, DriveConstants.TRACK_WIDTH))
                 .lineToConstantHeading(new Vector2d(22.25,55))
                 .addDisplacementMarker(() -> {
                     bot.setWristPosition(wristState.init);
@@ -57,23 +59,30 @@ public class closeBlue extends LinearOpMode {
                     bot.setArmPosition(armState.outtaking, armExtensionState.extending);
                     bot.setWristPosition(wristState.outtaking);
                 })
-                .lineToLinearHeading(new Pose2d(48 ,42.5, Math.toRadians(180)))
-                .lineToConstantHeading(new Vector2d(52,42.5))
+                .lineToLinearHeading(new Pose2d(46 ,42.5, Math.toRadians(180)))
+
+                .lineToConstantHeading(new Vector2d(48,42.5))
                 .addDisplacementMarker( () -> {
                     bot.setLidPosition(lidState.open);
                 })
-                .lineToConstantHeading(new Vector2d(51.8,42.5))
+
+                .waitSeconds(.25)
+
+                .lineToConstantHeading(new Vector2d(47.7,42.5))
                 .addDisplacementMarker( () -> {
                     bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending);
                 })
 
-                .lineToConstantHeading(new Vector2d(43, 42.5))
+                .resetVelConstraint()
+                .waitSeconds(.25)
+
+                .lineToConstantHeading(new Vector2d(40, 42.5))
                 .addDisplacementMarker( () -> {
                     bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
                     bot.setArmPosition(armState.intaking, armExtensionState.extending);
                     bot.setWristPosition(wristState.intaking);
                 })
-                .lineToConstantHeading(new Vector2d(43, 47))
+                .lineToConstantHeading(new Vector2d(40, 47))
                 .lineToLinearHeading(new Pose2d(49 ,58, Math.toRadians(270)))
 
                 .build();
@@ -81,6 +90,7 @@ public class closeBlue extends LinearOpMode {
         // ---------------------------- Center ---------------------------- //
 
         TrajectorySequence center = drive.trajectorySequenceBuilder(startPose)
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(50, 45, DriveConstants.TRACK_WIDTH))
                 .lineToConstantHeading(new Vector2d(10,55))
                 .addDisplacementMarker(() -> {
                     bot.setWristPosition(wristState.init);
@@ -98,22 +108,26 @@ public class closeBlue extends LinearOpMode {
                   bot.setWristPosition(wristState.outtaking);
                 })
 
-                .lineToConstantHeading(new Vector2d(52,35))
+                .lineToConstantHeading(new Vector2d(49,35))
                 .addDisplacementMarker( () -> {
                     bot.setLidPosition(lidState.open);
                 })
                 .waitSeconds(.25)
-                .lineToConstantHeading(new Vector2d(51.8, 35))
+                .lineToConstantHeading(new Vector2d(48.7, 35))
                 .addDisplacementMarker( () -> {
                     bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending);
                 })
-                .lineToConstantHeading(new Vector2d(43, 35))
+
+                .resetVelConstraint()
+                .waitSeconds(.25)
+
+                .lineToConstantHeading(new Vector2d(40, 35))
                 .addDisplacementMarker( () -> {
                     bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
                     bot.setArmPosition(armState.intaking, armExtensionState.extending);
                     bot.setWristPosition(wristState.intaking);
                 })
-                .lineToConstantHeading(new Vector2d(43, 47))
+                .lineToConstantHeading(new Vector2d(40, 47))
                 .lineToLinearHeading(new Pose2d(49 ,58, Math.toRadians(270)))
 
                 .build();
@@ -121,6 +135,7 @@ public class closeBlue extends LinearOpMode {
         // ---------------------------- Right ---------------------------- //
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(startPose)
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(50, 45, DriveConstants.TRACK_WIDTH))
                 .lineToConstantHeading(new Vector2d(15, 54))
 
                 .addDisplacementMarker( () -> {
@@ -130,7 +145,7 @@ public class closeBlue extends LinearOpMode {
                 })
                 .lineToLinearHeading(new Pose2d(15,32, Math.toRadians(0)))
 
-                .lineToConstantHeading(new Vector2d(8.5,32))
+                .lineToConstantHeading(new Vector2d(10,32))
                 .lineToConstantHeading(new Vector2d(14,32))
 
                 .lineToLinearHeading(new Pose2d(30,30,Math.toRadians(180)))
@@ -140,23 +155,29 @@ public class closeBlue extends LinearOpMode {
                     bot.setWristPosition(wristState.outtaking);
                 })
 
-                .lineToConstantHeading(new Vector2d(53,31))
+                .lineToConstantHeading(new Vector2d(50,31))
                 .addDisplacementMarker(() -> {
                    bot.setLidPosition(lidState.open);
                 })
-                .lineToConstantHeading(new Vector2d(52.8,31))
+                .waitSeconds(.25)
+
+                .lineToConstantHeading(new Vector2d(49.7,31))
+
                 .addDisplacementMarker(() -> {
-                    bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending);
+                    bot.outtakeSlide.setPosition(730);
                 })
 
-                .lineToConstantHeading(new Vector2d(43,31))
+                .resetVelConstraint()
+                .waitSeconds(.25)
+
+                .lineToConstantHeading(new Vector2d(40,31))
                 .addDisplacementMarker(() -> {
                     bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
                     bot.setArmPosition(armState.intaking, armExtensionState.extending);
                     bot.setWristPosition(wristState.intaking);
                 })
-                .lineToConstantHeading(new Vector2d(47, 32))
-                .lineToLinearHeading(new Pose2d(47 ,58, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(40, 32, Math.toRadians(270)))
+                .lineToConstantHeading(new Vector2d(47 ,55))
                 .build();
 
         // ---------------------------- Camera Initialization ---------------------------- //

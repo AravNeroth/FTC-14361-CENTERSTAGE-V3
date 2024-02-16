@@ -88,6 +88,9 @@ public class closeBlueAprilTag extends LinearOpMode {
 
         // ---------------------------- Runner ---------------------------- //
 
+        TrajectorySequence tag = null;
+        waitForStart();
+
         telemetry.addLine("New Vision Initialized.");
         newColorDetect();
 
@@ -114,9 +117,6 @@ public class closeBlueAprilTag extends LinearOpMode {
                 ID_TAG_OF_INTEREST = MIDDLE;
                 break;
         }
-
-        TrajectorySequence tag = null;
-        waitForStart();
 
         if (isStopRequested()) return;
 
