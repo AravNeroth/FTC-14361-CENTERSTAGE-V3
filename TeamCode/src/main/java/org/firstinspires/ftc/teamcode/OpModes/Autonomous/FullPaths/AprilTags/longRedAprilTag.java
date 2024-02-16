@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Commands.extensionState;
 import org.firstinspires.ftc.teamcode.Commands.outtakeSlidesState;
 import org.firstinspires.ftc.teamcode.Commands.wristState;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Detection.HSVBlueDetection;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Detection.HSVRedDetection;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
@@ -26,8 +27,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 
 import java.util.List;
 
-@Autonomous(name = "longBlueAprilTag ", group = "goobTest")
-public class longBlueAprilTag extends LinearOpMode {
+@Autonomous(name = "longRedAprilTag ", group = "goobTest")
+public class longRedAprilTag extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;
 
@@ -37,7 +38,7 @@ public class longBlueAprilTag extends LinearOpMode {
 
     String webcamName;
     Robot bot;
-    HSVBlueDetection blueDetection;
+    HSVRedDetection redDetection;
     ElapsedTime timer = new ElapsedTime();
     SampleMecanumDrive drive;
     OpenCvCamera camera;
@@ -47,11 +48,11 @@ public class longBlueAprilTag extends LinearOpMode {
     boolean onePixel = false, twoPixels = false;
     double tagsize = 0.166;
     AprilTagDetection tagOfInterest = null;
-    int LEFT = 1, MIDDLE = 2, RIGHT = 3;
+    int LEFT = 4, MIDDLE = 5, RIGHT = 6;
     int ID_TAG_OF_INTEREST;
     boolean tagFound = false;
 
-    double leftTapeX = 33, leftTapeY = 32, centerTapeX = -36, centerTapeY = 32, rightTapeX = -45, rightTapeY = 42;
+    double leftTapeX = -48.25, leftTapeY = -44, centerTapeX = -40, centerTapeY = -33.75, rightTapeX = -34, rightTapeY = -33;
     double secondTimeBoardX = 0, secondTimeBoardY = 0, thirdTimeBoardX, thirdTimeBoardY;
 
     @Override
@@ -67,31 +68,30 @@ public class longBlueAprilTag extends LinearOpMode {
         // ---------------------------- Tape ---------------------------- //
 
         TrajectorySequence leftTape = drive.trajectorySequenceBuilder(startPose)
+                .lineToConstantHeading(new Vector2d(leftTapeX + 1.25, leftTapeY - 8))
                 .lineToConstantHeading(new Vector2d(leftTapeX, leftTapeY))
-                .lineToLinearHeading(new Pose2d(leftTapeX  - 4, leftTapeY, Math.toRadians(180)))
-                .lineToConstantHeading(new Vector2d(leftTapeX, leftTapeY))
-                .lineToConstantHeading(new Vector2d(leftTapeX - 4, leftTapeY - 18))
-                .lineToConstantHeading(new Vector2d(leftTapeX + 72, leftTapeY - 18))
-                .lineToConstantHeading(new Vector2d(leftTapeX + 72, leftTapeY + 4))
+                .lineToConstantHeading(new Vector2d(leftTapeX, leftTapeY - 6))
+                .lineToConstantHeading(new Vector2d(leftTapeX + 9.75, leftTapeY - 6))
+                .lineToConstantHeading(new Vector2d(leftTapeX + 9.75, leftTapeY + 35))
+                .lineToLinearHeading(new Pose2d(leftTapeX + 88.25, leftTapeY + 35, Math.toRadians(180)))
                 .build();
 
         TrajectorySequence centerTape = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY + 23))
+                .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY - 21.25))
                 .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY))
-                .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY + 7))
-                .lineToConstantHeading(new Vector2d(centerTapeX - 4, centerTapeY + 10))
-                .lineToConstantHeading(new Vector2d(centerTapeX - 13, centerTapeY + 10))
-                .lineToLinearHeading(new Pose2d(centerTapeX - 13, centerTapeY - 18, Math.toRadians(180)))
-                .lineToConstantHeading(new Vector2d(centerTapeX - 3, centerTapeY - 18))
+                .lineToConstantHeading(new Vector2d(centerTapeX, centerTapeY - 8.25))
+                .lineToLinearHeading(new Pose2d(centerTapeX - 10, centerTapeY - 8.25, Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(centerTapeX - 10, centerTapeY + 23.75))
+                .lineToConstantHeading(new Vector2d(centerTapeX + 80, centerTapeY +23.75))
                 .build();
 
         TrajectorySequence rightTape = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(rightTapeX, rightTapeY - 8))
-                .lineToConstantHeading(new Vector2d(rightTapeX, rightTapeY + 5.5))
-                .lineToConstantHeading(new Vector2d(rightTapeX + 10, rightTapeY + 5.5))
-                .lineToConstantHeading(new Vector2d(rightTapeX + 10, rightTapeY - 30))
-                .lineToConstantHeading(new Vector2d(rightTapeX + 85, rightTapeY - 30))
-                .lineToLinearHeading(new Pose2d(rightTapeX + 80, rightTapeY + 1.5, Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(rightTapeX, rightTapeY - 22))
+                .lineToLinearHeading(new Pose2d(rightTapeX - 2, rightTapeY, Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(rightTapeX, rightTapeY))
+                .lineToConstantHeading(new Vector2d(rightTapeX - 4, rightTapeY))
+                .lineToConstantHeading(new Vector2d(rightTapeX - 13, rightTapeY + 22))
+                .lineToConstantHeading(new Vector2d(rightTapeX + 73, rightTapeY + 22))
                 .build();
 
         // ---------------------------- Runner ---------------------------- //
@@ -101,7 +101,7 @@ public class longBlueAprilTag extends LinearOpMode {
         waitForStart();
         initCam();
 
-        switch (blueDetection.getLocation()) {
+        switch (redDetection.getLocation()) {
             case LEFT:
                 drive.followTrajectorySequenceAsync(leftTape);
                 ID_TAG_OF_INTEREST = LEFT;
@@ -204,10 +204,9 @@ public class longBlueAprilTag extends LinearOpMode {
                     bot.setWristPosition(wristState.intaking);
 
                     TrajectorySequence park = drive.trajectorySequenceBuilder(tag.end())
-                            .lineToConstantHeading(new Vector2d(40,39))
-                            .lineToLinearHeading(new Pose2d(44 ,12, Math.toRadians(270)))
-                            .lineToConstantHeading(new Vector2d(45, 12))
-                            .lineToConstantHeading(new Vector2d(52,12))
+                            .lineToConstantHeading(new Vector2d(46,-29))
+                            .lineToLinearHeading(new Pose2d(46 ,-8, Math.toRadians(90)))
+                            .lineToConstantHeading(new Vector2d(52,-8))
                             .build();
 
                     drive.followTrajectorySequence(park);
@@ -229,7 +228,7 @@ public class longBlueAprilTag extends LinearOpMode {
 
         camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.SOFTWARE);
         // initializing our Detection class (details on how it works at the top)
-        blueDetection = new HSVBlueDetection(telemetry);
+        redDetection = new HSVRedDetection(telemetry);
 
         // yeah what this does is it gets the thing which uses the thing so we can get the thing
         /*
@@ -237,7 +236,7 @@ public class longBlueAprilTag extends LinearOpMode {
          we basically passthrough our detection into the camera
          and we feed the streaming camera frames into our Detection algorithm)
          */
-        camera.setPipeline(blueDetection);
+        camera.setPipeline(redDetection);
 
         /*
         this starts the camera streaming, with 2 possible combinations
