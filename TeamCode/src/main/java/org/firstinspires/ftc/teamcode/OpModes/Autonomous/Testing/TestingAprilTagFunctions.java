@@ -49,7 +49,7 @@ public class TestingAprilTagFunctions extends LinearOpMode{
     Robot robot;
 
     ElapsedTime timer = new ElapsedTime();
-    Pose2d start = new Pose2d(11.5, -62.75, Math.toRadians(270));
+    Pose2d start = new Pose2d(25, -31, Math.toRadians(270));
     SampleMecanumDrive drive;
     OpenCvCamera camera;
     boolean cameraOn = false, aprilTagOn = false, toAprilTag1 = false, initCam = false, randomTag = false;
@@ -59,6 +59,8 @@ public class TestingAprilTagFunctions extends LinearOpMode{
     double tagsize = 0.166;
     // AprilTagDetectionPipeline aprilTagDetectionPipeline;
     AprilTagDetection tagOfInterest = null;
+    TrajectorySequence turnToAprilTag = null;
+
     int LEFT = 4, MIDDLE = 5, RIGHT = 6, REDSTACK = 7;
     int ID_TAG_OF_INTEREST = 5;
     boolean tagFound = false;
@@ -88,6 +90,9 @@ public class TestingAprilTagFunctions extends LinearOpMode{
                 .lineToConstantHeading(new Vector2d(centerTapeX + 3, centerTapeY - 7))
                 .strafeRight(3)
                 .build();
+        TrajectorySequence turn = drive.trajectorySequenceBuilder(start)
+                .turn(Math.toRadians(-90))
+                .build();
 
 
 
@@ -107,6 +112,10 @@ public class TestingAprilTagFunctions extends LinearOpMode{
 
             switch (currentState) {
                 case tape:
+                    if(!toAprilTag1){
+                        drive.followTrajectorySequenceAsync(turn);
+                        toAprilTag1 = true;
+                    }
 
 List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
@@ -122,7 +131,7 @@ List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
                                 //  Check to see if we want to track towards this tag.
                                 if ((ID_TAG_OF_INTEREST < 0 || detection.id == ID_TAG_OF_INTEREST)) {
-                                    drive.breakFollowing();
+                                 //   drive.breakFollowing();
                                     telemetry.addLine("Inside Tag Of Interest If");
                                     telemetry.update();
                                     // Yes, we want to use this tag.
@@ -137,27 +146,37 @@ List<AprilTagDetection> currentDetections = aprilTag.getDetections();
                                     }
 
                                 }
-//                                else if (!randomTag) {
+                                else if (!randomTag) {
 //                                    TrajectorySequence turnToAprilTag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
 //                                            .turn(detection.ftcPose.bearing)
 //                                            .build();
-//                                    drive.followTrajectorySequenceAsync(turnToAprilTag);
-//                                    randomTag = true;
-//                                }
+
+                                    randomTag = true;
+                                }
                             }
 
                             if (tagFound) {
                                 telemetry.addLine("Inside TagFound If Statement");
                                 telemetry.update();
                                 timer.reset();
-                                // final double distanceX = tagOfInterest.center.x;
+                                double currentAngle = tagOfInterest.ftcPose.elevation;
+                                 turnToAprilTag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+
+                                         .lineToConstantHeading(new Vector2d(25, -31 - tagOfInterest.ftcPose.x-4))
+                                        .turn(-Math.toRadians(currentAngle))
+                                         .waitSeconds(1)
+                                        .build();
+
 //                                tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-//                                        .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y + 3, drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.x + 4))
-                                    //    .build();
+//                                        .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.x))
+//                                        .turn(Math.toRadians(-tagOfInterest.ftcPose.elevation))
+//                                        .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.x))
+//                                        .build();
 
 
                                 telemetry.addData("FTC Pose y: ", tagY);
                                 telemetry.addData("FTC Pose x: ", tagOfInterest.ftcPose.y);
+                                telemetry.addData("Elevation: ", tagOfInterest.ftcPose.elevation);
                                 telemetry.addData("Field Pose ", tagOfInterest.metadata.fieldPosition);
                                 telemetry.addData("New Pose x: ", drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y);
                                 telemetry.addData("New Pose y: ", drive.getPoseEstimate().getY() + tagOfInterest.ftcPose.x);
@@ -176,6 +195,21 @@ List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
                                 telemetry.update();
                             }
+                        }
+                        if (!drive.isBusy()) {
+
+                            if (!aprilTagOn) {
+                             //   drive.followTrajectorySequenceAsync();
+                                   drive.followTrajectorySequenceAsync(turnToAprilTag);
+                                aprilTagOn = true;
+                              //  currentState = aprilTagStateTestingExtra.state.idle;
+                                tagFound = false;
+
+                            } else if (timer.seconds() > 10) {
+                                currentState = aprilTagStateTestingExtra.state.idle;
+                            }
+
+                            //  currentState = state.firstTimeBoard;
                         }
 
 

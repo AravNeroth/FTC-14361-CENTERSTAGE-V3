@@ -58,7 +58,7 @@ public class LongRedStackAprilTagTesting extends LinearOpMode {
     Pose2d start = new Pose2d(-36.5, -62.75, Math.toRadians(270));
     SampleMecanumDrive drive;
     OpenCvCamera camera;
-    boolean cameraOn = false, aprilTagOn = false, toAprilTag1 = false, initCam = false, randomTag = false, underTrussBool = false;
+    boolean cameraOn = false, aprilTagOn = false, toAprilTag1 = false, initCam = false, randomTag = false, underTrussBool = false, stackBool = false, finishBoard = false;
     double boardX, boardY, stack1Y, stackDetectX, stackDetectY;
     boolean onePixel = false, twoPixels = false;
     double tagY = 0;
@@ -77,7 +77,7 @@ public class LongRedStackAprilTagTesting extends LinearOpMode {
     state currentState = state.tape;
 
     enum state {
-        tape, underTruss,firstTimeBoard, secondTimeBoard, thirdTimeBoard, stack, idle
+        tape, underTruss,firstTimeBoard, secondTimeBoard, thirdTimeBoard, toStack, idle
     }
 
     public void runOpMode() {
@@ -96,21 +96,43 @@ public class LongRedStackAprilTagTesting extends LinearOpMode {
                     bot.setWristPosition(wristState.intaking);
                 })
                 .lineToConstantHeading(new Vector2d(-38.25, -40))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, 45, DriveConstants.TRACK_WIDTH))
 
                 .lineToLinearHeading(new Pose2d(-38.25 ,-60.25, Math.toRadians(180)))
-                .addTemporalMarker(() -> {
-                    bot.setArmPosition(armState.outtaking, armExtensionState.extending);
-                    bot.setWristPosition(wristState.outtaking);
-                })
+
+                .resetVelConstraint()
                 .build();
         TrajectorySequence underTruss = drive.trajectorySequenceBuilder(centerTape.end())
-                .lineToConstantHeading(new Vector2d(25, -59))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(45, 45, DriveConstants.TRACK_WIDTH))
+                .lineToConstantHeading(new Vector2d(30, -59))
+                .resetVelConstraint()
+                //   .strafeRight(3)
+                .build();
+        TrajectorySequence underTrussToStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(45, 45, DriveConstants.TRACK_WIDTH))
+                .lineToConstantHeading(new Vector2d(50, drive.getPoseEstimate().getY()))
+                .addTemporalMarker(.1,() -> {
+                    bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
+                })
+                .addTemporalMarker(.3,() -> {
+                    bot.setArmPosition(armState.intaking, armExtensionState.extending);
+                    bot.setWristPosition(wristState.intaking);
+                })
+                .lineToConstantHeading(new Vector2d(50, -61))
+                .resetVelConstraint()
                 //   .strafeRight(3)
                 .build();
 
 
         TrajectorySequence goToCenterAprilTag = drive.trajectorySequenceBuilder(underTruss.end())
-                .lineToConstantHeading(new Vector2d(25, -31.5))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, 45, DriveConstants.TRACK_WIDTH))
+                .lineToConstantHeading(new Vector2d(30, -27))
+                .addTemporalMarker(() -> {
+                    bot.setArmPosition(armState.outtaking, armExtensionState.extending);
+                    bot.setWristPosition(wristState.outtaking);
+                })
+                .resetVelConstraint()
+
                 //   .strafeRight(3)
                 .build();
 
@@ -174,7 +196,7 @@ public class LongRedStackAprilTagTesting extends LinearOpMode {
 
 
                     if (!drive.isBusy()) {
-                        drive.followTrajectorySequenceAsync(goToCenterAprilTag);
+                       // drive.followTrajectorySequenceAsync(goToCenterAprilTag);
                         currentState = state.underTruss;
                         temporalMarkerTimer.reset();
                         timer.reset();
@@ -188,8 +210,11 @@ public class LongRedStackAprilTagTesting extends LinearOpMode {
                         drive.followTrajectorySequenceAsync(underTruss);
                         underTrussBool = true;
                     }
+
                     if(!drive.isBusy()){
-                        currentState = state.idle;
+                        drive.followTrajectorySequenceAsync(goToCenterAprilTag);
+                        timer.reset();
+                        currentState = state.firstTimeBoard;
                     }
                     break;
                 case firstTimeBoard:
@@ -206,7 +231,7 @@ public class LongRedStackAprilTagTesting extends LinearOpMode {
                                 telemetry.update();
 
                                 //  Check to see if we want to track towards this tag.
-                                if ((ID_TAG_OF_INTEREST < 0 || detection.id == ID_TAG_OF_INTEREST)) {
+                                if ((ID_TAG_OF_INTEREST < 0 || detection.id == ID_TAG_OF_INTEREST) && !finishBoard) {
                                     drive.breakFollowing();
                                     telemetry.addLine("Inside Tag Of Interest If");
                                     telemetry.update();
@@ -240,7 +265,7 @@ public class LongRedStackAprilTagTesting extends LinearOpMode {
                                 tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                         .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(25, 45, DriveConstants.TRACK_WIDTH))
 
-                                        .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3, tagY - 3.75))
+                                        .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -8, tagY - 11))
                                         .addDisplacementMarker( 1, () -> {
                                             bot.outtakeSlide.setPosition(500);
                                         })
@@ -285,17 +310,38 @@ public class LongRedStackAprilTagTesting extends LinearOpMode {
                     if (!drive.isBusy()) {
 
                         if (tagFound) {
-                            drive.followTrajectorySequenceAsync(tag);
-                            currentState = state.idle;
-                            tagFound =false;
+                            if(!finishBoard){
+                                drive.followTrajectorySequenceAsync(tag);
+                                if (!drive.isBusy()){
+                                    drive.setPoseEstimate(new Pose2d(tagOfInterest.metadata.fieldPosition.get(0)-9, tagOfInterest.metadata.fieldPosition.get(1), Math.toRadians(180)));
+                                    currentState = state.toStack;
+                                }
 
-                        } else if (timer.seconds() > 3.5) {
-                            currentState = state.idle;
+
+                               // finishBoard = true;
+                            }
+
+                        }
+                        else if (timer.seconds() > 5) {
+                            currentState = state.toStack;
                         }
 
                         //  currentState = state.firstTimeBoard;
                     }
 
+                    break;
+                case toStack:
+                    if(!stackBool){
+                        if(!drive.isBusy()){
+                            drive.followTrajectorySequenceAsync(underTrussToStack);
+                            stackBool = true;
+                    }
+
+
+                    }
+                    if(!drive.isBusy()){
+                        currentState = state.idle;
+                    }
                     break;
                 case idle:
                     telemetry.addLine("Inside Idle State");
