@@ -298,11 +298,12 @@ public class aprilTagStateTestingExtra extends LinearOpMode {
 //        visionPortal = VisionPortal.easyCreateWithDefaults(
 //                hardwareMap.get(WebcamName.class, "Webcam 1"), newVision);
 
-            NewVision.StartingPosition startingPos = NewVision.StartingPosition.NONE;
+            NewVision.StartingPosition startingPos = NewVision.StartingPosition.LEFT;
 
             telemetry.addLine("vision portal built");
             telemetry.addData("starting position: ", startingPos);
-            telemetry.addData("called NewVision- returned: ", newVision.getStartingPosition());
+            startingPos = newVision.getStartingPosition();
+            telemetry.addData("called NewVision- returned: ", startingPos);
 
         }
 

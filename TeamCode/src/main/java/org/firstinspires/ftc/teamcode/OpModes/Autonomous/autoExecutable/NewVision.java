@@ -25,7 +25,7 @@ public class NewVision implements VisionProcessor {
     private Rect rectRight = new Rect(366, 25, 100, 80);
 
 
-    StartingPosition selection = StartingPosition.NONE;
+    StartingPosition selection = StartingPosition.LEFT;
 
     Mat submat = new Mat();
     Mat hsvMat = new Mat();
@@ -57,10 +57,10 @@ public class NewVision implements VisionProcessor {
 
 
 
-        if ((satRectMiddle > satRectRight) && (satRectMiddle > 100)) {
+        if ((colRectMiddle > colRectRight) && (colRectMiddle - colRectRight > 35)) {
             selection = StartingPosition.CENTER;
 
-        } else if ((satRectRight > satRectMiddle) && (satRectRight > 100)) {
+        } else if ((colRectRight > colRectMiddle) && (colRectRight - colRectMiddle > 35)) {
             selection = StartingPosition.RIGHT;
 
         } else {
@@ -99,14 +99,14 @@ public class NewVision implements VisionProcessor {
     @Override
     public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
         Paint selectedPaint = new Paint();
-        selectedPaint.setColor(Color.RED);
+        selectedPaint.setColor(Color.GREEN);
         selectedPaint.setStyle(Paint.Style.STROKE);
         selectedPaint.setStrokeWidth(scaleCanvasDensity * 4);
 
         Paint nonSelected = new Paint();
         nonSelected.setStrokeWidth(scaleCanvasDensity * 4);
         nonSelected.setStyle(Paint.Style.STROKE);
-        nonSelected.setColor(Color.GREEN);
+        nonSelected.setColor(Color.RED);
 
         android.graphics.Rect drawRectangleMiddle = makeGraphicsRect(rectMiddle, scaleBmpPxToCanvasPx);
         android.graphics.Rect drawRectangleRight = makeGraphicsRect(rectRight, scaleBmpPxToCanvasPx);
@@ -137,7 +137,7 @@ public class NewVision implements VisionProcessor {
     }
 
     public enum StartingPosition {
-        NONE,
+
         LEFT,
         RIGHT,
         CENTER
