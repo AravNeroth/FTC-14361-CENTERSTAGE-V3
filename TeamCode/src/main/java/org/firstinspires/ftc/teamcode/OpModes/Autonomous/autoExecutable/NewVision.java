@@ -20,9 +20,9 @@ public class NewVision implements VisionProcessor {
     //g  private DrawRectangleProcessor drawRectangleProcessor;
     Telemetry telemetry;
     private Rect rectLeft = new Rect(40, 230, 80, 100);
-    private Rect rectMiddle = new Rect(240, 200, 180, 80);
+    private Rect rectMiddle = new Rect(349, 325, 90, 110);
 
-    private Rect rectRight = new Rect(520, 230, 80, 100);
+    private Rect rectRight = new Rect(366, 25, 100, 80);
 
 
     StartingPosition selection = StartingPosition.NONE;
@@ -42,27 +42,31 @@ public class NewVision implements VisionProcessor {
     @Override
     public Object processFrame(Mat frame, long captureTimeNanos) {
         Imgproc.cvtColor(frame, hsvMat, Imgproc.COLOR_RGB2HSV);
-        telemetry.addLine("converted to HSV");
 
-        double satRectLeft = getAvgSaturation(hsvMat, rectLeft);
         double satRectMiddle = getAvgSaturation(hsvMat, rectMiddle);
         double satRectRight = getAvgSaturation(hsvMat, rectRight);
-        telemetry.addLine("updated rectangle vars");
+
+        double colRectMiddle = getAvgColor(hsvMat, rectMiddle);
+        double colRectRight = getAvgColor(hsvMat, rectRight);
+
+        telemetry.addData("right sat: ", satRectRight);
+        telemetry.addData("mid sat: ", satRectMiddle);
+
+        telemetry.addData("right col: ", colRectRight);
+        telemetry.addData("middle col: ", colRectMiddle);
 
 
-        if ((satRectLeft > satRectMiddle) && (satRectLeft > satRectRight)) {
-            selection = StartingPosition.LEFT;
 
-        } else if ((satRectMiddle > satRectLeft) && (satRectMiddle > satRectRight)) {
+        if ((satRectMiddle > satRectRight) && (satRectMiddle > 100)) {
             selection = StartingPosition.CENTER;
 
-        } else if ((satRectRight > satRectMiddle) && (satRectRight > satRectLeft)) {
+        } else if ((satRectRight > satRectMiddle) && (satRectRight > 100)) {
             selection = StartingPosition.RIGHT;
-        } else {
 
-            selection = StartingPosition.NONE;
+        } else {
+            selection = StartingPosition.LEFT;
         }
-        telemetry.addLine("Selection decided");
+        telemetry.addData("Selection decided: ", selection );
         telemetry.update();
 
         return selection;
@@ -73,6 +77,12 @@ public class NewVision implements VisionProcessor {
         submat = input.submat(rect);
         Scalar color = Core.mean(submat);
         return color.val[1];
+    }
+
+    protected double getAvgColor(Mat input, Rect rect) {
+        submat = input.submat(rect);
+        Scalar color = Core.mean(submat);
+        return color.val[0];
     }
 
     private android.graphics.Rect makeGraphicsRect(Rect rect, float scaleBmpPxToCanvasPx) {
@@ -98,31 +108,22 @@ public class NewVision implements VisionProcessor {
         nonSelected.setStyle(Paint.Style.STROKE);
         nonSelected.setColor(Color.GREEN);
 
-        android.graphics.Rect drawRectangleLeft = makeGraphicsRect(rectLeft, scaleBmpPxToCanvasPx);
         android.graphics.Rect drawRectangleMiddle = makeGraphicsRect(rectMiddle, scaleBmpPxToCanvasPx);
         android.graphics.Rect drawRectangleRight = makeGraphicsRect(rectRight, scaleBmpPxToCanvasPx);
 
         selection = (StartingPosition) userContext;
 
         switch (selection) {
-            case LEFT:
-                canvas.drawRect(drawRectangleLeft, selectedPaint);
-                canvas.drawRect(drawRectangleMiddle, nonSelected);
-                canvas.drawRect(drawRectangleRight, nonSelected);
-                break;
 
             case RIGHT:
-                canvas.drawRect(drawRectangleLeft, nonSelected);
                 canvas.drawRect(drawRectangleMiddle, nonSelected);
                 canvas.drawRect(drawRectangleRight, selectedPaint);
                 break;
             case CENTER:
-                canvas.drawRect(drawRectangleLeft, nonSelected);
                 canvas.drawRect(drawRectangleMiddle, selectedPaint);
                 canvas.drawRect(drawRectangleRight, nonSelected);
                 break;
             case NONE:
-                canvas.drawRect(drawRectangleLeft, nonSelected);
                 canvas.drawRect(drawRectangleMiddle, nonSelected);
                 canvas.drawRect(drawRectangleRight, nonSelected);
                 break;
