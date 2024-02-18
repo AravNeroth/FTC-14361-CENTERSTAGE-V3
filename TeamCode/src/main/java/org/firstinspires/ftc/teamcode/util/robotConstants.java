@@ -81,7 +81,7 @@ public class robotConstants
     public static class Wrist
     {
         public static double outtaking = .365;
-        public static double intaking = .78;
+        public static double intaking = .7925;
         public static double init = .42;
     }
     public static class Lid
@@ -91,7 +91,7 @@ public class robotConstants
 //        public static double open =.2 ;
 
         public static double close = 0;
-        public static double open = 0.09;
+        public static double open = 0.2;
     }
 
     public static class Arm

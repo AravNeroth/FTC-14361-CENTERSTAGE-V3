@@ -57,10 +57,10 @@ public class NewVision implements VisionProcessor {
 
 
 
-        if ((satRectMiddle > satRectRight)) {
+        if ((satRectMiddle > satRectRight) && satRectMiddle > 100) {
             selection = StartingPosition.CENTER;
 
-        } else if ((satRectRight > satRectMiddle)) {
+        } else if ((satRectRight > satRectMiddle) && satRectRight > 100) {
             selection = StartingPosition.RIGHT;
 
         } else {

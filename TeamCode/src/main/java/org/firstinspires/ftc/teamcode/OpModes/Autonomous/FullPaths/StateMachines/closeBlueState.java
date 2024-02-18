@@ -5,12 +5,17 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Detection.HSVBlueDetection;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Detection.NewVision;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Commands.*;
@@ -20,10 +25,43 @@ import org.firstinspires.ftc.teamcode.Commands.currentState;
 
 @Autonomous(name = "closeBlueState", group = "Auto")
 public class closeBlueState extends LinearOpMode {
-    OpenCvCamera camera;
-    HSVBlueDetection blueDetection;
+    private AprilTagProcessor aprilTag;
+
+    /**
+     * The variable to store our instance of the vision portal.
+     */
+    private VisionPortal visionPortal;
+    NewVision newVision;
+
+
     String webcamName;
     Robot bot;
+
+    ElapsedTime timer = new ElapsedTime();
+    ElapsedTime temporalMarkerTimer = new ElapsedTime();
+    Pose2d start = new Pose2d(11.5, -62.75, Math.toRadians(270));
+    SampleMecanumDrive drive;
+    String selection;
+    OpenCvCamera camera;
+    boolean cameraOn = false, aprilTagOn = false, toAprilTag1 = false, initCam = false, randomTag = false, finishBoard = false;
+    double boardX, boardY, stack1Y, stackDetectX, stackDetectY;
+    boolean onePixel = false, twoPixels = false;
+    double tagY = 0;
+    //   aprilTagDetection aprilTagDetectionPipeline;
+    double detectYPos = 0, detectYNeg = 0;
+    double tagsize = 0.166;
+    // AprilTagDetectionPipeline aprilTagDetectionPipeline;
+    AprilTagDetection tagOfInterest = null;
+    int LEFT = 4, MIDDLE = 5, RIGHT = 6, REDSTACK = 7;
+    int ID_TAG_OF_INTEREST = 4;
+    boolean tagFound = false;
+
+    double leftTapeX = 0, leftTapeY = 0, centerTapeX = 11.5, centerTapeY = -34.5, rightTapeX = 0, rightTapeY = 0;
+    double leftBoardX, leftBoardY, centerBoardX, centerBoardY, rightBoardX, rightBoardY;
+    double secondTimeBoardX = 0, secondTimeBoardY = 0, thirdTimeBoardX, thirdTimeBoardY;
+
+    HSVBlueDetection blueDetection;
+
     currentState currentStates;
     boardState boardStates;
     Pose2d boardPose, parkPose;
@@ -32,7 +70,7 @@ public class closeBlueState extends LinearOpMode {
         bot = new Robot(hardwareMap, telemetry);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(15, 61, Math.toRadians(90));
-        initCam();
+
 
         drive.setPoseEstimate(startPose);
         bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
@@ -115,27 +153,27 @@ public class closeBlueState extends LinearOpMode {
         // ------------------------ Runner ------------------------- //
 
         waitForStart();
-        camera.stopStreaming();
+     //   camera.stopStreaming();
         if (isStopRequested()) return;
-
+        switch (newVision.getStartingPosition())
+        {
+            case LEFT:
+                drive.followTrajectorySequence(leftTape);
+                boardStates = boardState.left;
+                break;
+            case RIGHT:
+                drive.followTrajectorySequence(rightTape);
+                boardStates = boardState.right;
+                break;
+            case CENTER:
+                drive.followTrajectorySequence(centerTape);
+                boardStates = boardState.center;
+                break;
+        }
         switch (currentStates)
         {
             case tape:
-                switch (blueDetection.getLocation())
-                {
-                    case LEFT:
-                        drive.followTrajectorySequence(leftTape);
-                        boardStates = boardState.left;
-                        break;
-                    case RIGHT:
-                        drive.followTrajectorySequence(rightTape);
-                        boardStates = boardState.right;
-                        break;
-                    case MIDDLE:
-                        drive.followTrajectorySequence(centerTape);
-                        boardStates = boardState.center;
-                        break;
-                }
+
                 currentStates = currentState.board;
                 break;
 
@@ -177,43 +215,34 @@ public class closeBlueState extends LinearOpMode {
 
     // ------------------------ Camera Initialization ------------------------- //
 
-    private void initCam() {
+    private void newColorDetect(){
+        if(initCam){
+            visionPortal.stopStreaming();
+        }
+        else
+        {
+            newVision = new NewVision(telemetry);
+            visionPortal = new VisionPortal.Builder()
+                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .addProcessor(newVision)
+                    // .setCamera(BuiltinCameraDirection.BACK)
 
-        //This line retrieves the resource identifier for the camera monitor view. The camera monitor view is typically used to display the camera feed
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+                    //  .enableLiveView(false)
+                    // .addProcessor(newVision)
+                    .build();
 
-        webcamName = "Webcam 1";
+//        visionPortal = VisionPortal.easyCreateWithDefaults(
+//                hardwareMap.get(WebcamName.class, "Webcam 1"), newVision);
 
-        // This line creates a webcam instance using the OpenCvCameraFactor with the webcam name (webcamName) and the camera monitor view ID.
-        // The camera instance is stored in the camera variable that we can use later
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
+            //  NewVision.StartingPosition startingPos = NewVision.StartingPosition.LEFT;
+            visionPortal.resumeStreaming();
+//            telemetry.addLine("vision portal built");
+//            telemetry.addData("starting position: ", startingPos);
+//            startingPos = newVision.getStartingPosition();
+            //     telemetry.addData("called NewVision- returned: ", startingPos);
+            initCam = true;
+        }
 
-        // initializing our Detection class (details on how it works at the top)
-        blueDetection = new HSVBlueDetection(telemetry);
 
-        // yeah what this does is it gets the thing which uses the thing so we can get the thing
-        /*
-        (fr tho idk what pipeline does, but from what I gathered,
-         we basically passthrough our detection into the camera
-         and we feed the streaming camera frames into our Detection algorithm)
-         */
-        camera.setPipeline(blueDetection);
-
-        /*
-        this starts the camera streaming, with 2 possible combinations
-        it starts streaming at a chosen res, or if something goes wrong it throws an error
-         */
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                camera.showFpsMeterOnViewport(true);
-                camera.startStreaming(320, 240, OpenCvCameraRotation.UPSIDE_DOWN);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-                telemetry.addLine("Unspecified Error Occurred; Camera Opening");
-            }
-        });
     }
 }

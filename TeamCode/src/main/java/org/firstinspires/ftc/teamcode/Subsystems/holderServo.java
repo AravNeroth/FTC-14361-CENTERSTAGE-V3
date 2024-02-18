@@ -14,7 +14,7 @@ public class holderServo
     double minAngle = 0, maxAngle= 360;
     public holderServo(HardwareMap hardwareMap)
     {
-        holderServo = new SimpleServo(hardwareMap, "lidServo", minAngle, maxAngle, AngleUnit.DEGREES);
+        holderServo = new SimpleServo(hardwareMap, "bucketServo", minAngle, maxAngle, AngleUnit.DEGREES);
     }
 
     public void setHolderServoPosition(holderServoState holderServoState)

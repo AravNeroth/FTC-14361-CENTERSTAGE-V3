@@ -1,5 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autonomous.FullPaths.AprilTags;
-
+package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Testing;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -29,8 +28,8 @@ import org.openftc.easyopencv.OpenCvCamera;
 
 import java.util.List;
 
-@Autonomous(name = "LongRedAprilTag ", group = "goobTest")
-public class longRedAprilTag extends LinearOpMode {
+@Autonomous(name = "Long Red Stack April Tag ", group = "goobTest")
+public class LongRedStackAprilTag extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -101,46 +100,6 @@ public class longRedAprilTag extends LinearOpMode {
 
                 .resetVelConstraint()
                 .build();
-        TrajectorySequence leftTape = drive.trajectorySequenceBuilder(start)
-                //.lineToConstantHeading(new Vector2d(19,-55))
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, 45, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(-36.5, -37))
-                .addTemporalMarker(.05,() -> {
-                    bot.setLidPosition(lidState.close);
-                })
-                .addTemporalMarker(.15,() -> {
-                    bot.setArmPosition(armState.init, armExtensionState.extending);
-                    bot.setWristPosition(wristState.intaking);
-                })
-                .lineToLinearHeading(new Pose2d(-40 ,-60, Math.toRadians(180)))
-                .lineToConstantHeading(new Vector2d(-40, -40))
-
-
-                .lineToLinearHeading(new Pose2d(-40 ,-60, Math.toRadians(180)))
-                .waitSeconds(.25)
-
-                .resetVelConstraint()
-                .build();
-        TrajectorySequence rightTape = drive.trajectorySequenceBuilder(start)
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, 45, DriveConstants.TRACK_WIDTH))
-                //.lineToConstantHeading(new Vector2d(19,-55))
-                .lineToLinearHeading(new Pose2d(-38.25,-42, Math.toRadians(180)))
-                .lineToConstantHeading(new Vector2d(-34, -42))
-                .addTemporalMarker(.05,() -> {
-                    bot.setLidPosition(lidState.close);
-                })
-                .addTemporalMarker(.15,() -> {
-                    bot.setArmPosition(armState.init, armExtensionState.extending);
-                    bot.setWristPosition(wristState.intaking);
-                })
-                .lineToConstantHeading(new Vector2d(-38.25, -42))
-               // .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, 45, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(-38.25, -60))
-               // .lineToLinearHeading(new Pose2d(-38.25 ,-60, Math.toRadians(180)))
-                .waitSeconds(.25)
-
-                .resetVelConstraint()
-                .build();
         TrajectorySequence underTruss = drive.trajectorySequenceBuilder(centerTape.end())
                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(44, 45, DriveConstants.TRACK_WIDTH))
                 .lineToConstantHeading(new Vector2d(30, -59.25))
@@ -197,7 +156,7 @@ public class longRedAprilTag extends LinearOpMode {
                     bot.setLinkagePosition(linkageState.LOW);
                     bot.setActiveIntakePosition(activeIntakeState.active);
                 })
-                //  .waitSeconds(.25)
+              //  .waitSeconds(.25)
                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(50, 45, DriveConstants.TRACK_WIDTH))
                 .lineToLinearHeading(new Pose2d(-55,-28.5, Math.toRadians(180)))
                 .addTemporalMarker(() -> {
@@ -243,29 +202,38 @@ public class longRedAprilTag extends LinearOpMode {
 
                 //   .strafeRight(3)
                 .build();
-        TrajectorySequence goToLeftAprilTag = drive.trajectorySequenceBuilder(underTruss.end())
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, 45, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(32.5, -25))
-
-                .resetVelConstraint()
-
-                //   .strafeRight(3)
-                .build();
-        TrajectorySequence goToRightAprilTag = drive.trajectorySequenceBuilder(underTruss.end())
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, 45, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(32.5, -25))
-
-                .resetVelConstraint()
-
-                //   .strafeRight(3)
-                .build();
 
         telemetry.addLine("New Vision Initialized.");
         newColorDetect();
 
         telemetry.addLine("portal state " + visionPortal.getCameraState());
 
+        switch (newVision.getStartingPosition()){
+            case LEFT:
+                temporalMarkerTimer.reset();
+                ID_TAG_OF_INTEREST = LEFT;
+                drive.followTrajectorySequenceAsync(centerTape);
+                telemetry.addLine("left.");
+                telemetry.update();
 
+                break;
+            case RIGHT:
+                temporalMarkerTimer.reset();
+                ID_TAG_OF_INTEREST = RIGHT;
+                drive.followTrajectorySequenceAsync(centerTape);
+                telemetry.addLine("right.");
+                telemetry.update();
+
+                break;
+            case CENTER:
+                temporalMarkerTimer.reset();
+                ID_TAG_OF_INTEREST = MIDDLE;
+                drive.followTrajectorySequenceAsync(centerTape);
+                telemetry.addLine("center.");
+                telemetry.update();
+
+                break;
+        }
 
         telemetry.update();
 
@@ -274,41 +242,15 @@ public class longRedAprilTag extends LinearOpMode {
 
 
         if (isStopRequested()) return;
-        switch (newVision.getStartingPosition()){
-            case CENTER:
-                ID_TAG_OF_INTEREST = MIDDLE;
-                temporalMarkerTimer.reset();
-                drive.followTrajectorySequenceAsync(centerTape);
-                telemetry.addLine("CENTER.");
-                telemetry.update();
-
-                break;
-            case RIGHT:
-                ID_TAG_OF_INTEREST = RIGHT;
-                temporalMarkerTimer.reset();
-
-                drive.followTrajectorySequenceAsync(rightTape);
-                telemetry.addLine("right.");
-                telemetry.update();
-
-                break;
-            case LEFT:
-                ID_TAG_OF_INTEREST = LEFT;
-                temporalMarkerTimer.reset();
-
-                drive.followTrajectorySequenceAsync(leftTape);
-                telemetry.addLine("left.");
-                telemetry.update();
-
-                break;
-        }
         currentState = state.tape;
         while (opModeIsActive() && !isStopRequested()) {
 
             switch (currentState) {
                 case tape:
                     if(!cameraOn){
-
+                        if(bot.voltMecanum.getBatteryVoltage() < 13.8){
+                            batteryOffset = 1;
+                        }
                         // newColorDetect();
                         telemetry.addLine("Into disalbe");
                         telemetry.update();
@@ -327,7 +269,7 @@ public class longRedAprilTag extends LinearOpMode {
 
 
                     if (!drive.isBusy()) {
-                        // drive.followTrajectorySequenceAsync(goToCenterAprilTag);
+                       // drive.followTrajectorySequenceAsync(goToCenterAprilTag);
                         currentState = state.underTruss;
                         temporalMarkerTimer.reset();
                         timer.reset();
@@ -408,7 +350,7 @@ public class longRedAprilTag extends LinearOpMode {
                                             bot.outtakeSlide.setPosition(775);
                                         })
                                         .waitSeconds(.15)
-                                        //   .lineToConstantHeading(new Vector2d(50, tagY - 8))
+                                     //   .lineToConstantHeading(new Vector2d(50, tagY - 8))
 
                                         .build();
 
@@ -446,29 +388,29 @@ public class longRedAprilTag extends LinearOpMode {
 //                    }
 
 
-                    if (tagFound) {
-                        telemetry.addData("Field Pose ", tagOfInterest.metadata.fieldPosition);
-                        telemetry.update();
-                        if(!finishBoard){
-                            drive.followTrajectorySequenceAsync(tag);
-                            finishBoard = true;
+                        if (tagFound) {
+                            telemetry.addData("Field Pose ", tagOfInterest.metadata.fieldPosition);
+                            telemetry.update();
+                            if(!finishBoard){
+                                drive.followTrajectorySequenceAsync(tag);
+                                finishBoard = true;
+                            }
+                            if(!drive.isBusy()){
+                                drive.setPoseEstimate(new Pose2d(tagOfInterest.metadata.fieldPosition.get(0)-8,tagOfInterest.metadata.fieldPosition.get(1), Math.toRadians(180)));
+                                telemetry.addLine("Reset Pose");
+                                telemetry.addData("NewPose", drive.getPoseEstimate());
+                                currentState = state.toStack;
+                            }
+
                         }
-                        if(!drive.isBusy()){
-                            drive.setPoseEstimate(new Pose2d(tagOfInterest.metadata.fieldPosition.get(0)-8,tagOfInterest.metadata.fieldPosition.get(1), Math.toRadians(180)));
-                            telemetry.addLine("Reset Pose");
-                            telemetry.addData("NewPose", drive.getPoseEstimate());
+                        else if (timer.seconds() > 9) {
                             currentState = state.toStack;
                         }
 
-                    }
-                    else if (timer.seconds() > 9) {
-                        currentState = state.toStack;
-                    }
 
 
 
-
-                    //  currentState = state.firstTimeBoard;
+                        //  currentState = state.firstTimeBoard;
 
 
                     break;
@@ -482,7 +424,7 @@ public class longRedAprilTag extends LinearOpMode {
                             drive.followTrajectorySequenceAsync(underTrussToStack);
                             currentState = state.leaveStack;
                             stackBool = true;
-                        }
+                    }
 
 
                     }

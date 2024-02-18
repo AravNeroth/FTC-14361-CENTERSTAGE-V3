@@ -87,9 +87,8 @@ public class closeRedState extends LinearOpMode {
                     bot.setLidPosition(lidState.open);
                 })
                 .lineToConstantHeading(new Vector2d(54.8, -32))
-                .addDisplacementMarker( () -> {
-                    bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending);
-                })
+
+
                 .lineToConstantHeading(new Vector2d(43, -32))
                 .build();
 

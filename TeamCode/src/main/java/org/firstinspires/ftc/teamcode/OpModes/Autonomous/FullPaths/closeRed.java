@@ -5,13 +5,18 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Detection.HSVRedDetection;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Detection.NewVision;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.DriveConstants;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Commands.*;
@@ -20,19 +25,55 @@ import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.Sample
 
 @Autonomous(name = "closeRedObjectDetect", group = "Auto")
 public class closeRed extends LinearOpMode {
-    OpenCvCamera camera;
-    HSVRedDetection redDetection;
+    private AprilTagProcessor aprilTag;
+
+    /**
+     * The variable to store our instance of the vision portal.
+     */
+    private VisionPortal visionPortal;
+    NewVision newVision;
+
+
     String webcamName;
     Robot bot;
+
+    ElapsedTime timer = new ElapsedTime();
+    ElapsedTime temporalMarkerTimer = new ElapsedTime();
+    Pose2d start = new Pose2d(-36.5, -62.75, Math.toRadians(270));
+    SampleMecanumDrive drive;
+    OpenCvCamera camera;
+    boolean cameraOn = false, aprilTagOn = false, toAprilTag1 = false, initCam = false, randomTag = false, underTrussBool = false, stackBool = false, finishBoard = false;
+    double boardX, boardY, stack1Y, stackDetectX, stackDetectY;
+    double centerTagX = 60.275, centerTagY = -29.4;
+    boolean onePixel = false, twoPixels = false;
+    double tagY = 0;
+    //   aprilTagDetection aprilTagDetectionPipeline;
+    double tagsize = 0.166;
+    // AprilTagDetectionPipeline aprilTagDetectionPipeline;
+    AprilTagDetection tagOfInterest = null;
+    int LEFT = 4, MIDDLE = 5, RIGHT = 6, REDSTACK = 7;
+    int ID_TAG_OF_INTEREST = 4;
+    double batteryOffset = 0;
+    boolean tagFound = false;
+
+    double leftTapeX = 0, leftTapeY = 0, centerTapeX = 11.5, centerTapeY = -34.5, rightTapeX = 0, rightTapeY = 0;
+    double leftBoardX, leftBoardY, rightBoardX, rightBoardY;
+    double secondTimeBoardX = 0, secondTimeBoardY = 0, thirdTimeBoardX, thirdTimeBoardY;
+
+
+
+    enum state {
+        tape, underTruss,firstTimeBoard, secondTimeBoard, thirdTimeBoard, toStack, idle,leaveStack
+    }
     public void runOpMode() {
         bot = new Robot(hardwareMap, telemetry);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(12, -62.5, Math.toRadians(270));
-        initCam();
+
         drive.setPoseEstimate(startPose);
         //left ------------------------------------------------------------------
         TrajectorySequence left = drive.trajectorySequenceBuilder(startPose)
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(50, 45, DriveConstants.TRACK_WIDTH))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, 45, DriveConstants.TRACK_WIDTH))
 
                 .addDisplacementMarker( () -> {
                     bot.setWristPosition(wristState.init);
@@ -89,7 +130,7 @@ public class closeRed extends LinearOpMode {
 
         //center ------------------------------------------------------------------
         TrajectorySequence center = drive.trajectorySequenceBuilder(startPose)
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(50, 45, DriveConstants.TRACK_WIDTH))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, 45, DriveConstants.TRACK_WIDTH))
 
                 .lineToConstantHeading(new Vector2d(14,-55))
                 .addDisplacementMarker(() -> {
@@ -139,7 +180,7 @@ public class closeRed extends LinearOpMode {
 
         //right ------------------------------------------------------------------
         TrajectorySequence right = drive.trajectorySequenceBuilder(startPose)
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(50, 45, DriveConstants.TRACK_WIDTH))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, 45, DriveConstants.TRACK_WIDTH))
                 .lineToConstantHeading(new Vector2d(22.5,-39))
                 .addDisplacementMarker(() -> {
                     bot.setWristPosition(wristState.init);
@@ -194,7 +235,7 @@ public class closeRed extends LinearOpMode {
         camera.stopStreaming();
         if (isStopRequested()) return;
 
-        switch (redDetection.getLocation())
+        switch (newVision.getStartingPosition())
         {
             case LEFT:
                 drive.setPoseEstimate(startPose);
@@ -222,7 +263,7 @@ public class closeRed extends LinearOpMode {
                 drive.followTrajectorySequence(right);
 
                 break;
-            case MIDDLE:
+            case CENTER:
                 drive.setPoseEstimate(startPose);
                 bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
                 bot.setOuttakeSlideState(outtakeSlidesState.STATION);
@@ -237,43 +278,30 @@ public class closeRed extends LinearOpMode {
                 break;
         }
     }
-    private void initCam() {
+    private void newColorDetect(){
 
-        //This line retrieves the resource identifier for the camera monitor view. The camera monitor view is typically used to display the camera feed
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
-        webcamName = "Webcam 1";
+            newVision = new NewVision(telemetry);
+            visionPortal = new VisionPortal.Builder()
+                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .addProcessor(newVision)
+                    // .setCamera(BuiltinCameraDirection.BACK)
 
-        // This line creates a webcam instance using the OpenCvCameraFactor with the webcam name (webcamName) and the camera monitor view ID.
-        // The camera instance is stored in the camera variable that we can use later
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
+                    //  .enableLiveView(false)
+                    // .addProcessor(newVision)
+                    .build();
 
-        // initializing our Detection class (details on how it works at the top)
-        redDetection = new HSVRedDetection(telemetry);
+//        visionPortal = VisionPortal.easyCreateWithDefaults(
+//                hardwareMap.get(WebcamName.class, "Webcam 1"), newVision);
 
-        // yeah what this does is it gets the thing which uses the thing so we can get the thing
-        /*
-        (fr tho idk what pipeline does, but from what I gathered,
-         we basically passthrough our detection into the camera
-         and we feed the streaming camera frames into our Detection algorithm)
-         */
-        camera.setPipeline(redDetection);
+            //  NewVision.StartingPosition startingPos = NewVision.StartingPosition.LEFT;
+            visionPortal.resumeStreaming();
+//            telemetry.addLine("vision portal built");
+//            telemetry.addData("starting position: ", startingPos);
+//            startingPos = newVision.getStartingPosition();
+            //     telemetry.addData("called NewVision- returned: ", startingPos);
+            initCam = true;
+        }
 
-        /*
-        this starts the camera streaming, with 2 possible combinations
-        it starts streaming at a chosen res, or if something goes wrong it throws an error
-         */
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                camera.showFpsMeterOnViewport(true);
-                camera.startStreaming(320, 240, OpenCvCameraRotation.UPSIDE_DOWN);
-            }
 
-            @Override
-            public void onError(int errorCode) {
-                telemetry.addLine("Unspecified Error Occurred; Camera Opening");
-            }
-        });
     }
-}
