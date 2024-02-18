@@ -232,7 +232,7 @@ public class closeRed extends LinearOpMode {
         //camera initialization -----------------------------------------------------
         // initCam();
         waitForStart();
-        camera.stopStreaming();
+       // camera.stopStreaming();
         if (isStopRequested()) return;
 
         switch (newVision.getStartingPosition())

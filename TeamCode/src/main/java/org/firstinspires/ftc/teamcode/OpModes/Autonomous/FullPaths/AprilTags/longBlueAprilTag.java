@@ -311,7 +311,7 @@ public class longBlueAprilTag extends LinearOpMode {
 
         TrajectorySequence goToCenterAprilTag = drive.trajectorySequenceBuilder(underTruss.end())
                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, 45, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(32.5, 43))
+                .lineToConstantHeading(new Vector2d(32.5, 41))
 
                 .resetVelConstraint()
 
@@ -319,7 +319,7 @@ public class longBlueAprilTag extends LinearOpMode {
                 .build();
         TrajectorySequence goToLeftAprilTag = drive.trajectorySequenceBuilder(underTruss.end())
                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, 45, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(32.5, 48))
+                .lineToConstantHeading(new Vector2d(32.5, 46))
 
                 .resetVelConstraint()
 
@@ -327,7 +327,7 @@ public class longBlueAprilTag extends LinearOpMode {
                 .build();
         TrajectorySequence goToRightAprilTag = drive.trajectorySequenceBuilder(underTruss.end())
                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, 45, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(32.5, 38))
+                .lineToConstantHeading(new Vector2d(32.5, 36))
 
                 .resetVelConstraint()
 
@@ -421,7 +421,7 @@ public class longBlueAprilTag extends LinearOpMode {
                             if (ID_TAG_OF_INTEREST == MIDDLE) {
                                 drive.followTrajectorySequenceAsync(goToCenterAprilTag);
                                 currentState = state.firstTimeBoard;
-                                offset = 5;
+                                offset = 6;
                             } else if (ID_TAG_OF_INTEREST == LEFT) {
                                 drive.followTrajectorySequenceAsync(goToLeftAprilTag);
                                 currentState = state.firstTimeBoard;

@@ -64,7 +64,8 @@ public class robotConstants
     public static class activeIntake
     {
 
-        public static double active = -1;
+        public static double
+                active = -1;
         public static double reverseActive = 1;
 
 
@@ -81,7 +82,7 @@ public class robotConstants
     public static class Wrist
     {
         public static double outtaking = .365;
-        public static double intaking = .7925;
+        public static double intaking = .79275;
         public static double init = .42;
     }
     public static class Lid
@@ -138,8 +139,8 @@ public class robotConstants
     }
 
     public static class holderServo{
-            public static double open = .5;
-            public static double close = 0;
+            public static double open = 0;
+            public static double close = .50;
     }
 
 }

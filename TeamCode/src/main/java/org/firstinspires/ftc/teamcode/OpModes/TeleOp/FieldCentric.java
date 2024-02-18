@@ -41,6 +41,8 @@ public class FieldCentric extends OpMode {
 
         bot.setArmPosition(armState.intaking, armExtensionState.extending);
 
+        bot.setHolderServoPosition(holderServoState.open);
+
         bot.setWristPosition(wristState.intaking);
 
         bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
