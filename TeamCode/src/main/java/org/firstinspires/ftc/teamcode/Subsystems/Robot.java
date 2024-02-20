@@ -28,8 +28,10 @@ public class Robot {
     public armExtensionState armExtensionState;
     public extensionState extensionState;
     public mecanumState mecanumState;
+    public distanceSensor distanceSensor;
     public Lid lid;
     public lidState lidstate;
+    public colorSensor colorSensor;
     public ActiveIntake activeIntake;
     public activeIntakeState activeIntakeState;
     public slowDownState slowDownState;
@@ -53,7 +55,9 @@ public class Robot {
         lid = new Lid(hardwareMap);
         drone = new Drone(hardwareMap);
         holderServo = new holderServo(hardwareMap);
+      //  colorSensor = new colorSensor(hardwareMap);
         voltMecanum = new VoltMecanum(hardwareMap);
+        distanceSensor = new distanceSensor(hardwareMap);
     }
 
     // ---------------------------- OuttakeSlide ---------------------------- //

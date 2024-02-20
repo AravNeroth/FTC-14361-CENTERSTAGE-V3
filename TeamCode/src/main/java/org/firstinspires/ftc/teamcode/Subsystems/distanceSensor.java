@@ -9,7 +9,8 @@ import org.firstinspires.ftc.teamcode.Commands.stackState;
 
 public class distanceSensor
 {
-    DistanceSensor frontDistanceSensor;
+    DistanceSensor frontDistanceSensor, leftDistanceSensor, rightDistanceSensor;
+
     double tooFarTresh, FarTresh, CloseTresh;
     double distMulti;
     double offset;
@@ -18,17 +19,37 @@ public class distanceSensor
 
     public distanceSensor(HardwareMap hardwareMap)
     {
-        frontDistanceSensor = hardwareMap.get(DistanceSensor.class, "frontDistanceSensor");
+       // frontDistanceSensor = hardwareMap.get(DistanceSensor.class, "frontDistanceSensor");
+        leftDistanceSensor = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
+        rightDistanceSensor = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
     }
 
-    public frontDistanceState frontAdjust()
-    {
-        frontDistanceStates = frontDistanceState.noDetect;
-
-        if(frontDistanceSensor.getDistance(DistanceUnit.INCH) > 4)
-        {
-            frontDistanceStates = frontDistanceState.Far;
-        }
-        return frontDistanceStates;
+//    public frontDistanceState frontAdjust()
+//    {
+//        frontDistanceStates = frontDistanceState.noDetect;
+//
+//        if(frontDistanceSensor.getDistance(DistanceUnit.INCH) > 4)
+//        {
+//            frontDistanceStates = frontDistanceState.Far;
+//        }
+//        return frontDistanceStates;
+//    }
+    public double getLeftDistance(){
+        return leftDistanceSensor.getDistance(DistanceUnit.INCH);
+    }
+    public double getLeftDistanceEdgeDistance(){
+        return leftDistanceSensor.getDistance(DistanceUnit.INCH) - 4;
+    }
+      public double getBotsLeftCenterDistance(){
+    return leftDistanceSensor.getDistance(DistanceUnit.INCH) + 3.75;
+}
+    public double getRightDistance(){
+        return rightDistanceSensor.getDistance(DistanceUnit.INCH);
+    }
+    public double getRightEdgeDistance(){
+        return rightDistanceSensor.getDistance(DistanceUnit.INCH) - 3;
+    }
+    public double getBotsRightCenterDistance(){
+        return rightDistanceSensor.getDistance(DistanceUnit.INCH) + 4.75;
     }
 }

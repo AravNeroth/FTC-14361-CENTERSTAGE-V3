@@ -90,7 +90,7 @@ public class closeRedAprilTag extends LinearOpMode {
 
         TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
                 //.lineToConstantHeading(new Vector2d(19,-55))
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                 .lineToConstantHeading(new Vector2d(11.5, -35.5))
                 .addTemporalMarker(.05,() -> {
                     bot.setLidPosition(lidState.close);
@@ -108,7 +108,7 @@ public class closeRedAprilTag extends LinearOpMode {
                 })
                 .build();
         TrajectorySequence leftTape = drive.trajectorySequenceBuilder(start)
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(25, 90, DriveConstants.TRACK_WIDTH))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, 90, DriveConstants.TRACK_WIDTH))
                 .lineToConstantHeading(new Vector2d(15, -40))
                 .addTemporalMarker(.05,() -> {
                     bot.setLidPosition(lidState.close);
@@ -127,7 +127,7 @@ public class closeRedAprilTag extends LinearOpMode {
                 })
                 .build();
         TrajectorySequence rightTape = drive.trajectorySequenceBuilder(start)
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                 .lineToConstantHeading(new Vector2d(22,-45))
                 .addDisplacementMarker(() -> {
                     bot.setLidPosition(lidState.close);
@@ -303,7 +303,7 @@ public class closeRedAprilTag extends LinearOpMode {
 
                                 //   tagY = drive.getPoseEstimate().getX() - tagOfInterest.ftcPose.y-3;
                                 tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                        .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                                        .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
 
                                         .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -2.2, tagY - offset))
                                         .addDisplacementMarker( 1, () -> {
@@ -379,7 +379,7 @@ public class closeRedAprilTag extends LinearOpMode {
                 case park:
                     if(!drive.isBusy()){
                         TrajectorySequence parkInCorner = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                                 .forward(5)
                                 .addDisplacementMarker(5,  () -> {
                                     bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
@@ -395,7 +395,7 @@ public class closeRedAprilTag extends LinearOpMode {
                                 .lineToConstantHeading(new Vector2d(52, -57))
                                 .build();
                         TrajectorySequence parkNextToBackboard = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, 200, DriveConstants.TRACK_WIDTH))
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(40, 200, DriveConstants.TRACK_WIDTH))
                                 .forward(5)
                                 .addDisplacementMarker(5,  () -> {
                                     bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);

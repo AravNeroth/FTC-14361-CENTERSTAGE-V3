@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autonomous.FullPaths.AprilTags;
+package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Testing;
 
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -29,8 +29,8 @@ import org.openftc.easyopencv.OpenCvCamera;
 
 import java.util.List;
 
-@Autonomous(name = "LongRedAprilTag ", group = "goobTest")
-public class longRedAprilTag extends LinearOpMode {
+@Autonomous(name = "Long Red Distance Sensor ", group = "goobTest")
+public class LongRedDistanceSensor extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -55,7 +55,7 @@ public class longRedAprilTag extends LinearOpMode {
     Pose2d start = new Pose2d(-36.5, -62.75, Math.toRadians(270));
     SampleMecanumDrive drive;
     OpenCvCamera camera;
-    boolean cameraOn = false, aprilTagOn = false, toAprilTag1 = false, initCam = false, randomTag = false, underTrussBool = false, stackBool = false, finishBoard = false;
+    boolean cameraOn = false, aprilTagOn = false, toAprilTag1 = false, initCam = false, randomTag = false, underTrussBool = false, stackBool = false, finishBoard = false, lineUp = false;
     double boardX, boardY, stack1Y, stackDetectX, stackDetectY;
     double centerTagX = 60.275, centerTagY = -29.4;
     boolean onePixel = false, twoPixels = false;
@@ -74,7 +74,7 @@ public class longRedAprilTag extends LinearOpMode {
     double leftBoardX, leftBoardY, rightBoardX, rightBoardY;
     double secondTimeBoardX = 0, secondTimeBoardY = 0, thirdTimeBoardX, thirdTimeBoardY;
 
-    state currentState = state.tape;
+   state currentState = state.tape;
 
     enum state {
         tape, underTruss,firstTimeBoard, secondTimeBoard, thirdTimeBoard, toStack, idle,leaveStack, park
@@ -136,13 +136,14 @@ public class longRedAprilTag extends LinearOpMode {
                     bot.setWristPosition(wristState.intaking);
                 })
                 .lineToConstantHeading(new Vector2d(-39.25, -42))
-               // .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, 45, DriveConstants.TRACK_WIDTH))
+                // .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, 45, DriveConstants.TRACK_WIDTH))
                 .lineToConstantHeading(new Vector2d(-39.25, -57))
-               // .lineToLinearHeading(new Pose2d(-38.25 ,-60, Math.toRadians(180)))
+                // .lineToLinearHeading(new Pose2d(-38.25 ,-60, Math.toRadians(180)))
                 .waitSeconds(.25)
 
                 .resetVelConstraint()
                 .build();
+
         TrajectorySequence underTruss = drive.trajectorySequenceBuilder(centerTape.end())
                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(40, 45, DriveConstants.TRACK_WIDTH))
                 .lineToConstantHeading(new Vector2d(30, -55.5))
@@ -330,7 +331,7 @@ public class longRedAprilTag extends LinearOpMode {
 
                     if (!drive.isBusy()) {
                         // drive.followTrajectorySequenceAsync(goToCenterAprilTag);
-                        currentState = state.underTruss;
+                        currentState =state.underTruss;
                         temporalMarkerTimer.reset();
                         timer.reset();
                     }
@@ -339,10 +340,24 @@ public class longRedAprilTag extends LinearOpMode {
 //                    }
                     break;
                 case underTruss:
-                    if(!underTrussBool){
-                        drive.followTrajectorySequenceAsync(underTruss);
-                        underTrussBool = true;
+                    if(!drive.isBusy() && !lineUp){
+                        TrajectorySequence lineUpWithTrussWall = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, 45, DriveConstants.TRACK_WIDTH))
+                                .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY() - bot.distanceSensor.getLeftDistanceEdgeDistance() + 3.75))
+
+
+                                .resetVelConstraint()
+                                .build();
+                       drive.followTrajectorySequence(lineUpWithTrussWall);
+                       drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), -72+ bot.distanceSensor.getBotsLeftCenterDistance()));
                     }
+                    if(!drive.isBusy()){
+                        if(!underTrussBool){
+                            drive.followTrajectorySequenceAsync(underTruss);
+                            underTrussBool = true;
+                        }
+                    }
+
 
                     if(!drive.isBusy()) {
                         if (!drive.isBusy()) {

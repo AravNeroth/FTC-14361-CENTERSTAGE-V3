@@ -40,7 +40,7 @@ public class simpleDistanceDetect extends LinearOpMode {
         switch (currentStates){
             case stack1:
                 boolean aligned = false;
-                frontDistanceStates = frontDistanceSensor.frontAdjust();
+                //frontDistanceStates = frontDistanceSensor.frontAdjust();
 
                 switch (frontDistanceStates) {
                     case Far:
