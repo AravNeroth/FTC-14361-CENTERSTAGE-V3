@@ -65,13 +65,6 @@ public class FieldCentric extends OpMode {
         telemetry.addLine("Total Runtime: " + getRuntime() + " seconds.");
         telemetry.addLine("Left Slide Position: " + bot.getOuttakeLeftSlidePosition() + " ticks");
         telemetry.addLine("Right Slide Position: " + bot.getOuttakeRightSlidePosition() + " ticks");
-        telemetry.addLine("Wrist Position: " + bot.wrist.getWristPosition());
-        telemetry.addLine("State of V4B: init / " + bot.arm.getArmExtensionState());
-
-        telemetry.addLine("Right Arm Position: " + bot.arm.getRightArmPosition() + " ticks.");
-        telemetry.addLine("Right Arm Decimal Position: " + (1 - bot.arm.getRightArmPosition() / 360) + " decimal.");
-        telemetry.addLine("Left Arm Position: " + bot.arm.getLeftArmPosition() + " ticks.");
-        telemetry.addLine("Left Arm Decimal Position: " + (1 - bot.arm.getLeftArmPosition() / 360) + " decimal.");
         bot.driveTrain.driveAngleLock(bot.getMecanumState(), driver);
         bot.driveTrain.setMotorPower();
 
@@ -94,6 +87,9 @@ public class FieldCentric extends OpMode {
         }
         if(driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
             bot.setMecanumState(mecanumState.NORMAL);
+        }
+        if (driver.wasJustPressed(GamepadKeys.Button.BACK)) {
+          bot.setMecanumState(mecanumState.ROBOTCENTRIC);
         }
 
         if (driver.wasJustPressed(GamepadKeys.Button.A)) {

@@ -14,7 +14,7 @@ public class Mecanum
 {
     private DcMotorEx leftFront, leftRear, rightFront, rightRear;
     private double leftFrontPower, leftRearPower, rightFrontPower,rightRearPower, rotY, rotX, rx, x, y, denominator;
-    private double offset = 1.1;
+    private double offset = 1           ;
     ElapsedTime timer = new ElapsedTime();
     private double lastError = 0;
     double integralSum = 0;
@@ -135,6 +135,16 @@ public class Mecanum
                 rightFrontPower = (rotY - rotX - rx) / denominator;
                 rightRearPower = (rotY + rotX - rx) / denominator;
                 break;
+            case ROBOTCENTRIC:
+                y = gamepad1.getLeftY();
+                x = gamepad1.getLeftX();
+                rx = gamepad1.getRightX();
+
+                denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+                 leftFrontPower = (y + x + rx) / denominator;
+                 leftRearPower = (y - x + rx) / denominator;
+                 rightFrontPower = (y - x - rx) / denominator;
+                 rightRearPower = (y + x - rx) / denominator;
 
         }
     }
@@ -142,8 +152,8 @@ public class Mecanum
     public void setMotorPower()
     {
         leftFront.setPower(leftFrontPower * offset);
-        leftRear.setPower(leftRearPower * offset );
-        rightFront.setPower(rightFrontPower * offset);
+        leftRear.setPower(leftRearPower /1.6 );
+        rightFront.setPower(rightFrontPower /1.6);
         rightRear.setPower(rightRearPower * offset );
     }
     public void setSlowDownMotorPower()
@@ -191,5 +201,31 @@ public class Mecanum
             angle+=360;
         }
         return angle;
+    }
+
+    public void updatePID(double desiredAngle){
+
+        // double error = angleWrap(Math.toRadians(90) - imu.getAngularOrientation().firstAngle);
+        // rx = .1*(Math.toRadians(90)-imu.getAngularOrientation().firstAngle);
+        // rx = gamepad1.getRightX(); // 0.01 * (des_angle - curr_angle)
+        error = smallestAngleDifference(desiredAngle, imu.getAngularOrientation().firstAngle * (180/Math.PI));
+
+
+        timer.reset();
+        output = (error * -Kp) + (imu.getAngularVelocity().zRotationRate * Kd) + (integralSum * Ki);
+        rx = output;
+
+        botHeading = -imu.getAngularOrientation().firstAngle;
+
+
+
+        rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+        rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
+
+        denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+        leftFrontPower = (rx) / denominator;
+        leftRearPower = (rx) / denominator;
+        rightFrontPower = ( rx) / denominator;
+        rightRearPower = ( rx) / denominator;
     }
 }
