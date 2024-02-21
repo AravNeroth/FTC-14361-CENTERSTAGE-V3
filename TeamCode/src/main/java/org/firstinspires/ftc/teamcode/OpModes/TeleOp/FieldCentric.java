@@ -78,6 +78,9 @@ public class FieldCentric extends OpMode {
         if (driver.wasJustPressed(GamepadKeys.Button.START)) {
             bot.driveTrain.resetIMU();
         }
+        if(driver.wasJustPressed(GamepadKeys.Button.DPAD_UP)){
+            bot.outtakeSlide.setOuttakeSlidesPID(outtakeSlidesState.HIGHOUT);
+        }
 
         if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1) {
             bot.setMecanumState(mecanumState.TOBLUEBACKBOARD);

@@ -302,7 +302,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                                                    bot.setWristPosition(wristState.outtaking);
                                                    bot.outtakeSlide.setPosition(700);
                                                })
-                                               .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3.35 + xOffset,45.25))
+                                               .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3.5 + xOffset,45.25))
                                                .addTemporalMarker(() -> {
                                                    bot.setLidPosition(lidState.open);
                                                    bot.outtakeSlide.setPosition(800);
@@ -326,7 +326,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                                                    bot.setWristPosition(wristState.outtaking);
                                                    bot.outtakeSlide.setPosition(700);
                                                })
-                                               .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3.35,37.25))
+                                               .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3.5,37.25))
                                                .addTemporalMarker(() -> {
                                                    bot.setLidPosition(lidState.open);
                                                    bot.outtakeSlide.setPosition(800);
@@ -425,7 +425,8 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                                 drive.followTrajectorySequenceAsync(toLeftBackboard);
 
                                 toboard = true;
-                                yOffset = 2;
+                                xOffset =1;
+                                yOffset = 3.5;
                                 currentState = state.leaveBackboard;
                                 break;
                             case CENTER:
@@ -522,6 +523,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                             currentState = state.leaveBackboard;
 
                     }
+                    break;
                 case leaveBackboard:
                     if(!drive.isBusy() && !LeaveBackboard) {
                         TrajectorySequence leaveBackboard = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
@@ -570,6 +572,8 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                         {
                             case LEFT:
                                 yOffset = 2.25;
+                                xOffset = 3;
+
                                 break;
                             case CENTER:
                                 yOffset = 0;
