@@ -64,6 +64,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
     // AprilTagDetectionPipeline aprilTagDetectionPipeline;
     AprilTagDetection tagOfInterest = null;
     int LEFT = 1, MIDDLE = 2, RIGHT = 3, REDSTACK = 7;
+    double trussOfset = 0;
     int ID_TAG_OF_INTEREST = -1;
     double tagOffset = 0;
     double yOffset = 0, xOffset = 0;
@@ -105,7 +106,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                 .build();
         TrajectorySequence rightTape = drive.trajectorySequenceBuilder(start)
                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, 90, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(-49, 35))
+                .lineToConstantHeading(new Vector2d(-45.25, 38))
                 .addTemporalMarker(.05, () -> {
                     bot.setLidPosition(lidState.close);
                 })
@@ -113,13 +114,14 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                     bot.setArmPosition(armState.init, armExtensionState.extending);
                     bot.setWristPosition(wristState.intaking);
                 })
-                .lineToConstantHeading(new Vector2d(-49, 55))
+                .lineToConstantHeading(new Vector2d(-45.25, 55))
                 .lineToLinearHeading(new Pose2d(-38.25, 60, Math.toRadians(180)))
+                .waitSeconds(.1)
 
                 .build();
         TrajectorySequence leftTape = drive.trajectorySequenceBuilder(start)
                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, 90, DriveConstants.TRACK_WIDTH))
-                .lineToLinearHeading(new Pose2d(-39.75, 35, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-41, 35, Math.toRadians(180)))
                 .addTemporalMarker(.05, () -> {
                     bot.setLidPosition(lidState.close);
                 })
@@ -129,7 +131,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                 })
 
                 .lineToConstantHeading(new Vector2d(-36.75, 35))
-                .lineToConstantHeading(new Vector2d(-39.75, 35))
+                .lineToConstantHeading(new Vector2d(-40, 35))
                 .lineToConstantHeading(new Vector2d(-38.25, 60))
 
 //
@@ -165,6 +167,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
             case RIGHT:
                 ID_TAG_OF_INTEREST = -1;
                 temporalMarkerTimer.reset();
+                yOffset = -1;
 
                 drive.followTrajectorySequenceAsync(rightTape);
                 telemetry.addLine("right.");
@@ -174,7 +177,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
             case LEFT:
                 ID_TAG_OF_INTEREST = -1;
                 temporalMarkerTimer.reset();
-                xOffset= 1;
+                trussOfset = 1.5;
                 tagOffset = 10;
                 yOffset = 3;
                 drive.followTrajectorySequenceAsync(leftTape);
@@ -219,7 +222,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                     if (!drive.isBusy() && !lineUp) {
                         TrajectorySequence lineUpWithTrussWall = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(15, 45, DriveConstants.TRACK_WIDTH))
-                                .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY() + bot.distanceSensor.getRightEdgeDistance() - 3.5))
+                                .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY() + bot.distanceSensor.getRightEdgeDistance() - 3.5 + trussOfset))
 
 
                                 .resetVelConstraint()
@@ -296,13 +299,13 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                                    case LEFT:
                                        TrajectorySequence toBackBoardLeft = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30.5, 45, DriveConstants.TRACK_WIDTH))
-                                               .lineToConstantHeading(new Vector2d(40,45.25))
+                                               .lineToConstantHeading(new Vector2d(40,47.5))
                                                .addTemporalMarker(() -> {
                                                    bot.setArmPosition(armState.outtaking, armExtensionState.extending);
                                                    bot.setWristPosition(wristState.outtaking);
                                                    bot.outtakeSlide.setPosition(700);
                                                })
-                                               .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3.5 + xOffset,45.25))
+                                               .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3.35 + xOffset,47.5))
                                                .addTemporalMarker(() -> {
                                                    bot.setLidPosition(lidState.open);
                                                    bot.outtakeSlide.setPosition(800);
@@ -314,7 +317,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                                        drive.followTrajectorySequenceAsync(toBackBoardLeft);
                                        findTag = true;
                                        xOffset = 1;
-                                       yOffset = -3;
+                                   //    yOffset = -3;
                                        currentState = state.leaveBackboard;
                                        break;
                                    case CENTER:
@@ -326,7 +329,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                                                    bot.setWristPosition(wristState.outtaking);
                                                    bot.outtakeSlide.setPosition(700);
                                                })
-                                               .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3.5,37.25))
+                                               .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3.35,37.25))
                                                .addTemporalMarker(() -> {
                                                    bot.setLidPosition(lidState.open);
                                                    bot.outtakeSlide.setPosition(800);
@@ -337,20 +340,20 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                                                .build();
                                        drive.followTrajectorySequenceAsync(toBackBoard);
                                        findTag = true;
-                                       yOffset = 3.25;
+                                       yOffset = 0;
                                        currentState = state.leaveBackboard;
 
                                        break;
                                    case RIGHT:
                                        TrajectorySequence toBackBoardRight = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30.5, 45, DriveConstants.TRACK_WIDTH))
-                                               .lineToConstantHeading(new Vector2d(40,34))
+                                               .lineToConstantHeading(new Vector2d(40,33.5))
                                                .addTemporalMarker(() -> {
                                                    bot.setArmPosition(armState.outtaking, armExtensionState.extending);
                                                    bot.setWristPosition(wristState.outtaking);
                                                    bot.outtakeSlide.setPosition(700);
                                                })
-                                               .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3.5,34))
+                                               .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3.35,33.5))
                                                .addTemporalMarker(() -> {
                                                    bot.setLidPosition(lidState.open);
                                                    bot.outtakeSlide.setPosition(800);
@@ -360,6 +363,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
 
                                                .build();
                                        drive.followTrajectorySequenceAsync(toBackBoardRight);
+                                       yOffset = 3;
                                        findTag = true;
                                        currentState = state.leaveBackboard;
 
@@ -405,14 +409,14 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                             case LEFT:
                                 TrajectorySequence toLeftBackboard = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                         .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(32.5, 45, DriveConstants.TRACK_WIDTH))
-                                        .lineToConstantHeading(new Vector2d(40,45.25))
+                                        .lineToConstantHeading(new Vector2d(40,47.5))
                                         .addTemporalMarker(() -> {
                                             bot.setArmPosition(armState.outtaking, armExtensionState.extending);
                                             bot.setWristPosition(wristState.outtaking);
                                             bot.outtakeSlide.setPosition(700);
                                         })
 
-                                        .lineToConstantHeading(new Vector2d(50.8,45.25))
+                                        .lineToConstantHeading(new Vector2d(50.8,47.5))
                                         .addTemporalMarker(() -> {
                                             bot.setLidPosition(lidState.open);
                                             bot.outtakeSlide.setPosition(800);
@@ -423,10 +427,9 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                                         //   .strafeRight(3)
                                         .build();
                                 drive.followTrajectorySequenceAsync(toLeftBackboard);
-
+                            yOffset = 5.5;
                                 toboard = true;
-                                xOffset =1;
-                                yOffset = 3.5;
+
                                 currentState = state.leaveBackboard;
                                 break;
                             case CENTER:
@@ -452,21 +455,21 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                                 drive.followTrajectorySequenceAsync(toBackBoard);
 
                                 toboard = true;
-                                yOffset = 3.25;
+                                yOffset = -2.75;
 
                                 currentState = state.leaveBackboard;
                                 break;
                             case RIGHT:
                                 TrajectorySequence toRightBackboard = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                         .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(32.5, 45, DriveConstants.TRACK_WIDTH))
-                                        .lineToConstantHeading(new Vector2d(40,31.25))
+                                        .lineToConstantHeading(new Vector2d(40,33.5))
                                         .addTemporalMarker(() -> {
                                             bot.setArmPosition(armState.outtaking, armExtensionState.extending);
                                             bot.setWristPosition(wristState.outtaking);
                                             bot.outtakeSlide.setPosition(700);
                                         })
 
-                                        .lineToConstantHeading(new Vector2d(51,31.25))
+                                        .lineToConstantHeading(new Vector2d(50.8,33.5))
                                         .addTemporalMarker(() -> {
                                             bot.setLidPosition(lidState.open);
                                             bot.outtakeSlide.setPosition(800);
@@ -477,6 +480,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                                         //   .strafeRight(3)
                                         .build();
                                 drive.followTrajectorySequenceAsync(toRightBackboard);
+                                yOffset = 2.5;
 
                                 toboard = true;
                                 currentState = state.leaveBackboard;
@@ -523,9 +527,9 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                             currentState = state.leaveBackboard;
 
                     }
-                    break;
                 case leaveBackboard:
                     if(!drive.isBusy() && !LeaveBackboard) {
+
                         TrajectorySequence leaveBackboard = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, 45, DriveConstants.TRACK_WIDTH))
                                 .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() - 20, drive.getPoseEstimate().getY()))
@@ -537,7 +541,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                                     bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
                                 })
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, 45, DriveConstants.TRACK_WIDTH))
-                                .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() - 20, 61.25))
+                                .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() - 20, 61.25 + yOffset))
                                 .build();
                         drive.followTrajectorySequenceAsync(leaveBackboard);
                         LeaveBackboard = true;
@@ -548,6 +552,17 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                     break;
                 case underTrussFromBackboard:
                     if(!drive.isBusy() && !UnderTrussToStack){
+                        switch (startPath){
+                            case RIGHT:
+                                yOffset = -1.5;
+                                break;
+                            case CENTER:
+                                yOffset = 3.25;
+                                break;
+                            case LEFT:
+                                yOffset = -2;
+                                break;
+                        }
                         telemetry.addData("Under Truss" ,drive.getPoseEstimate().getY());
                         telemetry.update();
                         TrajectorySequence underTruss = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
@@ -572,14 +587,14 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                         {
                             case LEFT:
                                 yOffset = 2.25;
-                                xOffset = 3;
-
+                                xOffset = 1.5;
                                 break;
                             case CENTER:
                                 yOffset = 0;
                                 break;
                             case RIGHT:
-                                yOffset = 0;
+                                xOffset = .25;
+                                yOffset = .5;
                                 break;
                         }
                         currentState = state.toStack;
