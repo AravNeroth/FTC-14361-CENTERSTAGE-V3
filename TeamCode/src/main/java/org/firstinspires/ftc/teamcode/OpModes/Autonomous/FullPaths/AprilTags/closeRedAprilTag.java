@@ -64,10 +64,10 @@ public class closeRedAprilTag extends LinearOpMode {
     double boardX, boardY, stack1Y, stackDetectX, stackDetectY;
     boolean onePixel = false, twoPixels = false;
     double tagY = 0;
-    //   aprilTagDetection aprilTagDetectionPipeline;
+
     double detectYPos = 0, detectYNeg = 0;
     double tagsize = 0.166;
-    // AprilTagDetectionPipeline aprilTagDetectionPipeline;
+
     AprilTagDetection tagOfInterest = null;
     int LEFT = 4, MIDDLE = 5, RIGHT = 6, REDSTACK = 7;
     int ID_TAG_OF_INTEREST = 4;

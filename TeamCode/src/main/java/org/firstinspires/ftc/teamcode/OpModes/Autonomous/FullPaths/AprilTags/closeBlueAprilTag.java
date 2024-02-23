@@ -68,7 +68,7 @@ public class closeBlueAprilTag extends LinearOpMode {
     double tagsize = 0.166;
     // AprilTagDetectionPipeline aprilTagDetectionPipeline;
     AprilTagDetection tagOfInterest = null;
-    int LEFT = 4, MIDDLE = 5, RIGHT = 6, REDSTACK = 7;
+    int LEFT = 1, MIDDLE = 2, RIGHT = 3, BLUESTACK = 9;
     int ID_TAG_OF_INTEREST = 4;
     boolean tagFound = false;
     double offset = 3;

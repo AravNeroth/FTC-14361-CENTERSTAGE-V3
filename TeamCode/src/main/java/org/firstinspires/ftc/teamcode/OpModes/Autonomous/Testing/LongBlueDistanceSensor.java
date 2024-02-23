@@ -63,7 +63,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
     double tagsize = 0.166;
     // AprilTagDetectionPipeline aprilTagDetectionPipeline;
     AprilTagDetection tagOfInterest = null;
-    int LEFT = 1, MIDDLE = 2, RIGHT = 3, REDSTACK = 7;
+    int LEFT = 1, MIDDLE = 2, RIGHT = 3, REDSTACK = 9;
     double trussOfset = 0;
     int ID_TAG_OF_INTEREST = -1;
     double tagOffset = 0;

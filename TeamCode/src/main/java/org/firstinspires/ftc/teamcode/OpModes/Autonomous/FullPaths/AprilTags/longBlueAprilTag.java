@@ -68,7 +68,7 @@ public class longBlueAprilTag extends LinearOpMode {
     double tagsize = 0.166;
     // AprilTagDetectionPipeline aprilTagDetectionPipeline;
     AprilTagDetection tagOfInterest = null;
-    int LEFT = 4, MIDDLE = 5, RIGHT = 6, REDSTACK = 7;
+    int LEFT = 1, MIDDLE = 2, RIGHT = 3, BLUESTACK = 9;
     int ID_TAG_OF_INTEREST = 4;
     boolean tagFound = false;
     double offset = 3;
@@ -104,7 +104,7 @@ public class longBlueAprilTag extends LinearOpMode {
 
                 .lineToConstantHeading(new Vector2d(-49, 40))
                 .lineToLinearHeading(new Pose2d(-49, 11, Math.toRadians(180)))
-                .lineToConstantHeading(new Vector2d(32, 11))
+                .lineToConstantHeading(new Vector2d(32, 13))
                 .addTemporalMarker(() -> {
                     bot.setArmPosition(armState.outtaking, armExtensionState.extending);
                     bot.setWristPosition(wristState.outtaking);
@@ -130,10 +130,10 @@ public class longBlueAprilTag extends LinearOpMode {
                 .lineToConstantHeading(new Vector2d(-39,50))
                 // .setConstraints(40, 40)
                 .lineToConstantHeading(new Vector2d(-39,14))
-                .turn(Math.toRadians(-90))
+                .turn(Math.toRadians(90))
                 .lineToConstantHeading(new Vector2d(-39,11))
                 // .lineToLinearHeading(new Pose2d(-37.5,-11, Math.toRadians(180)))
-                .lineToConstantHeading(new Vector2d(25,11))
+                .lineToConstantHeading(new Vector2d(25,13))
                 .addTemporalMarker(() -> {
                     bot.setArmPosition(armState.outtaking, armExtensionState.extending);
                     bot.setWristPosition(wristState.outtaking);
@@ -153,7 +153,7 @@ public class longBlueAprilTag extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-34.75, 35, Math.toRadians(180)))
                 .lineToConstantHeading(new Vector2d(-42, 35))
                 .lineToConstantHeading(new Vector2d(-40, 11))
-                .lineToConstantHeading(new Vector2d(40, 11))
+                .lineToConstantHeading(new Vector2d(40, 13))
                 .addTemporalMarker(() -> {
                     bot.setArmPosition(armState.outtaking, armExtensionState.extending);
                     bot.setWristPosition(wristState.outtaking);
@@ -161,19 +161,19 @@ public class longBlueAprilTag extends LinearOpMode {
                 .build();
 
         TrajectorySequence goToCenterAprilTag = drive.trajectorySequenceBuilder(centerTape.end())
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(10, 90, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(28, 29))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, 90, DriveConstants.TRACK_WIDTH))
+                .lineToConstantHeading(new Vector2d(28, 39))
 
                 //   .strafeRight(3)
                 .build();
         TrajectorySequence goToLeftAprilTag = drive.trajectorySequenceBuilder(leftTape.end())
                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, 90, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(25, 34))
+                .lineToConstantHeading(new Vector2d(28, 46))
                 //   .strafeRight(3)
                 .build();
         TrajectorySequence goToRightAprilTag = drive.trajectorySequenceBuilder(rightTape.end())
                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, 90, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(33, 27))
+                .lineToConstantHeading(new Vector2d(33, 36))
 
                 //   .strafeRight(3)
                 .build();
@@ -245,16 +245,16 @@ public class longBlueAprilTag extends LinearOpMode {
                     if (!drive.isBusy()) {
                         if(ID_TAG_OF_INTEREST == MIDDLE){
                             drive.followTrajectorySequenceAsync(goToCenterAprilTag);
-                            offset = 5.95;
+                            offset = 1;
 
                         }
                         else if(ID_TAG_OF_INTEREST == LEFT){
                             drive.followTrajectorySequenceAsync(goToLeftAprilTag);
-                            offset = (1.2);
+                            offset = (4.6);
 
                         } else if (ID_TAG_OF_INTEREST == RIGHT) {
                             drive.followTrajectorySequenceAsync(goToRightAprilTag);
-                            offset = 4.75;
+                            offset = 3;
                         }
 
                         currentState = state.firstTimeBoard;
@@ -374,7 +374,7 @@ public class longBlueAprilTag extends LinearOpMode {
                             finishBoard = true;
                         }
                         if(!drive.isBusy()){
-                            drive.setPoseEstimate(new Pose2d(tagOfInterest.metadata.fieldPosition.get(0)-8,-tagOfInterest.metadata.fieldPosition.get(1), Math.toRadians(180)));
+                            drive.setPoseEstimate(new Pose2d(tagOfInterest.metadata.fieldPosition.get(0)-8,tagOfInterest.metadata.fieldPosition.get(1), Math.toRadians(180)));
                             telemetry.addLine("Reset Pose");
 
                             telemetry.addData("New Pose", drive.getPoseEstimate());
@@ -402,7 +402,7 @@ public class longBlueAprilTag extends LinearOpMode {
 
                                 })
 
-                                .lineToLinearHeading(new Pose2d(46, 12, Math.toRadians(90)))
+                                .lineToLinearHeading(new Pose2d(46, 12, Math.toRadians(270)))
 
 //
 
