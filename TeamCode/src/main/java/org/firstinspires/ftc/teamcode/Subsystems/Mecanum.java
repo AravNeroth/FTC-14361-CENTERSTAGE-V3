@@ -145,7 +145,7 @@ public class Mecanum
                  leftRearPower = (y - x + rx) / denominator;
                  rightFrontPower = (y - x - rx) / denominator;
                  rightRearPower = (y + x - rx) / denominator;
-
+break;
         }
     }
 
