@@ -152,8 +152,8 @@ public class Mecanum
     public void setMotorPower()
     {
         leftFront.setPower(leftFrontPower * offset);
-        leftRear.setPower(leftRearPower /1.6 );
-        rightFront.setPower(rightFrontPower /1.6);
+        leftRear.setPower(leftRearPower * offset );
+        rightFront.setPower(rightFrontPower * offset);
         rightRear.setPower(rightRearPower * offset );
     }
     public void setSlowDownMotorPower()
