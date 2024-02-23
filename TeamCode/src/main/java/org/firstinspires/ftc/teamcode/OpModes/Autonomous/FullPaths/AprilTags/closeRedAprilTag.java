@@ -91,7 +91,7 @@ public class closeRedAprilTag extends LinearOpMode {
         TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
                 //.lineToConstantHeading(new Vector2d(19,-55))
                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(11.5, -35.5))
+                .lineToConstantHeading(new Vector2d(11.5, -34))
                 .addTemporalMarker(.05,() -> {
                     bot.setLidPosition(lidState.close);
                 })
@@ -108,8 +108,8 @@ public class closeRedAprilTag extends LinearOpMode {
                 })
                 .build();
         TrajectorySequence leftTape = drive.trajectorySequenceBuilder(start)
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, 90, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(15, -40))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                .lineToLinearHeading(new Pose2d(19,-40, Math.toRadians(315)))
                 .addTemporalMarker(.05,() -> {
                     bot.setLidPosition(lidState.close);
                 })
@@ -117,10 +117,10 @@ public class closeRedAprilTag extends LinearOpMode {
                     bot.setArmPosition(armState.init, armExtensionState.extending);
                     bot.setWristPosition(wristState.intaking);
                 })
-                .lineToLinearHeading(new Pose2d(15,-33, Math.toRadians(0)))
-                .lineToConstantHeading(new Vector2d(11, -33))
+               .lineToLinearHeading(new Pose2d(10.25,-33, Math.toRadians(0)))
+             //   .lineToConstantHeading(new Vector2d(9, -33))
                 .lineToConstantHeading(new Vector2d(15, -33))
-                .lineToLinearHeading(new Pose2d(25 ,-33, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(25 ,-35, Math.toRadians(180)))
                 .addTemporalMarker(() -> {
                     bot.setArmPosition(armState.outtaking, armExtensionState.extending);
                     bot.setWristPosition(wristState.outtaking);
@@ -135,7 +135,8 @@ public class closeRedAprilTag extends LinearOpMode {
 
 
                 //     .back(5)
-                .lineToConstantHeading(new Vector2d(22 ,-50))
+                .lineToConstantHeading(new Vector2d(22 ,-55))
+                .lineToConstantHeading(new Vector2d(33 ,-55))
                 .addTemporalMarker(() -> {
                     bot.setArmPosition(armState.outtaking, armExtensionState.extending);
                     bot.setWristPosition(wristState.outtaking);
@@ -157,12 +158,8 @@ public class closeRedAprilTag extends LinearOpMode {
                 .build();
         TrajectorySequence goToRightAprilTag = drive.trajectorySequenceBuilder(rightTape.end())
                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(30, -34))
-                .addDisplacementMarker(() -> {
-                    bot.outtakeSlide.setPosition(500);
-                    bot.setArmPosition(armState.outtaking, armExtensionState.extending);
-                    bot.setWristPosition(wristState.outtaking);
-                })
+                .lineToConstantHeading(new Vector2d(33, -34))
+
                 //   .strafeRight(3)
                 .build();
 
@@ -238,11 +235,11 @@ public class closeRedAprilTag extends LinearOpMode {
                         }
                         else if(ID_TAG_OF_INTEREST == LEFT){
                             drive.followTrajectorySequenceAsync(goToLeftAprilTag);
-                            offset = (-2.4);
+                            offset = (3);
 
                         } else if (ID_TAG_OF_INTEREST == RIGHT) {
                             drive.followTrajectorySequenceAsync(goToRightAprilTag);
-                            offset = 2.2;
+                            offset = 4.75;
                         }
 
                         currentState = state.firstTimeBoard;
@@ -305,13 +302,13 @@ public class closeRedAprilTag extends LinearOpMode {
                                 tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                         .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
 
-                                        .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -2.2, tagY - offset))
+                                        .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3, tagY - offset))
                                         .addDisplacementMarker( 1, () -> {
-                                            bot.outtakeSlide.setPosition(650);
+                                            bot.outtakeSlide.setPosition(525);
                                         })
                                         .addTemporalMarker( () -> {
-                                            bot.setLidPosition(lidState.open);
-                                            bot.outtakeSlide.setPosition(775);
+                                            bot.lid.setLidPosition(lidState.open);
+                                            bot.outtakeSlide.setPosition(650);
                                         })
                                         .waitSeconds(.15)
                                         //   .lineToConstantHeading(new Vector2d(50, tagY - 8))
@@ -382,33 +379,34 @@ public class closeRedAprilTag extends LinearOpMode {
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                                 .forward(5)
                                 .addDisplacementMarker(5,  () -> {
-                                    bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
-                                })
-
-                                .lineToLinearHeading(new Pose2d(46, -45, Math.toRadians(90)))
-                                .addDisplacementMarker(() -> {
                                     bot.setArmPosition(armState.intaking, armExtensionState.extending);
                                     bot.setWristPosition(wristState.intaking);
                                 })
+                                .addDisplacementMarker(10,() -> {
+                                    bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
+
+                                })
+
+                                .lineToLinearHeading(new Pose2d(46, -45, Math.toRadians(90)))
+
 //
 
                                 .lineToConstantHeading(new Vector2d(52, -57))
                                 .build();
                         TrajectorySequence parkNextToBackboard = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(40, 200, DriveConstants.TRACK_WIDTH))
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                                 .forward(5)
                                 .addDisplacementMarker(5,  () -> {
-                                    bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
-                                    bot.setArmPosition(armState.init, armExtensionState.extending);
-                                    bot.setWristPosition(wristState.init);
-                                })
-
-                                .lineToLinearHeading(new Pose2d(46, -12, Math.toRadians(90)))
-                                .addDisplacementMarker(() -> {
                                     bot.setArmPosition(armState.intaking, armExtensionState.extending);
                                     bot.setWristPosition(wristState.intaking);
                                 })
-//
+                                .addDisplacementMarker(10,() -> {
+                                    bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
+
+                                })
+
+                                .lineToLinearHeading(new Pose2d(46, -12, Math.toRadians(90)))
+
 
                                 .lineToConstantHeading(new Vector2d(52, -10.5))
                                 .build();
