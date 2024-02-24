@@ -387,13 +387,13 @@ double underTrussOffset = 0, stackDistanceOffset = 0;
                                 tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                         .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(28, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
 
-                                        .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -4.9, tagY - offset))
+                                        .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -4.6, tagY - offset))
                                         .addDisplacementMarker( .5, () -> {
                                             bot.outtakeSlide.setPosition(700);
                                         })
                                         .addTemporalMarker( () -> {
                                             bot.lid.setLidPosition(lidState.open);
-                                            bot.outtakeSlide.setPosition(825);
+                                            bot.outtakeSlide.setPosition(800);
                                         })
                                        // .waitSeconds(.15)
                                         //   .lineToConstantHeading(new Vector2d(50, tagY - 8))
@@ -540,7 +540,7 @@ double underTrussOffset = 0, stackDistanceOffset = 0;
                                 .build();
                         drive.followTrajectorySequenceAsync(toStack);
                       //  underTrussOffset = 3;
-                        stackDistanceOffset = 5;
+                        stackDistanceOffset = 0;
                         currentState = state.setPoseEstimate;
                     }
 

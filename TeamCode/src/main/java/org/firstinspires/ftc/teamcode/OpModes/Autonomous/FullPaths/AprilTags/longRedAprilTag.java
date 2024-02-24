@@ -249,7 +249,7 @@ public class longRedAprilTag extends LinearOpMode {
                     if (!drive.isBusy()) {
                         if(ID_TAG_OF_INTEREST == MIDDLE){
                             drive.followTrajectorySequenceAsync(goToCenterAprilTag);
-                            offset = 5.95;
+                            offset = 5.9;
 
                         }
                         else if(ID_TAG_OF_INTEREST == LEFT){
@@ -321,7 +321,7 @@ public class longRedAprilTag extends LinearOpMode {
                                 tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                         .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(28, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
 
-                                        .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3.7, tagY - offset))
+                                        .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3.585, tagY - offset))
                                         .addDisplacementMarker( 1, () -> {
                                             bot.outtakeSlide.setPosition(700);
                                         })

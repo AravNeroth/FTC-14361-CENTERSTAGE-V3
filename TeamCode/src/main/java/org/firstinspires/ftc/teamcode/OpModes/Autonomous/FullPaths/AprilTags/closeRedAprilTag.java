@@ -230,12 +230,12 @@ public class closeRedAprilTag extends LinearOpMode {
                     if (!drive.isBusy()) {
                         if(ID_TAG_OF_INTEREST == MIDDLE){
                             drive.followTrajectorySequenceAsync(goToCenterAprilTag);
-                            offset = 2.5;
+                            offset = 2.434;
 
                         }
                         else if(ID_TAG_OF_INTEREST == LEFT){
                             drive.followTrajectorySequenceAsync(goToLeftAprilTag);
-                            offset = (3);
+                            offset = (1.315);
 
                         } else if (ID_TAG_OF_INTEREST == RIGHT) {
                             drive.followTrajectorySequenceAsync(goToRightAprilTag);
@@ -302,13 +302,13 @@ public class closeRedAprilTag extends LinearOpMode {
                                 tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                         .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
 
-                                        .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3, tagY - offset))
+                                        .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3.90, tagY - offset))
                                         .addDisplacementMarker( 1, () -> {
                                             bot.outtakeSlide.setPosition(525);
                                         })
                                         .addTemporalMarker( () -> {
                                             bot.lid.setLidPosition(lidState.open);
-                                            bot.outtakeSlide.setPosition(650);
+                                            bot.outtakeSlide.setPosition(700);
                                         })
                                         .waitSeconds(.15)
                                         //   .lineToConstantHeading(new Vector2d(50, tagY - 8))
@@ -405,10 +405,10 @@ public class closeRedAprilTag extends LinearOpMode {
 
                                 })
 
-                                .lineToLinearHeading(new Pose2d(46, -12, Math.toRadians(90)))
+                                .lineToLinearHeading(new Pose2d(46, -11, Math.toRadians(90)))
 
 
-                                .lineToConstantHeading(new Vector2d(52, -10.5))
+                                .lineToConstantHeading(new Vector2d(52, -11))
                                 .build();
                         drive.followTrajectorySequenceAsync(parkNextToBackboard);
                         currentState = state.idle;

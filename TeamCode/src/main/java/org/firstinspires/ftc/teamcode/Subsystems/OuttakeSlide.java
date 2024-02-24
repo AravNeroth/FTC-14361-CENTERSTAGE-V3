@@ -252,5 +252,8 @@ public class OuttakeSlide
         double output = (error * Kp) + (derivative * Kd) + (integralSum * Ki);
         return output;
     }
+//    public void setZero(){
+//        leftouttakeSlide.setC
+//    }
 }
 

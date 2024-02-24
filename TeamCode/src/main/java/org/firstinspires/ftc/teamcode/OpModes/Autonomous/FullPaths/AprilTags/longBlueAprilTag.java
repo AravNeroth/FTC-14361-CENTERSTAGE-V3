@@ -402,11 +402,11 @@ public class longBlueAprilTag extends LinearOpMode {
 
                                 })
 
-                                .lineToLinearHeading(new Pose2d(46, 12, Math.toRadians(270)))
+                                .lineToLinearHeading(new Pose2d(46, 11, Math.toRadians(270)))
 
 //
 
-                                .lineToConstantHeading(new Vector2d(52, 12))
+                                .lineToConstantHeading(new Vector2d(52, 11))
                                 .build();
                         TrajectorySequence parkInCorner = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, 200, DriveConstants.TRACK_WIDTH))
