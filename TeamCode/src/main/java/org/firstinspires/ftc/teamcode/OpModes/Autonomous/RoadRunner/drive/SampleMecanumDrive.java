@@ -49,6 +49,8 @@ import static org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive
 import static org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.DriveConstants.kV;
 
+import ftc.rogue.blacksmith.util.kalman.KalmanTwoWheelLocalizer;
+
 /*
  * Simple mecanum drive hardware implementation for REV hardware.
  */
@@ -132,11 +134,9 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         // TODO: if desired, use setLocalizer() to change the localization method
 
-        setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this));
+        setLocalizer(new KalmanTwoWheelLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this)));
 
-        trajectorySequenceRunner = new TrajectorySequenceRunner(
-                follower, HEADING_PID
-        );
+        trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
