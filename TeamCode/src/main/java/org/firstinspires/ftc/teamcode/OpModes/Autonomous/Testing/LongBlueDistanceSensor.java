@@ -390,19 +390,7 @@ public class LongBlueDistanceSensor extends LinearOpMode {
                                 telemetry.update();
                             }
                         }
-
-
-                        //    ID_TAG_OF_INTEREST = REDSTACK;
-
-
-                    } // detect for loop end
-
-                    // if detect not 0 end
-//                    else{
-//                        tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-//                                .lineToConstantHeading(new Vector2d(1, 1))
-//                                .build();
-//                    }
+                    }
 
                     if(!drive.isBusy() && !toboard && !findTag) {
                         switch (startPath){

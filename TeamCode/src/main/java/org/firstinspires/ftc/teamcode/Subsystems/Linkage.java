@@ -22,6 +22,9 @@ public class Linkage
     {
         switch(linkageState)
         {
+            case supaRus:
+                linkageServo.setPosition(robotConstants.linkage.supaRus);
+                break;
             case HIGH:
                 linkageServo.setPosition(robotConstants.linkage.highPosition);
                 break;
