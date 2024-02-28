@@ -22,6 +22,7 @@
 //
 //@com.qualcomm.robotcore.eventloop.opmode.TeleOp
 //
+//@Disabled
 //public class FieldCentricPID extends OpMode {
 //    private ElapsedTime runTime;
 //    private GamepadEx driver, operator;
