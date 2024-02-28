@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -42,7 +43,7 @@ public class OuttakePIDTuner extends OpMode {
     public static double p, i, d;
     private double pp, pi, pd;
     private double leftPid, rightPid;
-    final VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
+    public VoltageSensor voltageSensor;
 
     private ElapsedTime time;
 
