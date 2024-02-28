@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.profile.MotionState;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -23,8 +24,7 @@ import org.firstinspires.ftc.teamcode.Commands.wristState;
 import org.firstinspires.ftc.teamcode.Subsystems.RobotPID;
 
 @Config
-@TeleOp
-@Disabled
+@Autonomous(group = "drive")
 public class OuttakePIDTuner extends OpMode {
     private GamepadEx operator;
     private RobotPID bot;
@@ -34,7 +34,7 @@ public class OuttakePIDTuner extends OpMode {
     public static int target = 1000;
     private int previous_target = 0;
 
-    public static double kcos = 0.2;
+    public static double kcos = 0.1;
 
     public static double max_v = 8000;
     public static double max_a = 8000;
