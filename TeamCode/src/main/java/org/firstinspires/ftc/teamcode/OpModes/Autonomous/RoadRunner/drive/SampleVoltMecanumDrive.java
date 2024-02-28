@@ -27,6 +27,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.opmode.KalmanTwoWheelTrackingLocalizer;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.opmode.KalmanTwoWheelTrackingLocalizerVolt;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.trajectorysequence.TrajectorySequenceRunner;
@@ -131,7 +132,7 @@ public class SampleVoltMecanumDrive extends MecanumDrive {
 
         // TODO: if desired, use setLocalizer() to change the localization method
 
-        setLocalizer(new KalmanTwoWheelTrackingLocalizer(hardwareMap, this));
+        setLocalizer(new KalmanTwoWheelTrackingLocalizerVolt(hardwareMap, this));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }

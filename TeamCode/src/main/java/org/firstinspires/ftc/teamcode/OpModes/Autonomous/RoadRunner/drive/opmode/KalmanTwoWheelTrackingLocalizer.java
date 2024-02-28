@@ -2,11 +2,12 @@ package org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.opmod
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.TwoWheelTrackingLocalizer;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.TwoWheelTrackingLocalizerVolt;
 
 import ftc.rogue.blacksmith.util.kalman.KalmanFilter;
 
-public class KalmanTwoWheelTrackingLocalizer extends TwoWheelTrackingLocalizerVolt {
+public class KalmanTwoWheelTrackingLocalizer extends TwoWheelTrackingLocalizer {
     private final KalmanFilter headingFilter, wheelPos1Filter, wheelPos2Filter, wheelPos3Filter, headingVelocityFilter, wheelPos1VelocityFilter, wheelPos2VelocityFilter, wheelPos3VelocityFilter;
 
     public KalmanTwoWheelTrackingLocalizer(HardwareMap hardwareMap, SampleMecanumDrive drive)
