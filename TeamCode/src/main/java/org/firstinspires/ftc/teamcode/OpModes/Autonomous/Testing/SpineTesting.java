@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 
 public class SpineTesting extends LinearOpMode {
     Robot bot;
-    SampleMecanumDrive drive;
     ElapsedTime timer = new ElapsedTime();
 
     public void runOpMode() {

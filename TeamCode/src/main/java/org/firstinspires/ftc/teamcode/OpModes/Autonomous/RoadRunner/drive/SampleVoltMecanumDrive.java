@@ -286,10 +286,32 @@ public class SampleVoltMecanumDrive extends MecanumDrive {
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-        leftFront.setPower(v);
-        leftRear.setPower(v1);
-        rightRear.setPower(v2);
-        rightFront.setPower(v3);
+    /*
+    disclaimer: i have absolutely ZERO clue on if this works or not lmao
+     */
+        double mult = 1.0;
+        double currentVolt = batteryVoltageSensor.getVoltage();
+
+        if(currentVolt >= 14)
+            mult = 0.7;
+        else if(currentVolt >= 13.9)
+            mult = 0.75;
+        else if(currentVolt >= 13.8)
+            mult = 0.8;
+        else if(currentVolt >= 13.7)
+            mult = 0.9;
+        else if(currentVolt >= 13.6)
+            mult = 0.95;
+
+        double volt1 = v * mult;
+        double volt2 = v1 * mult;
+        double volt3 = v2 * mult;
+        double volt4 = v3 * mult;
+
+        leftFront.setPower(volt1);
+        leftRear.setPower(volt2);
+        rightRear.setPower(volt3);
+        rightFront.setPower(volt4);
     }
 
     @Override
