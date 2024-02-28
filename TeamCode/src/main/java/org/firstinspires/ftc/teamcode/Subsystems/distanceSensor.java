@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Commands.stackState;
 public class distanceSensor
 {
     DistanceSensor frontDistanceSensor, leftDistanceSensor, rightDistanceSensor;
+    AnalogInput us;
 
     double tooFarTresh, FarTresh, CloseTresh;
     double distMulti;
@@ -22,6 +24,7 @@ public class distanceSensor
        // frontDistanceSensor = hardwareMap.get(DistanceSensor.class, "frontDistanceSensor");
         leftDistanceSensor = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
         rightDistanceSensor = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
+        us = hardwareMap.get(AnalogInput.class, "us");
     }
 
 //    public frontDistanceState frontAdjust()
@@ -51,5 +54,14 @@ public class distanceSensor
     }
     public double getBotsRightCenterDistance(){
         return rightDistanceSensor.getDistance(DistanceUnit.INCH) + 4.75;
+    }
+    public double getUSDistance(){
+        return us.getVoltage() / 3.3;
+    }
+    public double getUSDistanceNoDiv(){
+        return us.getVoltage();
+    }
+    public double getUSDistance360(){
+        return us.getVoltage() / 3.3 * 360;
     }
 }
