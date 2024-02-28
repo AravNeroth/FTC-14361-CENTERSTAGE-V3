@@ -228,4 +228,19 @@ public class OuttakeSlidePID
 
         rightouttakeSlide.setPower(basePower);
     }
+
+    public double getCurrentPoseAvg()
+    {
+        return leftouttakeSlide.getCurrentPosition() + rightouttakeSlide.getCurrentPosition()/2;
+    }
+
+    public void setLeftPower(double power)
+    {
+        leftPower = power;
+    }
+
+    public void setRightPower(double power)
+    {
+        rightPower = power;
+    }
 }
