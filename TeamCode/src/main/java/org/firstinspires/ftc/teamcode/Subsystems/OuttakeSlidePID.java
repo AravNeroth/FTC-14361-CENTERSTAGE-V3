@@ -20,15 +20,15 @@ public class OuttakeSlidePID
         rightouttakeSlide = hardwareMap.get(DcMotorEx.class, "rightOuttakeSlide");
         leftouttakeSlide = hardwareMap.get(DcMotorEx.class, "leftOuttakeSlide");
 
-        rightouttakeSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftouttakeSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightouttakeSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftouttakeSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightouttakeSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        leftouttakeSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightouttakeSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftouttakeSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftouttakeSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftPower = 0;
         rightPower = 0;
-        basePower = .9;
+        basePower = 1;
 
         rightouttakeSlide.setTargetPositionTolerance(5);
         leftouttakeSlide.setTargetPositionTolerance(5);
@@ -191,25 +191,36 @@ public class OuttakeSlidePID
     {
         return rightouttakeSlide.getCurrentPosition();
     }
-    public void setPosition(int pos, double leftPidVal, double rightPidVal) {
-        leftSlidePosition = getLeftOuttakeSlideMotorPosition();
-        rightSlidePosition = getRightOuttakeSlideMotorPosition();
+//    public void setPosition(int pos, double leftPidVal, double rightPidVal) {
+//        leftSlidePosition = getLeftOuttakeSlideMotorPosition();
+//        rightSlidePosition = getRightOuttakeSlideMotorPosition();
+//
+//        ffL = Math.cos(Math.toRadians(pos/ticks_in_degree)) * f;
+//        ffR = Math.cos(Math.toRadians(pos/ticks_in_degree)) * f;
+//
+//        leftPower = leftPidVal + ffL;
+//        rightPower = rightPidVal + ffR;
+//
+//        leftouttakeSlide.setTargetPosition(pos);
+//        rightouttakeSlide.setTargetPosition(pos);
+//
+//        leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//        leftouttakeSlide.setPower(leftPower);
+//        rightouttakeSlide.setPower(rightPower);
+//    }
 
-        ffL = Math.cos(Math.toRadians(pos/ticks_in_degree)) * f;
-        ffR = Math.cos(Math.toRadians(pos/ticks_in_degree)) * f;
-
-        leftPower = leftPidVal + ffL;
-        rightPower = rightPidVal + ffR;
-
-        leftouttakeSlide.setTargetPosition(pos);
-        rightouttakeSlide.setTargetPosition(pos);
-
-        leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
+    public void setPosition(int pos, double leftPower, double rightPower) {
+//        leftouttakeSlide.setTargetPosition(pos);
+//        rightouttakeSlide.setTargetPosition(pos);
+//
+//        leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftouttakeSlide.setPower(leftPower);
         rightouttakeSlide.setPower(rightPower);
     }
+
     public void setLeftOuttakeSlidePosition(int pos) {
         leftouttakeSlide.setTargetPosition(pos);
 

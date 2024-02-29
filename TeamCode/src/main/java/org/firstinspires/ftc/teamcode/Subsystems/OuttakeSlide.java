@@ -15,7 +15,7 @@ public class OuttakeSlide
     DcMotorEx rightouttakeSlide, leftouttakeSlide;
     private final int countsPerRev = 384;
 
-    double power = .9;
+    double power = 1;
     double integralSum = 0;
     double lastError = 0;
     double Kp = 0;
