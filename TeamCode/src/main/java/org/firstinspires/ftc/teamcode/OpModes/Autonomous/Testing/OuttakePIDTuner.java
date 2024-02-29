@@ -32,35 +32,44 @@ import org.firstinspires.ftc.teamcode.Subsystems.RobotPID;
 public class OuttakePIDTuner extends OpMode {
     private GamepadEx operator;
     private RobotPID bot;
-    private PIDFController controller;
+    private PIDController controller;
     private final double ticks_in_degree = 384.5/360;
 
-    public static int DISTANCE = 1000;
+    public static int target = 1000;
+    public double Target;
     private int previous_target = 0;
 
     public static double kcos = 0.1;
 
-    public static double max_v = 8000;
-    public static double max_a = 8000;
+    public static double max_v = 10000;
+    public static double max_a = 6000;
 
     public static double p, i, d, f;
     private double pp, pi, pd;
-    private double leftPid, rightPid;
-
-    private ElapsedTime time;
+    private double power;
+    public double voltage;
+    private ElapsedTime voltageTimer, time;
 
     private MotionProfile profile;
+    public MotionState targetState;
+
+    public VoltageSensor voltageSensor;
 
     @Override
     public void init() {
         operator = new GamepadEx(gamepad2);
-        controller = new PIDFController(p, i, d, f);
+        controller = new PIDController(p, i, d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         bot = new RobotPID(hardwareMap, telemetry);
+        voltageTimer = new ElapsedTime();
         time = new ElapsedTime();
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         bot.setWristPosition(wristState.init);
         bot.setArmPosition(armState.init, armExtensionState.extending);
+
+        bot.outtakeSlide.setLeftPower(0);
+        bot.outtakeSlide.setRightPower(0);
 
         p = 0;
         i = 0;
@@ -76,19 +85,26 @@ public class OuttakePIDTuner extends OpMode {
 
     @Override
     public void loop() {
-        operator.readButtons();
+        targetState = profile == null ? new MotionState(0, 0) : profile.get(time.seconds());
+        Target = targetState.getX();
 
-        bot.driveTrain.setMotorPower();
-
-        if (p != pp || i != pi || d != pd) {
-            controller.setPIDF(p, i, d, f);
+        if(voltageTimer.seconds() > 5)
+        {
+            voltage = voltageSensor.getVoltage();
+            voltageTimer.reset();
         }
 
-        if (DISTANCE != previous_target) {
-            profile = MotionProfileGenerator.generateSimpleMotionProfile(new MotionState(previous_target, 0), new MotionState(DISTANCE, 0), max_v, max_a);
+        operator.readButtons();
+
+        if (p != pp || i != pi || d != pd) {
+            controller.setPID(p, i, d);
+        }
+
+        if (target != previous_target) {
+            profile = MotionProfileGenerator.generateSimpleMotionProfile(new MotionState(previous_target, 0), new MotionState(target, 0), max_v, max_a);
 
             time.reset();
-            previous_target = DISTANCE;
+            previous_target = target;
         }
 
         pp = p;
@@ -100,29 +116,40 @@ public class OuttakePIDTuner extends OpMode {
 
         double avgPose = (leftSlidePose + rightSlidePose)/2;
 
-        MotionState targetState = profile == null ? new MotionState(0, 0) : profile.get(time.seconds());
-//        double target = targetState.getX();
+        double pid = controller.calculate(avgPose, target);
+        double ff = Math.cos(Math.toRadians(target / ticks_in_degree)) * f;
 
-        leftPid = controller.calculate(avgPose, DISTANCE);
-        rightPid = controller.calculate(avgPose, DISTANCE);
-        double ff = Math.cos(Math.toRadians(DISTANCE / ticks_in_degree)) * f;
-
-        double leftPower = (leftPid + ff);
-        double rightPower = (rightPid + ff);
+        double power = (pid + ff) / (voltage * 12.0);
 
         if (operator.wasJustPressed(GamepadKeys.Button.DPAD_UP))
         {
-            bot.outtakeSlide.setPosition(DISTANCE, leftPower, rightPower);
+            bot.outtakeSlide.setPosition(power, power);
         }
 
         if (operator.wasJustPressed(GamepadKeys.Button.DPAD_DOWN))
         {
-            bot.outtakeSlide.setPosition(0, leftPower, rightPower);
+            bot.outtakeSlide.setPosition(power, power);
         }
 
         telemetry.addData("Left Slide Pose : ", leftSlidePose);
         telemetry.addData("Right Slide Pose : ", rightSlidePose);
-        telemetry.addData("Target Pose: ", DISTANCE);
+        telemetry.addData("Target Pose: ", target);
         telemetry.update();
     }
+
+    public double power()
+    {
+        double leftSlidePose = bot.getOuttakeLeftSlidePosition();
+        double rightSlidePose = bot.getOuttakeRightSlidePosition();
+
+        double avgPose = (leftSlidePose + rightSlidePose)/2;
+
+        double pid = controller.calculate(avgPose, target);
+        double ff = Math.cos(Math.toRadians(target / ticks_in_degree)) * f;
+
+        double power = (pid + ff) / (voltage * 12.0);
+
+        return power;
+    }
+
 }

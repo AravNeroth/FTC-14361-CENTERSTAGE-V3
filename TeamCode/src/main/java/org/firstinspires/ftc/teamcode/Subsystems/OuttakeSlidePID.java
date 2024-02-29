@@ -20,8 +20,8 @@ public class OuttakeSlidePID
         rightouttakeSlide = hardwareMap.get(DcMotorEx.class, "rightOuttakeSlide");
         leftouttakeSlide = hardwareMap.get(DcMotorEx.class, "leftOuttakeSlide");
 
-//        rightouttakeSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        leftouttakeSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightouttakeSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftouttakeSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightouttakeSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftouttakeSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftouttakeSlide.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -211,7 +211,7 @@ public class OuttakeSlidePID
 //        rightouttakeSlide.setPower(rightPower);
 //    }
 
-    public void setPosition(int pos, double leftPower, double rightPower) {
+    public void setPosition(double leftPower, double rightPower) {
 //        leftouttakeSlide.setTargetPosition(pos);
 //        rightouttakeSlide.setTargetPosition(pos);
 //
