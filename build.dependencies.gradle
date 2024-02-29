@@ -3,6 +3,7 @@ repositories {
     google() // Needed for androidx
     jcenter()
     maven { url = 'https://maven.brott.dev/' }
+    maven { url = 'https://jitpack.io' }
     flatDir {
         dirs rootProject.file('libs')
     }
@@ -23,15 +24,13 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
-
     implementation 'org.openftc:easyopencv:1.7.0'
 
+    implementation 'com.github.RR-9527:robot-code-v2:1.0.2'
 
     implementation 'com.acmerobotics.dashboard:dashboard:0.4.13'
     implementation 'org.apache.commons:commons-math3:3.6.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
     implementation 'com.acmerobotics.roadrunner:core:0.5.6'
-
-
 }
 
