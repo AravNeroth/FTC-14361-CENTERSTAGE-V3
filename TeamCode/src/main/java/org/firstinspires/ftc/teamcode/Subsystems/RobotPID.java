@@ -59,10 +59,15 @@ public class RobotPID {
         distanceSensor = new distanceSensor(hardwareMap);
     }
 
+    public void setPid(double p, double i, double d)
+    {
+        outtakeSlide.setPid(p,i,d);
+    }
+
     // ---------------------------- OuttakeSlide ---------------------------- //
 
-    public void setOuttakeSlidePosition(outtakeSlidesState outtakeSlidesState, extensionState extensionState, double leftPidVal, double rightPidVal) {
-        outtakeSlide.setOuttakeSlidePosition(extensionState, outtakeSlidesState, leftPidVal, rightPidVal);
+    public void setOuttakeSlidePosition(outtakeSlidesState outtakeSlidesState, extensionState extensionState) {
+        outtakeSlide.setOuttakeSlidePosition(extensionState, outtakeSlidesState);
         this.outtakeSlidesState = outtakeSlidesState;
     }
 
@@ -218,7 +223,6 @@ public class RobotPID {
 
     //---------------------------- Mecanum ---------------------------- //
     public void setMecanumState(mecanumState mecanumState){
-        // driveTrain.driveAngleLock(mecanumState, gamepad1);
         this.mecanumState = mecanumState;
     }
     public mecanumState getMecanumState(){

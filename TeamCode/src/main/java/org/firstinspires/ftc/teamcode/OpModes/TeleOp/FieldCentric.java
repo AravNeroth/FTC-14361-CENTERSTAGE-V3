@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Commands.activeIntakeState;
@@ -23,16 +24,24 @@ import org.firstinspires.ftc.teamcode.Subsystems.distanceSensor;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 
 public class FieldCentric extends OpMode {
-    private ElapsedTime runTime;
+    private ElapsedTime runTime, activeIntakeTimer;
     private GamepadEx driver, operator;
+    private Gamepad driverRumble;
     private Robot bot;
+    double activeIntakeVelocity, maxVelTresh, minVelTresh;
+    Gamepad.RumbleEffect customRumbleEffect;
 
     @Override
     public void init() {
         runTime = new ElapsedTime();
+        activeIntakeTimer = new ElapsedTime();
         driver = new GamepadEx(gamepad1);
+        driverRumble = new Gamepad();
         operator = new GamepadEx(gamepad2);
         bot = new Robot(hardwareMap, telemetry);
+        activeIntakeVelocity = 0.0;
+        maxVelTresh = 0.0;
+        minVelTresh = 0.0;
 
         telemetry.addLine("It's goobin time");
         telemetry.addLine("Time taken: " + getRuntime() + " seconds.");
@@ -56,6 +65,14 @@ public class FieldCentric extends OpMode {
         bot.setDrone();
 
         bot.setSlowDownState(slowDownState.FULL);
+
+        customRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
+                .addStep(0.0, 0.0, 300)  //  Pause for 300 mSec
+                .addStep(1.0, 0.0, 250)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 0.0, 250)  //  Pause for 250 mSec
+                .addStep(1.0, 0.0, 250)  //  Rumble left motor 100% for 250 mSec
+                .build();
     }
 
     // ---------------------------- LOOPING ---------------------------- //
@@ -65,13 +82,24 @@ public class FieldCentric extends OpMode {
         telemetry.addLine("Total Runtime: " + getRuntime() + " seconds.");
         telemetry.addLine("Left Slide Position: " + bot.getOuttakeLeftSlidePosition() + " ticks");
         telemetry.addLine("Right Slide Position: " + bot.getOuttakeRightSlidePosition() + " ticks");
+        telemetry.addLine("Intake Velocity: " + bot.activeIntake.getVelocity());
         bot.driveTrain.driveAngleLock(bot.getMecanumState(), driver);
         bot.driveTrain.setMotorPower();
 
         telemetry.update();
 
-        driver.readButtons();
-        operator.readButtons();
+        if (activeIntakeTimer.seconds() > 4) {
+            activeIntakeVelocity = bot.activeIntake.getVelocity();
+            activeIntakeTimer.reset();
+        }
+
+        if(bot.getActiveIntakeState().equals(activeIntakeState.active)) {
+            if(maxVelTresh > activeIntakeVelocity && activeIntakeVelocity > minVelTresh)
+            {
+                driverRumble.runRumbleEffect(customRumbleEffect);
+            }
+        }
+
 
         // ---------------------------- DRIVER CODE ---------------------------- //
 
@@ -99,11 +127,15 @@ public class FieldCentric extends OpMode {
             if (bot.getActiveIntakeState() != null && (bot.getActiveIntakeState().equals(activeIntakeState.active))) {
                 bot.setActiveIntakePosition(activeIntakeState.inactive);
                 bot.setActiveIntakeState(activeIntakeState.inactive);
-            } else if ((bot.getOuttakeState().equals(outtakeSlidesState.STATION) && (bot.getArmState()).equals(armState.intaking) && (bot.getWristState()).equals(wristState.intaking))) {
+            }
+            else if ((bot.getOuttakeState().equals(outtakeSlidesState.STATION) && (bot.getArmState()).equals(armState.intaking) && (bot.getWristState()).equals(wristState.intaking)))
+            {
                 bot.setLidPosition(lidState.open);
                 bot.setHolderServoPosition(holderServoState.open);
                 bot.setActiveIntakePosition(activeIntakeState.active);
                 bot.setActiveIntakeState(activeIntakeState.active);
+
+                activeIntakeVelocity = bot.activeIntake.getVelocity();
             }
         }
 

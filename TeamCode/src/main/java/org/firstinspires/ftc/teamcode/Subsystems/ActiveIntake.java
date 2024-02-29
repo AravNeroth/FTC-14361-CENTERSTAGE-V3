@@ -37,4 +37,9 @@ public class ActiveIntake
     public void setActiveIntakePower(double power){
         activeIntake.setPower(power);
     }
+
+    public double getVelocity()
+    {
+        return activeIntake.getVelocity();
+    }
 }

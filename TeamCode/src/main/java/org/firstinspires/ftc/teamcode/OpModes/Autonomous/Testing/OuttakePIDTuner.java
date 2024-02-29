@@ -36,7 +36,6 @@ public class OuttakePIDTuner extends OpMode {
     private final double ticks_in_degree = 384.5/360;
 
     public static int target = 1000;
-    public double Target;
     private int previous_target = 0;
 
     public static double kcos = 0.1;
@@ -46,12 +45,10 @@ public class OuttakePIDTuner extends OpMode {
 
     public static double p, i, d, f;
     private double pp, pi, pd;
-    private double power;
     public double voltage;
     private ElapsedTime voltageTimer, time;
 
     private MotionProfile profile;
-    public MotionState targetState;
 
     public VoltageSensor voltageSensor;
 
@@ -85,14 +82,6 @@ public class OuttakePIDTuner extends OpMode {
 
     @Override
     public void loop() {
-        targetState = profile == null ? new MotionState(0, 0) : profile.get(time.seconds());
-        Target = targetState.getX();
-
-        if(voltageTimer.seconds() > 5)
-        {
-            voltage = voltageSensor.getVoltage();
-            voltageTimer.reset();
-        }
 
         operator.readButtons();
 
@@ -112,44 +101,22 @@ public class OuttakePIDTuner extends OpMode {
         pd = d;
 
         double leftSlidePose = bot.getOuttakeLeftSlidePosition();
-        double rightSlidePose = bot.getOuttakeRightSlidePosition();
 
-        double avgPose = (leftSlidePose + rightSlidePose)/2;
-
-        double pid = controller.calculate(avgPose, target);
+        MotionState targetState = profile == null ? new MotionState(0, 0) : profile.get(time.seconds());
+        double target = targetState.getX();
+        double pid = controller.calculate(leftSlidePose, target);
         double ff = Math.cos(Math.toRadians(target / ticks_in_degree)) * f;
 
-        double power = (pid + ff) / (voltage * 12.0);
+        double power = (pid + ff) * 12.0/ (voltageSensor.getVoltage());
 
         if (operator.wasJustPressed(GamepadKeys.Button.DPAD_UP))
         {
-            bot.outtakeSlide.setPosition(power, power);
+            bot.outtakeSlide.setPos((int) target, power);
         }
 
-        if (operator.wasJustPressed(GamepadKeys.Button.DPAD_DOWN))
-        {
-            bot.outtakeSlide.setPosition(power, power);
-        }
-
-        telemetry.addData("Left Slide Pose : ", leftSlidePose);
-        telemetry.addData("Right Slide Pose : ", rightSlidePose);
+        telemetry.addData("Outtake Slide Pose : ", leftSlidePose);
         telemetry.addData("Target Pose: ", target);
         telemetry.update();
-    }
-
-    public double power()
-    {
-        double leftSlidePose = bot.getOuttakeLeftSlidePosition();
-        double rightSlidePose = bot.getOuttakeRightSlidePosition();
-
-        double avgPose = (leftSlidePose + rightSlidePose)/2;
-
-        double pid = controller.calculate(avgPose, target);
-        double ff = Math.cos(Math.toRadians(target / ticks_in_degree)) * f;
-
-        double power = (pid + ff) / (voltage * 12.0);
-
-        return power;
     }
 
 }

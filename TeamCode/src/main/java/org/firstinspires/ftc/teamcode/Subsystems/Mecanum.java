@@ -50,7 +50,7 @@ public class Mecanum
     public void drive(GamepadEx gamepad1)
     {
         y = gamepad1.getLeftY();
-        x = gamepad1.getLeftX();
+        x = gamepad1.getLeftX() * 1.1;
         rx = gamepad1.getRightX();
 
         double botHeading = -imu.getAngularOrientation().firstAngle;
@@ -70,7 +70,7 @@ public class Mecanum
         switch (mecanumState){
             case NORMAL:
                 y = gamepad1.getLeftY();
-                x = gamepad1.getLeftX();
+                x = gamepad1.getLeftX() * 1.1;
                 rx = gamepad1.getRightX();
 
                 botHeading = -imu.getAngularOrientation().firstAngle;

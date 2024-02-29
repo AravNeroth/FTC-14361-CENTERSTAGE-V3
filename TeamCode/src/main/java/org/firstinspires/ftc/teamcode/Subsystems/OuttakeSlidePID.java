@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.Commands.extensionState;
 import org.firstinspires.ftc.teamcode.Commands.outtakeSlidesState;
@@ -12,9 +14,12 @@ import org.firstinspires.ftc.teamcode.util.robotConstants;
 public class OuttakeSlidePID
 {
     DcMotorEx rightouttakeSlide, leftouttakeSlide;
-    double leftPower, rightPower, basePower, f, ffL, ffR, leftSlidePosition, rightSlidePosition;
+    double leftPower, rightPower, basePower, leftSlidePosition, rightSlidePosition;
+    public PIDController controller;
+    public VoltageSensor voltageSensor;
+    private final double ticks_in_degree = 384.5/360;
+    double pid, ff, f, power;
 
-    private final double ticks_in_degree = 384.539792388;
 
     public OuttakeSlidePID(HardwareMap hardwareMap) {
         rightouttakeSlide = hardwareMap.get(DcMotorEx.class, "rightOuttakeSlide");
@@ -22,19 +27,21 @@ public class OuttakeSlidePID
 
         rightouttakeSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftouttakeSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightouttakeSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftouttakeSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightouttakeSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftouttakeSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftouttakeSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        leftPower = 0;
-        rightPower = 0;
         basePower = 1;
+
+        f = 0.0;
+
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         rightouttakeSlide.setTargetPositionTolerance(5);
         leftouttakeSlide.setTargetPositionTolerance(5);
     }
 
-    public void setOuttakeSlidePosition(extensionState extensionState, outtakeSlidesState outtakeSlidesState, double leftPidVal, double rightPidVal)
+    public void setOuttakeSlidePosition(extensionState extensionState, outtakeSlidesState outtakeSlidesState)
     {
         switch(extensionState)
         {
@@ -44,136 +51,116 @@ public class OuttakeSlidePID
                 {
                     case MOSTHIGHOUT:
                         leftSlidePosition = getLeftOuttakeSlideMotorPosition();
-                        rightSlidePosition = getRightOuttakeSlideMotorPosition();
-
-                        ffL = Math.cos(Math.toRadians(robotConstants.outtakeSlide.MOSTHIGHLEFT/ticks_in_degree)) * f;
-                        ffR = Math.cos(Math.toRadians(robotConstants.outtakeSlide.MOSTHIGHRIGHT/ticks_in_degree)) * f;
-
-                        leftPower = leftPidVal + ffL;
-                        rightPower = rightPidVal + ffR;
 
                         leftouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.MOSTHIGHLEFT);
-                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.MOSTHIGHRIGHT);
+                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.MOSTHIGHLEFT);
+
+                        pid = controller.calculate(leftSlidePosition, robotConstants.outtakeSlide.MOSTHIGHLEFT);
+                        ff = Math.cos(Math.toRadians(robotConstants.outtakeSlide.LOWLEFT / ticks_in_degree)) * f;
+                        power = (pid + ff) * 12.0/ (voltageSensor.getVoltage());
 
                         leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                        leftouttakeSlide.setPower(leftPower);
-                        rightouttakeSlide.setPower(rightPower);
+                        leftouttakeSlide.setPower(power);
+                        rightouttakeSlide.setPower(power);
+
                         break;
                     case HIGHOUT:
                         leftSlidePosition = getLeftOuttakeSlideMotorPosition();
-                        rightSlidePosition = getRightOuttakeSlideMotorPosition();
-
-                        ffL = Math.cos(Math.toRadians(robotConstants.outtakeSlide.HIGHLEFT/ticks_in_degree)) * f;
-                        ffR = Math.cos(Math.toRadians(robotConstants.outtakeSlide.HIGHRIGHT/ticks_in_degree)) * f;
-
-                        leftPower = leftPidVal + ffL;
-                        rightPower = rightPidVal + ffR;
 
                         leftouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.HIGHLEFT);
-                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.HIGHRIGHT);
+                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.HIGHLEFT);
+
+                        pid = controller.calculate(leftSlidePosition, robotConstants.outtakeSlide.HIGHLEFT);
+                        ff = Math.cos(Math.toRadians(robotConstants.outtakeSlide.HIGHLEFT / ticks_in_degree)) * f;
+                        power = (pid + ff) * 12.0/ (voltageSensor.getVoltage());
 
                         leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                        leftouttakeSlide.setPower(leftPower);
-                        rightouttakeSlide.setPower(rightPower);
+                        leftouttakeSlide.setPower(power);
+                        rightouttakeSlide.setPower(power);
                         break;
                     case MEDIUMOUT:
                         leftSlidePosition = getLeftOuttakeSlideMotorPosition();
-                        rightSlidePosition = getRightOuttakeSlideMotorPosition();
-
-                        ffL = Math.cos(Math.toRadians(robotConstants.outtakeSlide.MEDIUMLEFT/ticks_in_degree)) * f;
-                        ffR = Math.cos(Math.toRadians(robotConstants.outtakeSlide.MEDIUMRIGHT/ticks_in_degree)) * f;
-
-                        leftPower = leftPidVal + ffL;
-                        rightPower = rightPidVal + ffR;
 
                         leftouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.MEDIUMLEFT);
-                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.MEDIUMRIGHT);
+                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.MEDIUMLEFT);
+
+                        pid = controller.calculate(leftSlidePosition, robotConstants.outtakeSlide.MEDIUMLEFT);
+                        ff = Math.cos(Math.toRadians(robotConstants.outtakeSlide.MEDIUMLEFT / ticks_in_degree)) * f;
+                        power = (pid + ff) * 12.0/ (voltageSensor.getVoltage());
 
                         leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                        leftouttakeSlide.setPower(leftPower);
-                        rightouttakeSlide.setPower(rightPower);
+                        leftouttakeSlide.setPower(power);
+                        rightouttakeSlide.setPower(power);
                         break;
                     case LOWMED:
                         leftSlidePosition = getLeftOuttakeSlideMotorPosition();
-                        rightSlidePosition = getRightOuttakeSlideMotorPosition();
-
-                        ffL = Math.cos(Math.toRadians(robotConstants.outtakeSlide.LOWMEDLEFT/ticks_in_degree)) * f;
-                        ffR = Math.cos(Math.toRadians(robotConstants.outtakeSlide.LOWMEDRIGHT/ticks_in_degree)) * f;
-
-                        leftPower = leftPidVal + ffL;
-                        rightPower = rightPidVal + ffR;
 
                         leftouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.LOWMEDLEFT);
-                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.LOWMEDRIGHT);
+                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.LOWMEDLEFT);
+
+                        pid = controller.calculate(leftSlidePosition, robotConstants.outtakeSlide.LOWMEDLEFT);
+                        ff = Math.cos(Math.toRadians(robotConstants.outtakeSlide.LOWMEDLEFT / ticks_in_degree)) * f;
+                        power = (pid + ff) * 12.0/ (voltageSensor.getVoltage());
 
                         leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                        leftouttakeSlide.setPower(leftPower);
-                        rightouttakeSlide.setPower(rightPower);
+                        leftouttakeSlide.setPower(power);
+                        rightouttakeSlide.setPower(power);
                         break;
                     case LOWOUT:
                         leftSlidePosition = getLeftOuttakeSlideMotorPosition();
-                        rightSlidePosition = getRightOuttakeSlideMotorPosition();
-
-                        ffL = Math.cos(Math.toRadians(robotConstants.outtakeSlide.LOWLEFT/ticks_in_degree)) * f;
-                        ffR = Math.cos(Math.toRadians(robotConstants.outtakeSlide.LOWRIGHT/ticks_in_degree)) * f;
-
-                        leftPower = leftPidVal + ffL;
-                        rightPower = rightPidVal + ffR;
 
                         leftouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.LOWLEFT);
-                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.LOWRIGHT);
+                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.LOWLEFT);
+
+                        pid = controller.calculate(leftSlidePosition, robotConstants.outtakeSlide.LOWLEFT);
+                        ff = Math.cos(Math.toRadians(robotConstants.outtakeSlide.LOWLEFT / ticks_in_degree)) * f;
+                        power = (pid + ff) * 12.0/ (voltageSensor.getVoltage());
 
                         leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                        leftouttakeSlide.setPower(leftPower);
-                        rightouttakeSlide.setPower(rightPower);
+                        leftouttakeSlide.setPower(power);
+                        rightouttakeSlide.setPower(power);
                         break;
                     case AUTOLOWOUT:
                         leftSlidePosition = getLeftOuttakeSlideMotorPosition();
-                        rightSlidePosition = getRightOuttakeSlideMotorPosition();
-
-                        ffL = Math.cos(Math.toRadians(robotConstants.outtakeSlide.AUTOLOWLEFT/ticks_in_degree)) * f;
-                        ffR = Math.cos(Math.toRadians(robotConstants.outtakeSlide.AUTOLOWRIGHT/ticks_in_degree)) * f;
-
-                        leftPower = leftPidVal + ffL;
-                        rightPower = rightPidVal + ffR;
 
                         leftouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.AUTOLOWLEFT);
-                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.AUTOLOWRIGHT);
+                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.AUTOLOWLEFT);
+
+                        pid = controller.calculate(leftSlidePosition, robotConstants.outtakeSlide.AUTOLOWLEFT);
+                        ff = Math.cos(Math.toRadians(robotConstants.outtakeSlide.AUTOLOWLEFT / ticks_in_degree)) * f;
+                        power = (pid + ff) * 12.0/ (voltageSensor.getVoltage());
 
                         leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                        leftouttakeSlide.setPower(leftPower);
-                        rightouttakeSlide.setPower(rightPower);
+                        leftouttakeSlide.setPower(power);
+                        rightouttakeSlide.setPower(power);
                         break;
                     case STATION:
                         leftSlidePosition = getLeftOuttakeSlideMotorPosition();
-                        rightSlidePosition = getRightOuttakeSlideMotorPosition();
-
-                        ffL = Math.cos(Math.toRadians(robotConstants.outtakeSlide.GROUNDLEFT/ticks_in_degree)) * f;
-                        ffR = Math.cos(Math.toRadians(robotConstants.outtakeSlide.GROUNDRIGHT/ticks_in_degree)) * f;
-
-                        leftPower = leftPidVal + ffL;
-                        rightPower = rightPidVal + ffR;
 
                         leftouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.GROUNDLEFT);
-                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.GROUNDRIGHT);
+                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.GROUNDLEFT);
+
+                        pid = controller.calculate(leftSlidePosition, robotConstants.outtakeSlide.GROUNDLEFT);
+                        ff = Math.cos(Math.toRadians(robotConstants.outtakeSlide.GROUNDLEFT / ticks_in_degree)) * f;
+                        power = (pid + ff) * 12.0/ (voltageSensor.getVoltage());
 
                         leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                        leftouttakeSlide.setPower(leftPower);
-                        rightouttakeSlide.setPower(rightPower);
+                        leftouttakeSlide.setPower(power);
+                        rightouttakeSlide.setPower(power);
                         break;
                 }
             }
@@ -191,34 +178,34 @@ public class OuttakeSlidePID
     {
         return rightouttakeSlide.getCurrentPosition();
     }
-//    public void setPosition(int pos, double leftPidVal, double rightPidVal) {
-//        leftSlidePosition = getLeftOuttakeSlideMotorPosition();
-//        rightSlidePosition = getRightOuttakeSlideMotorPosition();
-//
-//        ffL = Math.cos(Math.toRadians(pos/ticks_in_degree)) * f;
-//        ffR = Math.cos(Math.toRadians(pos/ticks_in_degree)) * f;
-//
-//        leftPower = leftPidVal + ffL;
-//        rightPower = rightPidVal + ffR;
-//
-//        leftouttakeSlide.setTargetPosition(pos);
-//        rightouttakeSlide.setTargetPosition(pos);
-//
-//        leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//
-//        leftouttakeSlide.setPower(leftPower);
-//        rightouttakeSlide.setPower(rightPower);
-//    }
+    public void setPosition(int pos) {
+        leftSlidePosition = getLeftOuttakeSlideMotorPosition();
+        rightSlidePosition = getRightOuttakeSlideMotorPosition();
 
-    public void setPosition(double leftPower, double rightPower) {
-//        leftouttakeSlide.setTargetPosition(pos);
-//        rightouttakeSlide.setTargetPosition(pos);
-//
-//        leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftouttakeSlide.setPower(leftPower);
-        rightouttakeSlide.setPower(rightPower);
+        leftouttakeSlide.setTargetPosition(pos);
+        leftouttakeSlide.setTargetPosition(pos);
+
+        double pid = controller.calculate(leftSlidePosition, pos);
+        double ff = Math.cos(Math.toRadians(pos / ticks_in_degree)) * f;
+        double power = (pid + ff) * 12.0/ (voltageSensor.getVoltage());
+
+        leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftouttakeSlide.setPower(power);
+        rightouttakeSlide.setPower(power);
+    }
+
+    public void setPos(int target, double power)
+    {
+        leftouttakeSlide.setTargetPosition(target);
+        leftouttakeSlide.setTargetPosition(target);
+
+        leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftouttakeSlide.setPower(power);
+        rightouttakeSlide.setPower(power);
     }
 
     public void setLeftOuttakeSlidePosition(int pos) {
@@ -240,9 +227,9 @@ public class OuttakeSlidePID
         rightouttakeSlide.setPower(basePower);
     }
 
-    public double getCurrentPoseAvg()
+    public void setPid(double p, double i, double d)
     {
-        return leftouttakeSlide.getCurrentPosition() + rightouttakeSlide.getCurrentPosition()/2;
+        controller.setPID(p,i,d);
     }
 
     public void setLeftPower(double power)

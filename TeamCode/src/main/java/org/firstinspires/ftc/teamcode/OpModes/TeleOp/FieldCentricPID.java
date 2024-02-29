@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
-import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Commands.activeIntakeState;
@@ -17,24 +17,31 @@ import org.firstinspires.ftc.teamcode.Commands.mecanumState;
 import org.firstinspires.ftc.teamcode.Commands.outtakeSlidesState;
 import org.firstinspires.ftc.teamcode.Commands.slowDownState;
 import org.firstinspires.ftc.teamcode.Commands.wristState;
-import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Subsystems.RobotPID;
-import org.firstinspires.ftc.teamcode.util.robotConstants;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 
 public class FieldCentricPID extends OpMode {
-    private ElapsedTime runTime;
+    private ElapsedTime runTime, activeIntakeTimer;
     private GamepadEx driver, operator;
+    private Gamepad driverRumble;
     private RobotPID bot;
-    public PIDController pidController;
-    double kP, kI, kD, leftPidValue, rightPidValue, leftSlidePosition, rightSlidePosition;
+    double kP, kI, kD, kF, leftPidValue, rightPidValue, leftSlidePosition, rightSlidePosition;
+    double activeIntakeVelocity, maxVelTresh, minVelTresh;
+    Gamepad.RumbleEffect customRumbleEffect;
+
     @Override
     public void init() {
         runTime = new ElapsedTime();
+        activeIntakeTimer = new ElapsedTime();
         driver = new GamepadEx(gamepad1);
+        driverRumble = new Gamepad();
         operator = new GamepadEx(gamepad2);
         bot = new RobotPID(hardwareMap, telemetry);
+
+        activeIntakeVelocity = 0.0;
+        maxVelTresh = 0.0;
+        minVelTresh = 0.0;
 
         leftPidValue = 0;
         rightPidValue = 0;
@@ -42,8 +49,6 @@ public class FieldCentricPID extends OpMode {
         kP = 0;
         kI = 0;
         kD = 0;
-
-        pidController = new PIDController(kP, kI, kD);
 
         telemetry.addLine("It's goobin time");
         telemetry.addLine("Time taken: " + getRuntime() + " seconds.");
@@ -56,7 +61,7 @@ public class FieldCentricPID extends OpMode {
 
         bot.setWristPosition(wristState.intaking);
 
-        bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending, leftPidValue, rightPidValue);
+        bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
 
         bot.setMecanumState(mecanumState.NORMAL);
 
@@ -67,6 +72,14 @@ public class FieldCentricPID extends OpMode {
         bot.setDrone();
 
         bot.setSlowDownState(slowDownState.FULL);
+
+        customRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
+                .addStep(0.0, 0.0, 300)  //  Pause for 300 mSec
+                .addStep(1.0, 0.0, 250)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 0.0, 250)  //  Pause for 250 mSec
+                .addStep(1.0, 0.0, 250)  //  Rumble left motor 100% for 250 mSec
+                .build();
     }
 
     // ---------------------------- LOOPING ---------------------------- //
@@ -79,12 +92,24 @@ public class FieldCentricPID extends OpMode {
         bot.driveTrain.driveAngleLock(bot.getMecanumState(), driver);
         bot.driveTrain.setMotorPower();
 
+        bot.setPid(kP, kI, kD);
+
         telemetry.update();
 
         driver.readButtons();
         operator.readButtons();
 
-        pidController.setPID(kP, kI, kD);
+        if (activeIntakeTimer.seconds() > 4) {
+            activeIntakeVelocity = bot.activeIntake.getVelocity();
+            activeIntakeTimer.reset();
+        }
+
+        if(bot.getActiveIntakeState().equals(activeIntakeState.active)) {
+            if(maxVelTresh > activeIntakeVelocity && activeIntakeVelocity > minVelTresh)
+            {
+                driverRumble.runRumbleEffect(customRumbleEffect);
+            }
+        }
 
         // ---------------------------- DRIVER CODE ---------------------------- //
 
@@ -109,11 +134,15 @@ public class FieldCentricPID extends OpMode {
             if (bot.getActiveIntakeState() != null && (bot.getActiveIntakeState().equals(activeIntakeState.active))) {
                 bot.setActiveIntakePosition(activeIntakeState.inactive);
                 bot.setActiveIntakeState(activeIntakeState.inactive);
-            } else if ((bot.getOuttakeState().equals(outtakeSlidesState.STATION) && (bot.getArmState()).equals(armState.intaking) && (bot.getWristState()).equals(wristState.intaking))) {
+            }
+            else if ((bot.getOuttakeState().equals(outtakeSlidesState.STATION) && (bot.getArmState()).equals(armState.intaking) && (bot.getWristState()).equals(wristState.intaking)))
+            {
                 bot.setLidPosition(lidState.open);
                 bot.setHolderServoPosition(holderServoState.open);
                 bot.setActiveIntakePosition(activeIntakeState.active);
                 bot.setActiveIntakeState(activeIntakeState.active);
+
+                activeIntakeVelocity = bot.activeIntake.getVelocity();
             }
         }
 
@@ -166,11 +195,9 @@ public class FieldCentricPID extends OpMode {
             } else {
                 bot.setLinkagePosition(linkageState.LOW);
             }
-
         }
 
         // --------------------------- OPERATOR CODE --------------------------- //
-
 
         if (operator.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)) {
             if (bot.getWristState() != null && bot.getWristState().equals(wristState.intaking)) {
@@ -185,60 +212,30 @@ public class FieldCentricPID extends OpMode {
             }
         }
         if (operator.wasJustPressed(GamepadKeys.Button.BACK)) {
-            leftSlidePosition = bot.getOuttakeLeftSlidePosition();
-            rightSlidePosition = bot.getOuttakeRightSlidePosition();
-
-            leftPidValue = pidController.calculate(leftSlidePosition, robotConstants.outtakeSlide.HIGHLEFT);
-            rightPidValue = pidController.calculate(rightSlidePosition, robotConstants.outtakeSlide.HIGHRIGHT);
-
-            bot.setOuttakeSlidePosition(outtakeSlidesState.HIGHOUT, extensionState.extending, leftPidValue, rightPidValue);
+            bot.setOuttakeSlidePosition(outtakeSlidesState.HIGHOUT, extensionState.extending);
             bot.setOuttakeSlideState(outtakeSlidesState.HIGHOUT);
         }
 
         if (operator.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
-            leftSlidePosition = bot.getOuttakeLeftSlidePosition();
-            rightSlidePosition = bot.getOuttakeRightSlidePosition();
-
-            leftPidValue = pidController.calculate(leftSlidePosition, robotConstants.outtakeSlide.MEDIUMLEFT);
-            rightPidValue = pidController.calculate(rightSlidePosition, robotConstants.outtakeSlide.MEDIUMRIGHT);
-
-            bot.setOuttakeSlidePosition(outtakeSlidesState.MEDIUMOUT, extensionState.extending, leftPidValue, rightPidValue);
+            bot.setOuttakeSlidePosition(outtakeSlidesState.MEDIUMOUT, extensionState.extending);
             bot.setOuttakeSlideState(outtakeSlidesState.MEDIUMOUT);
         }
 
         if (operator.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT))
         {
-            leftSlidePosition = bot.getOuttakeLeftSlidePosition();
-            rightSlidePosition = bot.getOuttakeRightSlidePosition();
-
-            leftPidValue = pidController.calculate(leftSlidePosition, robotConstants.outtakeSlide.LOWMEDLEFT);
-            rightPidValue = pidController.calculate(rightSlidePosition, robotConstants.outtakeSlide.LOWMEDRIGHT);
-
-            bot.setOuttakeSlidePosition(outtakeSlidesState.LOWMED, extensionState.extending, leftPidValue, rightPidValue);
+            bot.setOuttakeSlidePosition(outtakeSlidesState.LOWMED, extensionState.extending);
             bot.setOuttakeSlideState(outtakeSlidesState.LOWMED);
         }
 
         if (operator.wasJustPressed(GamepadKeys.Button.DPAD_LEFT))
         {
-            leftSlidePosition = bot.getOuttakeLeftSlidePosition();
-            rightSlidePosition = bot.getOuttakeRightSlidePosition();
-
-            leftPidValue = pidController.calculate(leftSlidePosition, robotConstants.outtakeSlide.LOWLEFT);
-            rightPidValue = pidController.calculate(rightSlidePosition, robotConstants.outtakeSlide.LOWRIGHT);
-
-            bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending, leftPidValue, rightPidValue);
+            bot.setOuttakeSlidePosition(outtakeSlidesState.LOWOUT, extensionState.extending);
             bot.setOuttakeSlideState(outtakeSlidesState.LOWOUT);
         }
 
         if (operator.wasJustPressed(GamepadKeys.Button.DPAD_DOWN))
         {
-            leftSlidePosition = bot.getOuttakeLeftSlidePosition();
-            rightSlidePosition = bot.getOuttakeRightSlidePosition();
-
-            leftPidValue = pidController.calculate(leftSlidePosition, robotConstants.outtakeSlide.GROUNDLEFT);
-            rightPidValue = pidController.calculate(rightSlidePosition, robotConstants.outtakeSlide.GROUNDRIGHT);
-
-            bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending, leftPidValue, rightPidValue);
+            bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
             bot.setOuttakeSlideState(outtakeSlidesState.STATION);
         }
 
