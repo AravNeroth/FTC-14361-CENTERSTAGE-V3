@@ -14,15 +14,18 @@ import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.Sample
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.SampleVoltMecanumDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous(name = "Auto Voltage Testing", group = "AravTest")
 
 public class AutoVoltTesting extends LinearOpMode {
     ElapsedTime timer = new ElapsedTime();
+    Double m1Vel, m2Vel, m3Vel, m4Vel;
+    List<Double> allMotorVels;
 
     // init stuff below
-        public static double DISTANCE = 70; // in
+        public static double DISTANCE = 50; // in - robot will go AROUND this much! allocate space
 
         @Override
         public void runOpMode () throws InterruptedException {
@@ -38,7 +41,7 @@ public class AutoVoltTesting extends LinearOpMode {
 
             telemetry.addLine("Instructions: Grab A Tape Measure And Give Bot Room To Go Straight.");
             telemetry.addLine("Measure & Note Distance On | V14+ | V13.9 | V13.8 | V13.7 | V13.6 |");
-            telemetry.addLine("Adjust 'mult' in SampleVoltMecanumDrive file until robot travels same dist no matter battery.");
+            telemetry.addLine("Adjust 'mult' in SampleVoltMecanumDrive setPower() until robot travels same dist no matter battery.");
             telemetry.addLine("Ready to Start.");
 
             telemetry.update();
@@ -49,8 +52,10 @@ public class AutoVoltTesting extends LinearOpMode {
 
             drive.followTrajectory(trajectory);
 
-            telemetry.addLine("Current Voltage: " + drive.getBatteryVoltage());
-            telemetry.addLine("Motor Speeds: ");
+            allMotorVels = drive.getWheelVelocities();
+
+            telemetry.addLine("Voltage: " + drive.getBatteryVoltage());
+            telemetry.addLine("Motor Velocities: | LF: " + allMotorVels.get(0) + "| LR: " + allMotorVels.get(1) + "| RR: " + allMotorVels.get(2) + "| RF:  " + allMotorVels.get(3) + "|" );
 
 
             Pose2d poseEstimate = drive.getPoseEstimate();
