@@ -46,9 +46,9 @@ public class FieldCentricPID extends OpMode {
         leftPidValue = 0;
         rightPidValue = 0;
 
-        kP = 0;
-        kI = 0;
-        kD = 0;
+        kP = 6;
+        kI = 1;
+        kD = 3;
 
         telemetry.addLine("It's goobin time");
         telemetry.addLine("Time taken: " + getRuntime() + " seconds.");
