@@ -49,6 +49,10 @@ public class AutoVoltTesting extends LinearOpMode {
 
             drive.followTrajectory(trajectory);
 
+            telemetry.addLine("Current Voltage: " + drive.getBatteryVoltage());
+            telemetry.addLine("Motor Speeds: ");
+
+
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("final X Position: ", poseEstimate.getX());
             telemetry.addData("final Y Position: ", poseEstimate.getY());

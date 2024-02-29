@@ -280,6 +280,10 @@ public class SampleVoltMecanumDrive extends MecanumDrive {
         }
         return wheelVelocities;
     }
+
+    public double getBatteryVoltage(){
+        return batteryVoltageSensor.getVoltage();
+    }
     public void breakFollowing() {
         trajectorySequenceRunner.breakFollowing();
     }
