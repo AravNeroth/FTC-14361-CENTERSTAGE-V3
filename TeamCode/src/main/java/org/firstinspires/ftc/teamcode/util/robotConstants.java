@@ -127,6 +127,7 @@ public class robotConstants
 
     public static class linkage
     {
+        public static double autoHigh = .80;
         public static double highPosition = .84;
         public static double mediumPosition = .875;
         public static double lowPosition = .935;

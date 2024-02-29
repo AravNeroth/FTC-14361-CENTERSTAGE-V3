@@ -31,6 +31,9 @@ public class Linkage
             case LOW:
                 linkageServo.setPosition(robotConstants.linkage.lowPosition);
                 break;
+            case AUTOHIGH:
+                linkageServo.setPosition(robotConstants.linkage.autoHigh);
+                break;
             default:
                 linkageServo.setPosition(robotConstants.linkage.lowPosition);
         }

@@ -8,10 +8,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Commands.activeIntakeState;
 import org.firstinspires.ftc.teamcode.Commands.armExtensionState;
 import org.firstinspires.ftc.teamcode.Commands.armState;
 import org.firstinspires.ftc.teamcode.Commands.extensionState;
 import org.firstinspires.ftc.teamcode.Commands.lidState;
+import org.firstinspires.ftc.teamcode.Commands.linkageState;
 import org.firstinspires.ftc.teamcode.Commands.outtakeSlidesState;
 import org.firstinspires.ftc.teamcode.Commands.wristState;
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.Detection.NewVision;
@@ -80,7 +82,7 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
     state currentState = state.tape;
 
     enum state {
-        tape, firstTimeBoard, secondTimeBoard, thirdTimeBoard, stack, idle, park
+        tape, firstTimeBoard, secondTimeBoard, thirdTimeBoard, stack, idle, park, leaveBoard, underGateToStack, leaveStack, stackTurn, scoring
     }
 
     public void runOpMode() {
@@ -90,8 +92,8 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
 
         TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
                 //.lineToConstantHeading(new Vector2d(19,-55))
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                .lineToConstantHeading(new Vector2d(11.5, 34))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                .lineToConstantHeading(new Vector2d(14.5, 34.75))
                 .addTemporalMarker(.05,() -> {
                     bot.setLidPosition(lidState.close);
                 })
@@ -99,7 +101,7 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                     bot.setArmPosition(armState.init, armExtensionState.extending);
                     bot.setWristPosition(wristState.intaking);
                 })
-                .lineToConstantHeading(new Vector2d(11.5, 40))
+                .lineToConstantHeading(new Vector2d(14.5, 40))
 
                 .lineToLinearHeading(new Pose2d(25 ,40, Math.toRadians(180)))
                 .addTemporalMarker(() -> {
@@ -228,7 +230,7 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
 
 
                     if (!drive.isBusy()) {
-                        drive.setPoseEstimate(new Pose2d(72-bot.distanceSensor.getBotsRightCenterDistance(), drive.getPoseEstimate().getY(), Math.toRadians(180)));
+                        drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), 72-bot.distanceSensor.getBotsRightCenterDistance(), Math.toRadians(180)));
                         currentState = state.firstTimeBoard;
                         temporalMarkerTimer.reset();
                         timer.reset();
@@ -242,7 +244,7 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                         switch (startPath){
                             case RIGHT:
                                 score = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                        .lineToConstantHeading(new Vector2d(62.5, 32))
+                                        .lineToConstantHeading(new Vector2d(50.05, 32))
                                         .addTemporalMarker(.05,() -> {
                                           bot.outtakeSlide.setPosition(525);
                                         })
@@ -250,13 +252,14 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                                             bot.setLidPosition(lidState.open);
                                             bot.outtakeSlide.setPosition(700);
                                         })
+                                        .waitSeconds(.1)
                                         .build();
                                 drive.followTrajectorySequenceAsync(score);
-                                currentState = state.park;
+                                currentState = state.leaveBoard;
                                 break;
                             case CENTER:
                                 score = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                        .lineToConstantHeading(new Vector2d(62.5, 38))
+                                        .lineToConstantHeading(new Vector2d(50.05, 37.8))
                                         .addTemporalMarker(.05,() -> {
                                             bot.outtakeSlide.setPosition(515);
                                         })
@@ -264,13 +267,14 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                                             bot.setLidPosition(lidState.open);
                                             bot.outtakeSlide.setPosition(700);
                                         })
+                                        .waitSeconds(.1)
                                         .build();
                                 drive.followTrajectorySequenceAsync(score);
-                                currentState = state.park;
+                                currentState = state.leaveBoard;
                                 break;
                             case LEFT:
                                 score = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                        .lineToConstantHeading(new Vector2d(62.5, 44))
+                                        .lineToConstantHeading(new Vector2d(50.05, 44))
                                         .addTemporalMarker(.05,() -> {
                                             bot.outtakeSlide.setPosition(525);
                                         })
@@ -278,18 +282,186 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                                             bot.setLidPosition(lidState.open);
                                             bot.outtakeSlide.setPosition(700);
                                         })
+                                        .waitSeconds(.1)
                                         .build();
 
                                 drive.followTrajectorySequenceAsync(score);
-                                drive.setPoseEstimate(new Pose2d(52, drive.getPoseEstimate().getY(), Math.toRadians(180)));
-                                currentState = state.park;
+                                drive.setPoseEstimate(new Pose2d(50.05, 72-bot.distanceSensor.getBotsRightCenterDistance(), Math.toRadians(180)));
+                                currentState = state.leaveBoard;
                                 break;
 
                         }
                     }
 
                                       break;
+                case leaveBoard:
+                    if(!drive.isBusy()){
+                        TrajectorySequence leave = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                                .waitSeconds(.1)
+                                .lineToConstantHeading(new Vector2d(42, drive.getPoseEstimate().getY()))
+                                .waitSeconds(.2)
+                                .lineToConstantHeading(new Vector2d(42, 11.5))
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                                .waitSeconds(.1)
+                               //.splineTo(new Vector2d(42, 10), Math.toRadians(180))
+                                .addDisplacementMarker(5,  () -> {
+                                    bot.setArmPosition(armState.intaking, armExtensionState.extending);
+                                    bot.setWristPosition(wristState.intaking);
+                                })
+                                .addDisplacementMarker(10,() -> {
+                                    bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
+
+                                })
+                                .build();
+                        drive.followTrajectorySequenceAsync(leave);
+                        currentState = state.underGateToStack;
+                    }
+                    break;
+                case underGateToStack:
+                    if(!drive.isBusy()){
+                        TrajectorySequence underGate = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(47.5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                                .lineToConstantHeading(new Vector2d(-55, 11.5))
+
+                                .build();
+                        drive.followTrajectorySequenceAsync(underGate);
+
+                        currentState = state.stackTurn;
+                    }
+
+                    break;
+                case stack:
+                    if(!drive.isBusy()){
+                        drive.setPoseEstimate(new Pose2d(-72 + bot.distanceSensor.getBotsFrontDistance(), drive.getPoseEstimate().getY()));
+                        TrajectorySequence pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                              //  .forward(1)
+                                .waitSeconds(4)
+                                .addTemporalMarker(.25,() -> {
+                                    bot.setActiveIntakePosition(activeIntakeState.active);
+                                    bot.setLinkagePosition(linkageState.AUTOHIGH);
+                                })
+                                .addTemporalMarker(.5,() -> {
+                                    bot.setLinkagePosition(linkageState.LOW);
+                                })
+                                .addTemporalMarker(.75,() -> {
+                                    bot.setLinkagePosition(linkageState.AUTOHIGH);
+                                })
+                                .addTemporalMarker(1,() -> {
+                                    bot.setLinkagePosition(linkageState.LOW);
+                                })
+                                .addTemporalMarker(1.25,() -> {
+                                    bot.setLinkagePosition(linkageState.AUTOHIGH);
+                                })
+                                .addTemporalMarker(1.5,() -> {
+                                    bot.setLinkagePosition(linkageState.MEDIUM);
+                                })
+                                .addTemporalMarker(1.8,() -> {
+                                    bot.setLinkagePosition(linkageState.HIGH);
+                                })
+                                .addTemporalMarker(2.1,() -> {
+                                    bot.setLinkagePosition(linkageState.MEDIUM);
+                                })
+//                                .addTemporalMarker(.9,() -> {
+//                                    bot.setLinkagePosition(linkageState.HIGH);
+//                                })
+                                .addTemporalMarker(2.5,() -> {
+                                    bot.setLinkagePosition(linkageState.LOW);
+                                })
+                                .back(10)
+                                .addDisplacementMarker(() -> {
+                                   bot.activeIntake.setActiveIntakePosition(activeIntakeState.inactive);
+                                })
+
+                                .build();
+                        drive.followTrajectorySequenceAsync(pickUpStack);
+                        currentState = state.leaveStack;
+                    }
+                    break;
+                case stackTurn:
+                    if(!drive.isBusy()){
+                        drive.setPoseEstimate(new Pose2d(-72 + bot.distanceSensor.getBotsFrontDistance(), drive.getPoseEstimate().getY(), Math.toRadians(180)));
+                        TrajectorySequence pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                .lineToLinearHeading(new Pose2d(-67.75, 11.5, Math.toRadians(240)))
+                                .addTemporalMarker(() -> {
+                               //     bot.setActiveIntakePosition(activeIntakeState.active);
+                                    bot.setLinkagePosition(linkageState.LOW);
+                                })
+                                .forward(.75)
+                                .turn(Math.toRadians(-100))
+                                .addTemporalMarker(() -> {
+                                        bot.setActiveIntakePosition(activeIntakeState.active);
+                                   // bot.setLinkagePosition(linkageState.HIGH);
+                                })
+                                .lineToLinearHeading(new Pose2d(-70, 15, Math.toRadians(180)))
+
+                                .waitSeconds(.45)
+                                .back(.35)
+                                 .strafeLeft(2)
+                                .waitSeconds(.1)
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                                .back(10)
+                                .addTemporalMarker(() -> {
+                    bot.setArmPosition(armState.init, armExtensionState.extending);
+
+                                })
+
+                                .build();
+                        drive.followTrajectorySequenceAsync(pickUpStack);
+                        currentState = state.leaveStack;
+                    }
+                    break;
+
+                case leaveStack:
+                    if(!drive.isBusy()){
+                        TrajectorySequence underGate = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                                .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX(), 10.5))
+                                .addTemporalMarker(.1,() -> {
+                                    bot.setLidPosition(lidState.close);
+                                    bot.setActiveIntakePosition(activeIntakeState.activeReverse);
+                                })
+                                .addTemporalMarker(.6,() -> {
+                                    bot.setLinkagePosition(linkageState.HIGH);
+                                    bot.setActiveIntakePosition(activeIntakeState.inactive);
+                                })
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(47.5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                                .lineToConstantHeading(new Vector2d(35, 10.5))
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                                .lineToConstantHeading(new Vector2d(35, 31))
+                                .addTemporalMarker(() -> {
+                                    bot.outtakeSlide.setPosition(700);
+                                    bot.setArmPosition(armState.outtaking, armExtensionState.extending);
+                                    bot.setWristPosition(wristState.outtaking);
+                                })
+
+
+                                .build();
+
+                        drive.followTrajectorySequenceAsync(underGate);
+
+                        currentState = state.park;
+                    }
+                    break;
+                case scoring:
+                    if(!drive.isBusy()) {
+                        drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), 72-bot.distanceSensor.getBotsRightCenterDistance(), Math.toRadians(180)));
+                        TrajectorySequence scoreBoard = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                .lineToConstantHeading(new Vector2d(43.5, 31))
+                                .addTemporalMarker(() -> {
+                                    bot.setLidPosition(lidState.open);
+                                    bot.outtakeSlide.setPosition(950);
+                                })
+                                // .lineToConstantHeading(new Vector2d(45, 28))
+
+                                .build();
+
+                        drive.followTrajectorySequenceAsync(scoreBoard);
+                        currentState = state.park;
+                    }
+                    break;
                 case park:
+
                     if(!drive.isBusy()){
                         TrajectorySequence parkNextToBackboard = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
@@ -303,11 +475,11 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
 
                                 })
 
-                                .lineToLinearHeading(new Pose2d(46, 12, Math.toRadians(270)))
+                                .lineToLinearHeading(new Pose2d(40, 12, Math.toRadians(270)))
 
 //
 
-                                .lineToConstantHeading(new Vector2d(52, 12))
+                                .lineToConstantHeading(new Vector2d(46, 12))
                                 .build();
                         TrajectorySequence parkInCorner = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
@@ -326,9 +498,10 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
 
                                 .lineToConstantHeading(new Vector2d(52, 55))
                                 .build();
-                        drive.followTrajectorySequenceAsync(parkInCorner);
+                        drive.followTrajectorySequenceAsync(parkNextToBackboard);
                         currentState = state.idle;
                     }
+                    break;
                 case idle:
                     telemetry.addLine("Inside Idle State");
               //      telemetry.addData("Tag ID", tagOfInterest.id);

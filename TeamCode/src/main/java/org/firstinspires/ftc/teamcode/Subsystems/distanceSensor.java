@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Commands.stackState;
 
 public class distanceSensor
 {
-    DistanceSensor frontDistanceSensor, leftDistanceSensor, rightDistanceSensor;
+    DistanceSensor frontDistanceSensor, leftDistanceSensor, rightDistanceSensor ;
     AnalogInput us;
 
     double tooFarTresh, FarTresh, CloseTresh;
@@ -24,7 +24,8 @@ public class distanceSensor
        // frontDistanceSensor = hardwareMap.get(DistanceSensor.class, "frontDistanceSensor");
         leftDistanceSensor = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
         rightDistanceSensor = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
-        us = hardwareMap.get(AnalogInput.class, "us");
+        frontDistanceSensor = hardwareMap.get(DistanceSensor.class, "frontDistanceSensor");
+        //us = hardwareMap.get(AnalogInput.class, "us");
     }
 
 //    public frontDistanceState frontAdjust()
@@ -54,6 +55,9 @@ public class distanceSensor
     }
     public double getBotsRightCenterDistance(){
         return rightDistanceSensor.getDistance(DistanceUnit.INCH) + 4.75;
+    }
+    public double getBotsFrontDistance(){
+        return frontDistanceSensor.getDistance(DistanceUnit.INCH) - 3.5625;
     }
     public double getUSDistance(){
         return us.getVoltage() / 3.3;
