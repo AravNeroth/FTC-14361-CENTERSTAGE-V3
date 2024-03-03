@@ -66,10 +66,10 @@ public class FieldCentric extends OpMode {
         telemetry.addLine("Total Runtime: " + getRuntime() + " seconds.");
         telemetry.addLine("Left Slide Position: " + bot.getOuttakeLeftSlidePosition() + " ticks");
         telemetry.addLine("Right Slide Position: " + bot.getOuttakeRightSlidePosition() + " ticks");
-        telemetry.addLine("US Distance " + bot.distanceSensor.getUSDistance());
-        telemetry.addLine("US Distance " + bot.distanceSensor.getUSDistanceNoDiv());
-
-        telemetry.addLine("US Distance " + bot.distanceSensor.getUSDistance360());
+//        telemetry.addLine("US Distance " + bot.distanceSensor.getUSDistance());
+//        telemetry.addLine("US Distance " + bot.distanceSensor.getUSDistanceNoDiv());
+//
+//        telemetry.addLine("US Distance " + bot.distanceSensor.getUSDistance360());
         bot.driveTrain.driveAngleLock(bot.getMecanumState(), driver);
         bot.driveTrain.setMotorPower();
 
