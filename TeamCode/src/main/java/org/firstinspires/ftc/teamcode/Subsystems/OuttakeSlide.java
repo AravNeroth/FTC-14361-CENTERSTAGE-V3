@@ -141,6 +141,10 @@ public class OuttakeSlide
                 break;
         }
     }
+    public void resetSlideEncoder(){
+        rightouttakeSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftouttakeSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
     public void setOuttakeSlidesPID(outtakeSlidesState outtakeSlidesState)
     {
 
