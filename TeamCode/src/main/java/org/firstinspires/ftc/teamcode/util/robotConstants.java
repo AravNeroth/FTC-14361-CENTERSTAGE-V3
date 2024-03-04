@@ -31,6 +31,9 @@ public class robotConstants
 
         public static int GROUNDLEFT = 0;
         public static int GROUNDRIGHT = 0;
+
+        public static int supaDownRight = -50;
+        public static int supaDownLeft = -50;
     }
 
     public static class intakeSlide
@@ -82,7 +85,7 @@ public class robotConstants
     public static class Wrist
     {
         public static double outtaking = .365;
-        public static double intaking = .78;
+        public static double intaking = .82;
         public static double init = .42;
     }
     public static class Lid

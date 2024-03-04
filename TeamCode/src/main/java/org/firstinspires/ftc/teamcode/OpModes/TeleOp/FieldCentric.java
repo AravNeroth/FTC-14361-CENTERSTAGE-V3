@@ -24,13 +24,14 @@ import org.firstinspires.ftc.teamcode.Subsystems.distanceSensor;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 
 public class FieldCentric extends OpMode {
-    private ElapsedTime runTime;
+    private ElapsedTime runTime, outtakeResetTimer;
     private GamepadEx driver, operator;
     private Robot bot;
 
     @Override
     public void init() {
         runTime = new ElapsedTime();
+        outtakeResetTimer = new ElapsedTime();
         driver = new GamepadEx(gamepad1);
         operator = new GamepadEx(gamepad2);
         bot = new Robot(hardwareMap, telemetry);
@@ -47,7 +48,9 @@ public class FieldCentric extends OpMode {
 
         bot.setWristPosition(wristState.intaking);
 
-        bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
+        bot.setOuttakeSlidePosition(outtakeSlidesState.supaDown, extensionState.extending);
+        bot.outtakeSlide.resetSlideEncoder();
+        bot.setOuttakeSlideState(outtakeSlidesState.supaDown);
 
         bot.setMecanumState(mecanumState.NORMAL);
 
@@ -78,6 +81,12 @@ public class FieldCentric extends OpMode {
 
         driver.readButtons();
         operator.readButtons();
+
+        if(outtakeResetTimer.seconds() < 1.5 && outtakeResetTimer.startTime() > .75)
+        {
+            bot.outtakeSlide.resetSlideEncoder();
+            outtakeResetTimer.reset();
+        }
 
         // ---------------------------- DRIVER CODE ---------------------------- //
 
@@ -257,11 +266,11 @@ public class FieldCentric extends OpMode {
             bot.outtakeSlide.setLeftOuttakeSlidePosition((int) bot.outtakeSlide.getLeftOuttakeSlideMotorPosition() - (int) (operator.getRightY() * 20));
             bot.outtakeSlide.setRightouttakeSlidePosition((int) bot.outtakeSlide.getRightOuttakeSlideMotorPosition() - (int) (operator.getRightY() * 20));
         }
-//        if(operator.getLeftY() > .1){
-//
-//        }
-        if(operator.wasJustPressed(GamepadKeys.Button.LEFT_STICK_BUTTON)){
-          bot.outtakeSlide.resetSlideEncoder();
+
+        if (operator.wasJustPressed(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
+            outtakeResetTimer.reset();
+            bot.setOuttakeSlidePosition(outtakeSlidesState.supaDown, extensionState.extending);
+            bot.setOuttakeSlideState(outtakeSlidesState.supaDown);
         }
     }
 }

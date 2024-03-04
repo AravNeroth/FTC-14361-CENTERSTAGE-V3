@@ -134,6 +134,16 @@ public class OuttakeSlide
                         leftouttakeSlide.setPower(power);
                         rightouttakeSlide.setPower(power);
                         break;
+                    case supaDown:
+                        leftouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.supaDownLeft);
+                        rightouttakeSlide.setTargetPosition(robotConstants.outtakeSlide.supaDownRight);
+
+                        leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                        leftouttakeSlide.setPower(power);
+                        rightouttakeSlide.setPower(power);
+                        break;
                 }
             }
 
@@ -244,9 +254,7 @@ public class OuttakeSlide
 
         rightouttakeSlide.setPower(power);
     }
-//    public double PIDControl(double reference, double state){
-//double
-//    }
+
     public double PIDControl(double reference, double state){
         double error = reference - state;
         integralSum += error * timer.seconds();
@@ -256,8 +264,6 @@ public class OuttakeSlide
         double output = (error * Kp) + (derivative * Kd) + (integralSum * Ki);
         return output;
     }
-//    public void setZero(){
-//        leftouttakeSlide.setC
-//    }
+
 }
 
