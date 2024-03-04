@@ -80,6 +80,9 @@ public class SampleVoltMecanumDrive extends MecanumDrive {
     private List<Integer> lastEncPositions = new ArrayList<>();
     private List<Integer> lastEncVels = new ArrayList<>();
 
+    // voltage stuff
+    private double volt1, volt2, volt3, volt4;
+
     public SampleVoltMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
@@ -284,33 +287,65 @@ public class SampleVoltMecanumDrive extends MecanumDrive {
     public double getBatteryVoltage(){
         return batteryVoltageSensor.getVoltage();
     }
+
+
     public void breakFollowing() {
         trajectorySequenceRunner.breakFollowing();
+    }
+
+    public List<Double> getWheelPowers() {
+        List<Double> wheelPowers = new ArrayList<>();
+        // im sure theres a better way to do this but this works
+        wheelPowers.add(volt1);
+        wheelPowers.add(volt2);
+        wheelPowers.add(volt3);
+        wheelPowers.add(volt4);
+
+        return wheelPowers;
+    }
+
+    public double getPowerMult(){
+
+        double mult = 1.0;
+        double currentVolt = batteryVoltageSensor.getVoltage();
+
+        if(currentVolt >= 14)
+            mult = 0.716;
+        else if(currentVolt >= 13.9)
+            mult = 0.8;
+        else if(currentVolt >= 13.8)
+            mult = 0.8;
+        else if(currentVolt >= 13.7)
+            mult = 0.92;
+        else if(currentVolt >= 13.6)
+            mult = 0.95;
+
+        return mult;
     }
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
     /*
-    disclaimer: i have absolutely ZERO clue on if this works or not lmao
+    note: i have absolutely ZERO clue on if this works or not lmao
      */
         double mult = 1.0;
         double currentVolt = batteryVoltageSensor.getVoltage();
 
         if(currentVolt >= 14)
-            mult = 0.7;
+            mult = 0.716;
         else if(currentVolt >= 13.9)
-            mult = 0.75;
+            mult = 0.8;
         else if(currentVolt >= 13.8)
             mult = 0.8;
         else if(currentVolt >= 13.7)
-            mult = 0.9;
+            mult = 0.92;
         else if(currentVolt >= 13.6)
-            mult = 0.95;
+            mult = 0.965;
 
-        double volt1 = v * mult;
-        double volt2 = v1 * mult;
-        double volt3 = v2 * mult;
-        double volt4 = v3 * mult;
+        volt1 = v * mult;
+        volt2 = v1 * mult;
+        volt3 = v2 * mult;
+        volt4 = v3 * mult;
 
         leftFront.setPower(volt1);
         leftRear.setPower(volt2);

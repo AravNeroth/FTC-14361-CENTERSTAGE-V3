@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.Sample
 import org.firstinspires.ftc.teamcode.OpModes.Autonomous.RoadRunner.drive.SampleVoltMecanumDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -22,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class AutoVoltTesting extends LinearOpMode {
     ElapsedTime timer = new ElapsedTime();
     Double m1Vel, m2Vel, m3Vel, m4Vel;
-    List<Double> allMotorVels;
+    List<Double> allMotorSpeed;
 
     // init stuff below
         public static double DISTANCE = 50; // in - robot will go AROUND this much! allocate space
@@ -30,6 +31,7 @@ public class AutoVoltTesting extends LinearOpMode {
         @Override
         public void runOpMode () throws InterruptedException {
             timer.reset();
+            DecimalFormat numberFormat = new DecimalFormat("#.00");
 
             Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -42,6 +44,7 @@ public class AutoVoltTesting extends LinearOpMode {
             telemetry.addLine("Instructions: Grab A Tape Measure And Give Bot Room To Go Straight.");
             telemetry.addLine("Measure & Note Distance On | V14+ | V13.9 | V13.8 | V13.7 | V13.6 |");
             telemetry.addLine("Adjust 'mult' in SampleVoltMecanumDrive setPower() until robot travels same dist no matter battery.");
+            telemetry.addLine("Voltage on Initialization Completion: " + drive.getBatteryVoltage());
             telemetry.addLine("Ready to Start.");
 
             telemetry.update();
@@ -52,11 +55,12 @@ public class AutoVoltTesting extends LinearOpMode {
 
             drive.followTrajectory(trajectory);
 
-            allMotorVels = drive.getWheelVelocities();
 
             telemetry.addLine("Voltage: " + drive.getBatteryVoltage());
-            telemetry.addLine("Motor Velocities: | LF: " + allMotorVels.get(0) + "| LR: " + allMotorVels.get(1) + "| RR: " + allMotorVels.get(2) + "| RF:  " + allMotorVels.get(3) + "|" );
+            telemetry.addLine("Current Mult: " + drive.getPowerMult());
 
+            allMotorSpeed = drive.getWheelPowers();
+            telemetry.addLine("Motor Powers: | LF: " + (allMotorSpeed.get(0)) + "| LR: " + (allMotorSpeed.get(1)) + "| RR: " + (allMotorSpeed.get(2)) + "| RF:  " + (allMotorSpeed.get(3)) + "|" );
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("final X Position: ", poseEstimate.getX());
