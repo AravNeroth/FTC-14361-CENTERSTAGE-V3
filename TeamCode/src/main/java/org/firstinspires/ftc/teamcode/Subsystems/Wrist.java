@@ -41,11 +41,10 @@ public class Wrist
     {
         return wristServo.getPosition();
     }
-//    public void turnWristOff(){
-//        wristServo.disable();
-//    }
+
     public void setWristCustomPosition(double position){
         wristServo.setPosition(position);
+        wristServo.disable();
     }
 
 }

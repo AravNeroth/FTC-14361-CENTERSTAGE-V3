@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.util.robotConstants;
 
 public class ActiveIntake
 {
-   DcMotorEx activeIntake;
+    DcMotorEx activeIntake;
     public ActiveIntake(HardwareMap hardwareMap)
     {
         activeIntake = hardwareMap.get(DcMotorEx.class, "activeIntake");

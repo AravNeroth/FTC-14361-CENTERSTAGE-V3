@@ -50,12 +50,6 @@ public class Arm
 
                 armExtension = armExtensionState.station;
                 break;
-//            case outtakingHigh:
-//                leftArm.setPosition(robotConstants.arm.outtakingLeftHigh);
-//                rightArm.setPosition(robotConstants.arm.outtakingRightHigh);
-//
-//                armExtension =armExtensionState.station;
-//                break;
             case intaking:
                 leftArm.setPosition(intakingLeft);
                 rightArm.setPosition(intakingRight);

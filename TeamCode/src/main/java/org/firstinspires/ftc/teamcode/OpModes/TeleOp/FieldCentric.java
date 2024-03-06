@@ -20,23 +20,26 @@ import org.firstinspires.ftc.teamcode.Commands.armState;
 import org.firstinspires.ftc.teamcode.Commands.wristState;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Subsystems.distanceSensor;
+import org.firstinspires.ftc.teamcode.util.robotConstants;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 
 public class FieldCentric extends OpMode {
-    private ElapsedTime runTime, outtakeResetTimer;
+    private ElapsedTime runTime;
     private GamepadEx driver, operator;
     private Robot bot;
-    double slideOverride;
+    double P, I, D;
 
     @Override
     public void init() {
         runTime = new ElapsedTime();
-        outtakeResetTimer = new ElapsedTime();
         driver = new GamepadEx(gamepad1);
         operator = new GamepadEx(gamepad2);
         bot = new Robot(hardwareMap, telemetry);
-        slideOverride = 0.0;
+
+        P = 6;
+        I = 1;
+        D = 2;
 
         telemetry.addLine("It's goobin time");
         telemetry.addLine("Time taken: " + getRuntime() + " seconds.");
@@ -50,9 +53,7 @@ public class FieldCentric extends OpMode {
 
         bot.setWristPosition(wristState.intaking);
 
-        bot.setOuttakeSlidePosition(outtakeSlidesState.supaDown, extensionState.extending);
-        bot.outtakeSlide.resetSlideEncoder();
-        bot.setOuttakeSlideState(outtakeSlidesState.supaDown);
+        bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
 
         bot.setMecanumState(mecanumState.NORMAL);
 
@@ -63,6 +64,8 @@ public class FieldCentric extends OpMode {
         bot.setDrone();
 
         bot.setSlowDownState(slowDownState.FULL);
+
+        bot.setPid(6,1,2);
     }
 
     // ---------------------------- LOOPING ---------------------------- //
@@ -72,10 +75,6 @@ public class FieldCentric extends OpMode {
         telemetry.addLine("Total Runtime: " + getRuntime() + " seconds.");
         telemetry.addLine("Left Slide Position: " + bot.getOuttakeLeftSlidePosition() + " ticks");
         telemetry.addLine("Right Slide Position: " + bot.getOuttakeRightSlidePosition() + " ticks");
-//        telemetry.addLine("US Distance " + bot.distanceSensor.getUSDistance());
-//        telemetry.addLine("US Distance " + bot.distanceSensor.getUSDistanceNoDiv());
-//
-//        telemetry.addLine("US Distance " + bot.distanceSensor.getUSDistance360());
         bot.driveTrain.driveAngleLock(bot.getMecanumState(), driver);
         bot.driveTrain.setMotorPower();
 
@@ -84,19 +83,12 @@ public class FieldCentric extends OpMode {
         driver.readButtons();
         operator.readButtons();
 
-        if(outtakeResetTimer.seconds() < 2 && outtakeResetTimer.startTime() > 1.5)
-        {
-            bot.outtakeSlide.resetSlideEncoder();
-            outtakeResetTimer.reset();
-        }
-
         // ---------------------------- DRIVER CODE ---------------------------- //
+
+
 
         if (driver.wasJustPressed(GamepadKeys.Button.START)) {
             bot.driveTrain.resetIMU();
-        }
-        if(driver.wasJustPressed(GamepadKeys.Button.DPAD_UP)){
-            bot.outtakeSlide.setOuttakeSlidesPID(outtakeSlidesState.HIGHOUT);
         }
 
         if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1) {
@@ -174,6 +166,10 @@ public class FieldCentric extends OpMode {
                 bot.setLinkagePosition(linkageState.LOW);
             }
 
+        }
+
+        if (driver.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
+            bot.wrist.setWristCustomPosition(robotConstants.Wrist.init);
         }
 
         // --------------------------- OPERATOR CODE --------------------------- //

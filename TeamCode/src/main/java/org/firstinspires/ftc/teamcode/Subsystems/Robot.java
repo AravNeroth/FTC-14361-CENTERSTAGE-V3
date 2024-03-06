@@ -55,9 +55,14 @@ public class Robot {
         lid = new Lid(hardwareMap);
         drone = new Drone(hardwareMap);
         holderServo = new holderServo(hardwareMap);
-      //  colorSensor = new colorSensor(hardwareMap);
+        //  colorSensor = new colorSensor(hardwareMap);
         voltMecanum = new VoltMecanum(hardwareMap);
         distanceSensor = new distanceSensor(hardwareMap);
+    }
+
+    public void setPid(double p, double i, double d)
+    {
+        outtakeSlide.setPid(p,i,d);
     }
 
     // ---------------------------- OuttakeSlide ---------------------------- //

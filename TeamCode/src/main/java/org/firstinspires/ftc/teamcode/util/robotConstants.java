@@ -29,8 +29,8 @@ public class robotConstants
         public static int AUTOMEDLEFT = 350;
         public static int AUTOMEDRIGHT = 350;
 
-        public static int GROUNDLEFT = 0;
-        public static int GROUNDRIGHT = 0;
+        public static int GROUNDLEFT = -10;
+        public static int GROUNDRIGHT = -10;
 
         public static int supaDownRight = -50;
         public static int supaDownLeft = -50;
@@ -67,11 +67,8 @@ public class robotConstants
     public static class activeIntake
     {
 
-        public static double
-                active = -1;
+        public static double active = -1;
         public static double reverseActive = 1;
-
-
 
         public static double autoActive = -.7;
         public static double autoReverseActive = .7;
@@ -84,27 +81,22 @@ public class robotConstants
 
     public static class Wrist
     {
-        public static double outtaking = .365;
-        public static double intaking = .82;
+        public static double outtaking = .38;
+        public static double intaking = .795;
         public static double init = .42;
     }
     public static class Lid
     {
-        // wihtout Distance Sensor
-//        public static double close = 0;
-//        public static double open =.2 ;
-
         public static double close = 0;
         public static double open = 0.2;
     }
 
     public static class Arm
-
     {
-
         public static double intakingLeft = 0.006;
 
-        public static double intakingRight = 0.043;
+        public static double intakingRight = 0.006;
+
 
 
         public static double intakingInitLeft = .5;
