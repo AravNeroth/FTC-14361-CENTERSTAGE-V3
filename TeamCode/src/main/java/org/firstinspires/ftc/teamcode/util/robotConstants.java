@@ -29,8 +29,8 @@ public class robotConstants
         public static int AUTOMEDLEFT = 350;
         public static int AUTOMEDRIGHT = 350;
 
-        public static int GROUNDLEFT = 0;
-        public static int GROUNDRIGHT = 0;
+        public static int GROUNDLEFT = -10;
+        public static int GROUNDRIGHT = -10;
     }
 
     public static class intakeSlide
@@ -82,7 +82,7 @@ public class robotConstants
     public static class Wrist
     {
         public static double outtaking = .365;
-        public static double intaking = .78;
+        public static double intaking = .795;
         public static double init = .42;
     }
     public static class Lid
@@ -101,7 +101,7 @@ public class robotConstants
 
         public static double intakingLeft = 0.006;
 
-        public static double intakingRight = 0.043;
+        public static double intakingRight = 0.006;
 
 
         public static double intakingInitLeft = .5;
