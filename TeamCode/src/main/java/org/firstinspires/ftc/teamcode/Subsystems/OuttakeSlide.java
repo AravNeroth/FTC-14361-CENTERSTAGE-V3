@@ -23,6 +23,7 @@ public class OuttakeSlide
     double Kd = 0;
     double leftPower = 0, rightPower = 0;
     ElapsedTime timer = new ElapsedTime();
+    int leftCurrent,rightCurrent;
 
 
     public OuttakeSlide(HardwareMap hardwareMap) {
@@ -252,6 +253,24 @@ public class OuttakeSlide
         rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
+        rightouttakeSlide.setPower(power);
+    }
+
+    public void slideOverride(double override)
+    {
+        leftCurrent = leftouttakeSlide.getCurrentPosition();
+        rightCurrent = rightouttakeSlide.getCurrentPosition();
+
+        if(override != 0){
+            leftouttakeSlide.setTargetPosition(leftCurrent);
+            rightouttakeSlide.setTargetPosition(rightCurrent);
+            power = -override;
+        }
+
+        leftouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightouttakeSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftouttakeSlide.setPower(power);
         rightouttakeSlide.setPower(power);
     }
 

@@ -27,6 +27,7 @@ public class FieldCentric extends OpMode {
     private ElapsedTime runTime, outtakeResetTimer;
     private GamepadEx driver, operator;
     private Robot bot;
+    double slideOverride;
 
     @Override
     public void init() {
@@ -35,6 +36,7 @@ public class FieldCentric extends OpMode {
         driver = new GamepadEx(gamepad1);
         operator = new GamepadEx(gamepad2);
         bot = new Robot(hardwareMap, telemetry);
+        slideOverride = 0.0;
 
         telemetry.addLine("It's goobin time");
         telemetry.addLine("Time taken: " + getRuntime() + " seconds.");
@@ -82,7 +84,7 @@ public class FieldCentric extends OpMode {
         driver.readButtons();
         operator.readButtons();
 
-        if(outtakeResetTimer.seconds() < 1.5 && outtakeResetTimer.startTime() > .75)
+        if(outtakeResetTimer.seconds() < 2 && outtakeResetTimer.startTime() > 1.5)
         {
             bot.outtakeSlide.resetSlideEncoder();
             outtakeResetTimer.reset();
@@ -258,19 +260,18 @@ public class FieldCentric extends OpMode {
 
         if (operator.getRightY() > .1) {
 
-            bot.outtakeSlide.setLeftOuttakeSlidePosition((int) bot.outtakeSlide.getLeftOuttakeSlideMotorPosition() - (int) (operator.getRightY() * 20));
-            bot.outtakeSlide.setRightouttakeSlidePosition((int) bot.outtakeSlide.getRightOuttakeSlideMotorPosition() - (int) (operator.getRightY() * 20));
+            bot.outtakeSlide.setLeftOuttakeSlidePosition((int) bot.outtakeSlide.getLeftOuttakeSlideMotorPosition() - (int) (operator.getRightY() * 80));
+            bot.outtakeSlide.setRightouttakeSlidePosition((int) bot.outtakeSlide.getRightOuttakeSlideMotorPosition() - (int) (operator.getRightY() * 80));
         }
         if (operator.getRightY() < -.1) {
 
-            bot.outtakeSlide.setLeftOuttakeSlidePosition((int) bot.outtakeSlide.getLeftOuttakeSlideMotorPosition() - (int) (operator.getRightY() * 20));
-            bot.outtakeSlide.setRightouttakeSlidePosition((int) bot.outtakeSlide.getRightOuttakeSlideMotorPosition() - (int) (operator.getRightY() * 20));
+            bot.outtakeSlide.setLeftOuttakeSlidePosition((int) bot.outtakeSlide.getLeftOuttakeSlideMotorPosition() - (int) (operator.getRightY() * 80));
+            bot.outtakeSlide.setRightouttakeSlidePosition((int) bot.outtakeSlide.getRightOuttakeSlideMotorPosition() - (int) (operator.getRightY() * 80));
         }
 
-        if (operator.wasJustPressed(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
-            outtakeResetTimer.reset();
-            bot.setOuttakeSlidePosition(outtakeSlidesState.supaDown, extensionState.extending);
-            bot.setOuttakeSlideState(outtakeSlidesState.supaDown);
+        if (operator.wasJustPressed(GamepadKeys.Button.LEFT_STICK_BUTTON))
+        {
+            bot.outtakeSlide.resetSlideEncoder();
         }
     }
 }
