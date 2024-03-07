@@ -35,8 +35,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "Close Blue Distance Sensor Testing", group = "goobTest")
-public class CloseBlueDistanceSensorTesting extends LinearOpMode {
+@Autonomous(name = "Close Blue Turn Other", group = "goobTest")
+public class CloseBlueTurnOther extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -226,14 +226,19 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                     if (!aprilTagOn) {
                         telemetry.addLine("into april tag enable");
                         telemetry.update();
-                      //  initAprilTag();
+                        //  initAprilTag();
                         aprilTagOn = true;
                     }
 
 
                     if (!drive.isBusy()) {
+                        double sum = 0;
                         if(bot.distanceSensor.getBotsRightCenterDistance() < 58) {
-                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), 72 - bot.distanceSensor.getBotsRightCenterDistance(), Math.toRadians(180)));
+                            for(int x = 0; x < 50; x++){
+                                sum+= bot.distanceSensor.getBotsRightCenterDistance();
+                            }
+                            sum/= 50;
+                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), 72 - sum, Math.toRadians(180)));
                         }
                         currentState = state.firstTimeBoard;
                         temporalMarkerTimer.reset();
@@ -245,15 +250,20 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                     break;
                 case firstTimeBoard:
                     if(!drive.isBusy()){
+                        double sum = 0;
                         if(bot.distanceSensor.getBotsRightCenterDistance() < 58) {
-                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), 72 - bot.distanceSensor.getBotsRightCenterDistance(), Math.toRadians(180)));
+                            for(int x = 0; x < 25; x++){
+                                sum+= bot.distanceSensor.getBotsRightCenterDistance();
+                            }
+                            sum/= 50;
+                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), 72 - sum, Math.toRadians(180)));
                         }
                         switch (startPath){
                             case RIGHT:
                                 score = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                        .lineToConstantHeading(new Vector2d(50.5, 30.8))
+                                        .lineToConstantHeading(new Vector2d(50.35, 31.8))
                                         .addTemporalMarker(.05,() -> {
-                                          bot.outtakeSlide.setPosition(525);
+                                            bot.outtakeSlide.setPosition(525);
                                         })
                                         .addTemporalMarker( () -> {
                                             bot.setLidPosition(lidState.open);
@@ -266,7 +276,7 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                                 break;
                             case CENTER:
                                 score = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                        .lineToConstantHeading(new Vector2d(50.5, 37.35))
+                                        .lineToConstantHeading(new Vector2d(50.35, 37.35))
                                         .addTemporalMarker(.05,() -> {
                                             bot.outtakeSlide.setPosition(515);
                                         })
@@ -281,7 +291,7 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                                 break;
                             case LEFT:
                                 score = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                        .lineToConstantHeading(new Vector2d(50.5, 44))
+                                        .lineToConstantHeading(new Vector2d(50.25, 44))
                                         .addTemporalMarker(.05,() -> {
                                             bot.outtakeSlide.setPosition(525);
                                         })
@@ -293,8 +303,13 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                                         .build();
 
                                 drive.followTrajectorySequenceAsync(score);
+                                 sum = 0;
                                 if(bot.distanceSensor.getBotsRightCenterDistance() < 58) {
-                                    drive.setPoseEstimate(new Pose2d(50.5, 72 - bot.distanceSensor.getBotsRightCenterDistance(), Math.toRadians(180)));
+                                    for(int x = 0; x < 25; x++){
+                                        sum+= bot.distanceSensor.getBotsRightCenterDistance();
+                                    }
+                                    sum/= 50;
+                                    drive.setPoseEstimate(new Pose2d(50.25, 72 - sum, Math.toRadians(180)));
                                 }
                                 currentState = state.leaveBoard;
                                 break;
@@ -302,7 +317,7 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                         }
                     }
 
-                                      break;
+                    break;
                 case leaveBoard:
                     if(!drive.isBusy()){
                         TrajectorySequence leave = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
@@ -313,7 +328,7 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                                 .lineToConstantHeading(new Vector2d(42, 12.25))
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                                 .waitSeconds(.1)
-                               //.splineTo(new Vector2d(42, 10), Math.toRadians(180))
+                                //.splineTo(new Vector2d(42, 10), Math.toRadians(180))
                                 .addDisplacementMarker(5,  () -> {
                                     bot.setArmPosition(armState.intaking, armExtensionState.extending);
                                     bot.setWristPosition(wristState.intaking);
@@ -331,12 +346,12 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                     if(!drive.isBusy()){
                         TrajectorySequence underGate = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(47.5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                                .lineToConstantHeading(new Vector2d(-55, 11.75))
+                                .lineToConstantHeading(new Vector2d(-55, 12.25))
 
                                 .build();
                         drive.followTrajectorySequenceAsync(underGate);
 
-                        currentState = state.stackTurn;
+                        currentState = state.stackTurnOtherWay;
                     }
 
                     break;
@@ -344,8 +359,8 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                     if(!drive.isBusy()){
                         if(bot.distanceSensor.getBotsFrontDistance() < 50){
                             drive.setPoseEstimate(new Pose2d(-72 + bot.distanceSensor.getBotsFrontDistance() + 8, drive.getPoseEstimate().getY(), Math.toRadians(180)));
-                             pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                    .lineToLinearHeading(new Pose2d(-61.25, 11.65, Math.toRadians(210)))
+                            pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                    .lineToLinearHeading(new Pose2d(-61.25, 12, Math.toRadians(210)))
                                     .addTemporalMarker(() -> {
                                         //     bot.setActiveIntakePosition(activeIntakeState.active);
                                         bot.setLinkagePosition(linkageState.LOW);
@@ -354,8 +369,8 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                                     .build();
                         }
                         else{
-                             pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                    .lineToLinearHeading(new Pose2d(-61.25, 11.65, Math.toRadians(210)))
+                            pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                    .lineToLinearHeading(new Pose2d(-61.25, 12, Math.toRadians(210)))
                                     .addTemporalMarker(() -> {
                                         //     bot.setActiveIntakePosition(activeIntakeState.active);
                                         bot.setLinkagePosition(linkageState.LOW);
@@ -366,7 +381,7 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
 
 
                         drive.followTrajectorySequenceAsync(pickUpStack);
-                        currentState = state.stack;
+                        currentState = state.stackTurnOtherWay;
                     }
                     break;
                 case stackTurnOtherWay:
@@ -374,17 +389,17 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                         if(bot.distanceSensor.getBotsFrontDistance() < 50){
                             drive.setPoseEstimate(new Pose2d(-72 + bot.distanceSensor.getBotsFrontDistance() + 8, drive.getPoseEstimate().getY(), Math.toRadians(180)));
                             pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                    .lineToLinearHeading(new Pose2d(-61.25, 18, Math.toRadians(180)))
+                                    .lineToLinearHeading(new Pose2d(-61.25, 20, Math.toRadians(180)))
                                     .addTemporalMarker(() -> {
                                         //     bot.setActiveIntakePosition(activeIntakeState.active);
                                         bot.setLinkagePosition(linkageState.HIGH);
                                     })
-                                    .forward(bot.distanceSensor.getBotsFrontDistance() - 4)
+                                    .forward(bot.distanceSensor.getBotsFrontDistance() - 5)
                                     .build();
                         }
                         else{
                             pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                    .lineToLinearHeading(new Pose2d(-61.25, 18, Math.toRadians(210)))
+                                    .lineToLinearHeading(new Pose2d(-61.25, 20, Math.toRadians(180)))
                                     .addTemporalMarker(() -> {
                                         //     bot.setActiveIntakePosition(activeIntakeState.active);
                                         bot.setLinkagePosition(linkageState.HIGH);
@@ -395,31 +410,31 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
 
 
                         drive.followTrajectorySequenceAsync(pickUpStack);
-                        currentState = state.stack;
+                        currentState = state.stackOtherWay;
                     }
                     break;
                 case stackOtherWay:
                     if(!drive.isBusy()){
-
+                        if(bot.distanceSensor.getBotsRightCenterDistance() < 58) {
+                            drive.setPoseEstimate(new Pose2d(-72+8, 72 - bot.distanceSensor.getBotsRightCenterDistance(), Math.toRadians(180)));
+                        }
                         TrajectorySequence pickUpStack1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
 
                                 //.lineToLinearHeading(new Pose2d(-63, 15, Math.toRadians(180)))
-                                .strafeLeft(5)
+                                .strafeLeft(7)
                                 .addTemporalMarker(() -> {
                                     bot.setActiveIntakePosition(activeIntakeState.active);
                                     // bot.setLinkagePosition(linkageState.HIGH);
                                 })
-                                .waitSeconds(.5)
-                                .back(.35)
-                                .strafeRight(2)
-                                .waitSeconds(.1)
+                                .waitSeconds(.75)
+                               .strafeRight(2)
+                                .waitSeconds(.35)
+                                .back(.45)
+                                //  .strafeRight(2)
+                                //   .waitSeconds(.1)
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                                 .back(10)
-                                .addTemporalMarker(() -> {
-                                    bot.setActiveIntakePosition(activeIntakeState.inactive);
-                                    bot.setArmPosition(armState.init, armExtensionState.extending);
 
-                                })
 
                                 .build();
                         drive.followTrajectorySequenceAsync(pickUpStack1);
@@ -429,7 +444,7 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                 case stack:
                     if(!drive.isBusy()){
 
-                         TrajectorySequence pickUpStack1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                        TrajectorySequence pickUpStack1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .turn(Math.toRadians(-70))
                                 .addTemporalMarker(() -> {
                                     bot.setActiveIntakePosition(activeIntakeState.active);
@@ -443,11 +458,7 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                                 .waitSeconds(.1)
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                                 .back(10)
-                                .addTemporalMarker(() -> {
-                                    bot.setActiveIntakePosition(activeIntakeState.inactive);
-                                    bot.setArmPosition(armState.init, armExtensionState.extending);
 
-                                })
 
                                 .build();
                         drive.followTrajectorySequenceAsync(pickUpStack1);
@@ -462,6 +473,11 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                         TrajectorySequence underGate = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                                 .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX(), 13.75, Math.toRadians(180)))
+                                .addTemporalMarker(.01,() -> {
+                                    bot.setActiveIntakePosition(activeIntakeState.inactive);
+                                    bot.setArmPosition(armState.init, armExtensionState.extending);
+
+                                })
                                 .addTemporalMarker(.1,() -> {
                                     bot.setLidPosition(lidState.close);
                                     bot.setActiveIntakePosition(activeIntakeState.activeReverse);
@@ -481,7 +497,7 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                                 })
                                 .waitSeconds(.1)
 
-                               // .lineToConstantHeading(new Vector2d(45, 28))
+                                // .lineToConstantHeading(new Vector2d(45, 28))
 
                                 .build();
                         drive.followTrajectorySequenceAsync(underGate);
@@ -490,21 +506,22 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                     }
                     break;
                 case scoreStack:
-                 if(!drive.isBusy()) {
-                     if(bot.distanceSensor.getBotsRightCenterDistance() < 58) {
-                         drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), 72 - bot.distanceSensor.getBotsRightCenterDistance(), Math.toRadians(180)));
-                     }
-                     TrajectorySequence scoreSt = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                             //    .lineToConstantHeading(new Vector2d(51.5, bot.distanceSensor.getBotsRightCenterDistance()))
-                             .lineToConstantHeading(new Vector2d(52.3, 31.75))
-                             .addTemporalMarker(() -> {
-                                 bot.setLidPosition(lidState.open);
-                                 bot.outtakeSlide.setPosition(950);
-                             })
-                             .build();
-                     drive.followTrajectorySequenceAsync(scoreSt);
-                     currentState = state.park;
-                 }
+                    if(!drive.isBusy()) {
+                        if(bot.distanceSensor.getBotsRightCenterDistance() < 58) {
+                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), 72 - bot.distanceSensor.getBotsRightCenterDistance(), Math.toRadians(180)));
+                        }
+                        TrajectorySequence scoreSt = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                //    .lineToConstantHeading(new Vector2d(51.5, bot.distanceSensor.getBotsRightCenterDistance()))
+                                .lineToConstantHeading(new Vector2d(52.2, 31.75))
+                                .addTemporalMarker(() -> {
+                                    bot.setLidPosition(lidState.open);
+                                    bot.outtakeSlide.setPosition(950);
+                                })
+                                .waitSeconds(.2)
+                                .build();
+                        drive.followTrajectorySequenceAsync(scoreSt);
+                        currentState = state.park;
+                    }
 
 
                     break;
@@ -552,12 +569,12 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
                     break;
                 case idle:
                     telemetry.addLine("Inside Idle State");
-              //      telemetry.addData("Tag ID", tagOfInterest.id);
-            //        telemetry.addData("pose est ", drive.getPoseEstimate());
-           //         telemetry.addData("Tag y", tagY);
-           //         telemetry.addData("double y + ", detectYPos);
-              //      telemetry.addData("double y -", detectYNeg);
-               //     telemetry.addData("tag ", tagOfInterest.metadata.fieldPosition.get(1)+5);
+                    //      telemetry.addData("Tag ID", tagOfInterest.id);
+                    //        telemetry.addData("pose est ", drive.getPoseEstimate());
+                    //         telemetry.addData("Tag y", tagY);
+                    //         telemetry.addData("double y + ", detectYPos);
+                    //      telemetry.addData("double y -", detectYNeg);
+                    //     telemetry.addData("tag ", tagOfInterest.metadata.fieldPosition.get(1)+5);
 
                     telemetry.update();
                     break;
@@ -631,4 +648,3 @@ public class CloseBlueDistanceSensorTesting extends LinearOpMode {
         }
     }
 }
-
