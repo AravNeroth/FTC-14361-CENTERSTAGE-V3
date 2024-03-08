@@ -234,10 +234,10 @@ public class CloseBlueTurnOther extends LinearOpMode {
                     if (!drive.isBusy()) {
                         double sum = 0;
                         if(bot.distanceSensor.getBotsRightCenterDistance() < 58) {
-                            for(int x = 0; x < 50; x++){
+                            for(int x = 0; x < 10; x++){
                                 sum+= bot.distanceSensor.getBotsRightCenterDistance();
                             }
-                            sum/= 50;
+                            sum/= 10;
                             drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), 72 - sum, Math.toRadians(180)));
                         }
                         currentState = state.firstTimeBoard;
@@ -252,10 +252,10 @@ public class CloseBlueTurnOther extends LinearOpMode {
                     if(!drive.isBusy()){
                         double sum = 0;
                         if(bot.distanceSensor.getBotsRightCenterDistance() < 58) {
-                            for(int x = 0; x < 25; x++){
+                            for(int x = 0; x < 10; x++){
                                 sum+= bot.distanceSensor.getBotsRightCenterDistance();
                             }
-                            sum/= 50;
+                            sum/= 10;
                             drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), 72 - sum, Math.toRadians(180)));
                         }
                         switch (startPath){
@@ -291,7 +291,7 @@ public class CloseBlueTurnOther extends LinearOpMode {
                                 break;
                             case LEFT:
                                 score = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                        .lineToConstantHeading(new Vector2d(50.25, 44))
+                                        .lineToConstantHeading(new Vector2d(50.35, 44))
                                         .addTemporalMarker(.05,() -> {
                                             bot.outtakeSlide.setPosition(525);
                                         })
@@ -305,11 +305,11 @@ public class CloseBlueTurnOther extends LinearOpMode {
                                 drive.followTrajectorySequenceAsync(score);
                                  sum = 0;
                                 if(bot.distanceSensor.getBotsRightCenterDistance() < 58) {
-                                    for(int x = 0; x < 25; x++){
+                                    for(int x = 0; x < 10; x++){
                                         sum+= bot.distanceSensor.getBotsRightCenterDistance();
                                     }
-                                    sum/= 50;
-                                    drive.setPoseEstimate(new Pose2d(50.25, 72 - sum, Math.toRadians(180)));
+                                    sum/= 10;
+                                    drive.setPoseEstimate(new Pose2d(50.35, 72 - sum, Math.toRadians(180)));
                                 }
                                 currentState = state.leaveBoard;
                                 break;
@@ -358,7 +358,13 @@ public class CloseBlueTurnOther extends LinearOpMode {
                 case stackTurn:
                     if(!drive.isBusy()){
                         if(bot.distanceSensor.getBotsFrontDistance() < 50){
-                            drive.setPoseEstimate(new Pose2d(-72 + bot.distanceSensor.getBotsFrontDistance() + 8, drive.getPoseEstimate().getY(), Math.toRadians(180)));
+                            double sum = 0;
+
+                                for(int x = 0; x < 10; x++) {
+                                    sum += bot.distanceSensor.getBotsFrontDistance();
+                                }
+                                sum/= 10;
+                            drive.setPoseEstimate(new Pose2d(-72 + sum + 8, drive.getPoseEstimate().getY(), Math.toRadians(180)));
                             pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                     .lineToLinearHeading(new Pose2d(-61.25, 12, Math.toRadians(210)))
                                     .addTemporalMarker(() -> {
@@ -368,6 +374,7 @@ public class CloseBlueTurnOther extends LinearOpMode {
                                     .forward(bot.distanceSensor.getBotsFrontDistance() - 4)
                                     .build();
                         }
+
                         else{
                             pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                     .lineToLinearHeading(new Pose2d(-61.25, 12, Math.toRadians(210)))
@@ -387,7 +394,14 @@ public class CloseBlueTurnOther extends LinearOpMode {
                 case stackTurnOtherWay:
                     if(!drive.isBusy()){
                         if(bot.distanceSensor.getBotsFrontDistance() < 50){
-                            drive.setPoseEstimate(new Pose2d(-72 + bot.distanceSensor.getBotsFrontDistance() + 8, drive.getPoseEstimate().getY(), Math.toRadians(180)));
+                            double sum = 0;
+
+                            for(int x = 0; x < 10; x++) {
+                                sum += bot.distanceSensor.getBotsFrontDistance();
+                            }
+                            sum/= 10;
+                            drive.setPoseEstimate(new Pose2d(-72 + sum + 8, drive.getPoseEstimate().getY(), Math.toRadians(180)));
+                         //   drive.setPoseEstimate(new Pose2d(-72 + bot.distanceSensor.getBotsFrontDistance() + 8, drive.getPoseEstimate().getY(), Math.toRadians(180)));
                             pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                     .lineToLinearHeading(new Pose2d(-61.25, 20, Math.toRadians(180)))
                                     .addTemporalMarker(() -> {
@@ -416,7 +430,24 @@ public class CloseBlueTurnOther extends LinearOpMode {
                 case stackOtherWay:
                     if(!drive.isBusy()){
                         if(bot.distanceSensor.getBotsRightCenterDistance() < 58) {
-                            drive.setPoseEstimate(new Pose2d(-72+8, 72 - bot.distanceSensor.getBotsRightCenterDistance(), Math.toRadians(180)));
+                            double frontSum = 0;
+
+                            for(int x = 0; x < 10; x++) {
+                                frontSum += bot.distanceSensor.getBotsFrontDistance();
+                            }
+                            frontSum/= 10;
+                            drive.setPoseEstimate(new Pose2d(-72 + frontSum + 8, drive.getPoseEstimate().getY(), Math.toRadians(180)));
+                         //   drive.setPoseEstimate(new Pose2d(-72+8, 72 - bot.distanceSensor.getBotsRightCenterDistance(), Math.toRadians(180)));
+                        }
+                        if(bot.distanceSensor.getBotsRightCenterDistance() < 58){
+                            double sideSum = 0;
+
+                            for(int x = 0; x < 10; x++) {
+                                sideSum += bot.distanceSensor.getBotsFrontDistance();
+                            }
+                            sideSum/= 10;
+                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), 72 - sideSum, Math.toRadians(180)));
+                            //   drive.setPoseEstimate(new Pose2d(-72+8, 72 - bot.distanceSensor.getBotsRightCenterDistance(), Math.toRadians(180)
                         }
                         TrajectorySequence pickUpStack1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
 
