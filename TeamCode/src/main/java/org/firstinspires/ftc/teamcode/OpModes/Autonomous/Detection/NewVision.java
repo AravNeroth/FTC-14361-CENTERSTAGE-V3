@@ -49,11 +49,11 @@ public class NewVision implements VisionProcessor {
         double colRectMiddle = getAvgColor(hsvMat, rectMiddle);
         double colRectRight = getAvgColor(hsvMat, rectRight);
 
-        telemetry.addData("right sat: ", satRectRight);
-        telemetry.addData("mid sat: ", satRectMiddle);
+      //  telemetry.addData("right sat: ", satRectRight);
+       // telemetry.addData("mid sat: ", satRectMiddle);
 
-        telemetry.addData("right col: ", colRectRight);
-        telemetry.addData("middle col: ", colRectMiddle);
+       // telemetry.addData("right col: ", colRectRight);
+       // telemetry.addData("middle col: ", colRectMiddle);
 
 
 

@@ -181,7 +181,6 @@ public class Robot {
 
     //---------------------------- Lid ---------------------------- //
     public void setLidState(lidState lidstate) {
-
         this.lidstate = lidstate;
     }
 
@@ -200,7 +199,6 @@ public class Robot {
 
     //---------------------------- Holder Servo ---------------------------- //
     public void setHolderServoState(holderServoState holderState) {
-
         this.holderServoState = holderState;
     }
 
