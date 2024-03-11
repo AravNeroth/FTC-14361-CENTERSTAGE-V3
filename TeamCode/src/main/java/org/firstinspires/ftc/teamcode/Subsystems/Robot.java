@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.Commands.mecanumState;
 public class Robot {
     public OuttakeSlide outtakeSlide;
     public Mecanum driveTrain;
+    public UltrasonicSensor ultrasonicSensor;
     public Wrist wrist;
     public Arm arm;
     public Drone drone;
@@ -58,6 +59,7 @@ public class Robot {
       //  colorSensor = new colorSensor(hardwareMap);
         voltMecanum = new VoltMecanum(hardwareMap);
         distanceSensor = new distanceSensor(hardwareMap);
+        ultrasonicSensor = new UltrasonicSensor(hardwareMap);
     }
 
     // ---------------------------- OuttakeSlide ---------------------------- //
@@ -226,6 +228,7 @@ public class Robot {
     public void runMecanum(mecanumState mecanumState, GamepadEx gamepad1){
         driveTrain.driveAngleLock(mecanumState, gamepad1);
     }
+
 }
 
 

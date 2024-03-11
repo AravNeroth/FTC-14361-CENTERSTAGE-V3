@@ -78,10 +78,10 @@ public class VoltageFieldCentric extends OpMode {
         telemetry.addLine("State of V4B: init / " + bot.arm.getArmExtensionState());
 //        telemetry.addLine("Right Claw Position: " + bot.claw.getRightClawPosition());
 //        telemetry.addLine("Left Claw Position: " + bot.claw.getLeftClawPosition());
-        telemetry.addLine("Right Arm Position: " + bot.arm.getRightArmPosition() + " ticks.");
-        telemetry.addLine("Right Arm Decimal Position: " + (1 - bot.arm.getRightArmPosition() / 360) + " decimal.");
-        telemetry.addLine("Left Arm Position: " + bot.arm.getLeftArmPosition() + " ticks.");
-        telemetry.addLine("Left Arm Decimal Position: " + (1 - bot.arm.getLeftArmPosition() / 360) + " decimal.");
+//        telemetry.addLine("Right Arm Position: " + bot.arm.getRightArmPosition() + " ticks.");
+//        telemetry.addLine("Right Arm Decimal Position: " + (1 - bot.arm.getRightArmPosition() / 360) + " decimal.");
+//        telemetry.addLine("Left Arm Position: " + bot.arm.getLeftArmPosition() + " ticks.");
+//        telemetry.addLine("Left Arm Decimal Position: " + (1 - bot.arm.getLeftArmPosition() / 360) + " decimal.");
 //        telemetry.addLine("DIstance in CM" + bot.getDistanceSensor());
 //      telemetry.addLine("Intake Slide Encoder Tick Count " + intakeSlideCountSubstract);
         telemetry.addLine("Voltage Current: " + bot.voltMecanum.getBatteryVoltage());

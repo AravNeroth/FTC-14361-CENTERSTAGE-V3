@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.Commands.armState;
 public class Arm
 {
     private ServoEx leftArm, rightArm;
-    AnalogInput rightAnalogInput, leftAnalogInput;
+   // AnalogInput rightAnalogInput, leftAnalogInput;
     public armExtensionState armExtension;
     double minAngle = 0, maxAngle= 360;
 
@@ -34,8 +34,8 @@ public class Arm
     {
         rightArm = new SimpleServo(hardwareMap, "rightVirtualFourBar", minAngle, maxAngle, AngleUnit.DEGREES);
         leftArm = new SimpleServo(hardwareMap, "leftVirtualFourBar", minAngle, maxAngle, AngleUnit.DEGREES);
-        rightAnalogInput = hardwareMap.get(AnalogInput.class, "rightAnalogInput");
-        leftAnalogInput = hardwareMap.get(AnalogInput.class, "leftAnalogInput");
+//        rightAnalogInput = hardwareMap.get(AnalogInput.class, "rightAnalogInput");
+//        leftAnalogInput = hardwareMap.get(AnalogInput.class, "leftAnalogInput");
 
 
     }
@@ -108,15 +108,15 @@ public class Arm
         }
     }
 
-    public double getRightArmPosition()
-    {
-        double position = rightAnalogInput.getVoltage() / 3.3 * 360;
-        return position;
-    }
-
-    public double getLeftArmPosition()
-    {
-        double position = leftAnalogInput.getVoltage() / 3.3 * 360;
-        return position;
-    }
+//    public double getRightArmPosition()
+//    {
+//        double position = rightAnalogInput.getVoltage() / 3.3 * 360;
+//        return position;
+//    }
+//
+//    public double getLeftArmPosition()
+//    {
+//        double position = leftAnalogInput.getVoltage() / 3.3 * 360;
+//        return position;
+//    }
 }
