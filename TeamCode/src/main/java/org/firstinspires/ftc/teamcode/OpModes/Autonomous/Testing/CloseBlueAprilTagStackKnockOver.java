@@ -387,6 +387,21 @@ public class CloseBlueAprilTagStackKnockOver extends LinearOpMode {
                     break;
                 case leaveBoard:
                     if(!drive.isBusy()){
+                        double sideSum = 0;
+                        int count = 0;
+
+                        for (int x = 0; x < 3; x++) {
+                            double distance = bot.distanceSensor.getBotsRightCenterDistance();
+                            if (distance < 58) {
+                                sideSum += distance;
+                                count++;
+
+                            }
+                        }
+                        if(count!= 0){
+                            sideSum /= count;
+                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(),72-sideSum, Math.toRadians(180)));
+                        }
                         TrajectorySequence leave = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                                 .waitSeconds(.1)
@@ -428,7 +443,7 @@ public class CloseBlueAprilTagStackKnockOver extends LinearOpMode {
                         }
                         TrajectorySequence underGate = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(47.5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                                .lineToConstantHeading(new Vector2d(-50, 14.5))
+                                .lineToConstantHeading(new Vector2d(-50, 15))
                                 .strafeRight(12)
 
                                 .build();
@@ -482,7 +497,7 @@ public class CloseBlueAprilTagStackKnockOver extends LinearOpMode {
                                         .lineToLinearHeading(new Pose2d(-62, 20.5, Math.toRadians(180)))
                                         .addTemporalMarker(() -> {
                                             //     bot.setActiveIntakePosition(activeIntakeState.active);
-                                            bot.setLinkagePosition(linkageState.MEDIUM);
+                                            bot.setLinkagePosition(linkageState.HIGH);
                                         })
                                         .forward(frontSum-8.1)
                                         .build();
@@ -550,7 +565,7 @@ public class CloseBlueAprilTagStackKnockOver extends LinearOpMode {
                                      bot.setLinkagePosition(linkageState.LOW);
                                 })
                                 .waitSeconds(.35)
-                                .strafeLeft(3)
+                                .strafeRight(3)
                                 .waitSeconds(.35)
                                   .strafeRight(1.5)
                                    .waitSeconds(.1)
@@ -671,7 +686,7 @@ public class CloseBlueAprilTagStackKnockOver extends LinearOpMode {
 
 //
 
-                                .lineToConstantHeading(new Vector2d(51, 12.5))
+                                .lineToConstantHeading(new Vector2d(50.9, 12.5))
                                 .build();
                         TrajectorySequence parkInCorner = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))

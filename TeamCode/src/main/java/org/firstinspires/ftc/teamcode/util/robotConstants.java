@@ -101,7 +101,7 @@ public class robotConstants
 
         public static double intakingLeft = 0.00;
 
-        public static double intakingRight = 0.05 ;
+        public static double intakingRight = 0.02 ;
 
 
         public static double intakingInitLeft = .5;

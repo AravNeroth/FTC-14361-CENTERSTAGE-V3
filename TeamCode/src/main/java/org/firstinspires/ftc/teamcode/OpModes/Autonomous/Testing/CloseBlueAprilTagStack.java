@@ -615,18 +615,23 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                     break;
                 case idle:
                     telemetry.addLine("Inside Idle State");
-                    telemetry.addData("D sensor", bot.distanceSensor.getBotsRightCenterDistance());
+
+
+                    telemetry.addData("pose est ", drive.getPoseEstimate());
+
+                    telemetry.addData("Left Center Dis", bot.distanceSensor.getBotsLeftCenterDistance());
+                    telemetry.addData("Left Edge Distance", bot.distanceSensor.getLeftDistanceEdgeDistance());
                     telemetry.addData("Pose Est", drive.getPoseEstimate());
                     telemetry.addData("Y Value", drive.getPoseEstimate().getY());
 
 
                     if (timer.seconds() > 5) {
-                        if (bot.distanceSensor.getBotsRightCenterDistance() < 58) {
+                        if (bot.distanceSensor.getBotsLeftCenterDistance() < 58) {
                             double sideSum = 0;
                             int count = 0;
 
                             for (int x = 0; x < 3; x++) {
-                                double distance = bot.distanceSensor.getBotsRightCenterDistance();
+                                double distance = bot.distanceSensor.getBotsLeftCenterDistance();
                                 if (distance < 58) {
                                     sideSum += distance;
                                     count++;
@@ -641,7 +646,7 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                             }
 
                             telemetry.addData("Side Sum", sideSum);
-                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), 72 - sideSum, Math.toRadians(180)));
+                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), -72 + sideSum, Math.toRadians(180)));
                             telemetry.update();
                             timer.reset();
                         }

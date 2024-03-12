@@ -67,7 +67,7 @@ public class FieldCentric extends OpMode {
         telemetry.addLine("Total Runtime: " + getRuntime() + " seconds.");
         telemetry.addLine("Left Slide Position: " + bot.getOuttakeLeftSlidePosition() + " ticks");
         telemetry.addLine("Right Slide Position: " + bot.getOuttakeRightSlidePosition() + " ticks");
-        telemetry.addLine("Ultrasonic Sensor " + bot.ultrasonicSensor.getDistance());
+    //    telemetry.addLine("Ultrasonic Sensor " + bot.ultrasonicSensor.getLeftDistance());
 
 //        telemetry.addLine("US Distance " + bot.distanceSensor.getUSDistance());
 //        telemetry.addLine("US Distance " + bot.distanceSensor.getUSDistanceNoDiv());
@@ -90,12 +90,12 @@ public class FieldCentric extends OpMode {
             bot.outtakeSlide.setOuttakeSlidesPID(outtakeSlidesState.HIGHOUT);
         }
 
-        if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1) {
-            bot.setMecanumState(mecanumState.TOBLUEBACKBOARD);
-        }
-        if (driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1) {
-            bot.setMecanumState(mecanumState.TOREDBACKBOARD);
-        }
+//        if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1) {
+//            bot.setMecanumState(mecanumState.TOBLUEBACKBOARD);
+//        }
+//        if (driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1) {
+//            bot.setMecanumState(mecanumState.TOREDBACKBOARD);
+//        }
         if(driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
             bot.setMecanumState(mecanumState.NORMAL);
         }
