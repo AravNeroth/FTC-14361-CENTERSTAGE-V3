@@ -35,7 +35,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "Close Blue Turn Other", group = "goobTest")
+//@Autonomous(name = "Close Blue Turn Other", group = "goobTest")
 public class CloseBlueTurnOther extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Testing;
+package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Stack;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -28,9 +28,8 @@ import org.openftc.easyopencv.OpenCvCamera;
 
 import java.util.List;
 
-//@Autonomous(name = "Close Blue April Tag Stack ", group = "goobTest")
-
-public class CloseBlueAprilTagStack extends LinearOpMode {
+@Autonomous(name = "Close Blue April Tag Stack Knock Over", group = "Stack")
+public class CloseBlueAprilTagStackKnockOver extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -97,7 +96,7 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                     bot.setWristPosition(wristState.intaking);
                 })
                 .lineToConstantHeading(new Vector2d(11.5, 40))
-
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                 .lineToLinearHeading(new Pose2d(25 ,40, Math.toRadians(180)))
                 .addTemporalMarker(() -> {
                     bot.setArmPosition(armState.outtaking, armExtensionState.extending);
@@ -142,7 +141,7 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                 .build();
 
         TrajectorySequence goToCenterAprilTag = drive.trajectorySequenceBuilder(centerTape.end())
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(10, 90, DriveConstants.TRACK_WIDTH))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, 90, DriveConstants.TRACK_WIDTH))
                 .lineToConstantHeading(new Vector2d(25, 32))
 
                 //   .strafeRight(3)
@@ -177,8 +176,8 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
             case CENTER:
                 ID_TAG_OF_INTEREST = MIDDLE;
                 temporalMarkerTimer.reset();
-             //   drive.followTrajectorySequenceAsync(centerTape);
-               // telemetry.addLine("CENTER.");
+                drive.followTrajectorySequenceAsync(centerTape);
+                telemetry.addLine("CENTER.");
                 telemetry.update();
 
                 break;
@@ -186,8 +185,8 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                 ID_TAG_OF_INTEREST = RIGHT;
                 temporalMarkerTimer.reset();
 
-               // drive.followTrajectorySequenceAsync(rightTape);
-            //    telemetry.addLine("right.");
+                drive.followTrajectorySequenceAsync(rightTape);
+                telemetry.addLine("right.");
                 telemetry.update();
 
                 break;
@@ -195,13 +194,13 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                 ID_TAG_OF_INTEREST = LEFT;
                 temporalMarkerTimer.reset();
 
-            //    drive.followTrajectorySequenceAsync(leftTape);
-             //   telemetry.addLine("left.");
+                drive.followTrajectorySequenceAsync(leftTape);
+                telemetry.addLine("left.");
                 telemetry.update();
 
                 break;
         }
-        currentState = state.idle;
+        currentState = state.tape;
         while (opModeIsActive() && !isStopRequested()) {
 
             switch (currentState) {
@@ -298,7 +297,7 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
 
                                         .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX() + tagOfInterest.ftcPose.y -3, tagY - offset))
                                         .addDisplacementMarker( 1, () -> {
-                                            bot.outtakeSlide.setPosition(525);
+                                            bot.outtakeSlide.setPosition(500);
                                         })
                                         .addTemporalMarker( () -> {
                                             bot.setLidPosition(lidState.open);
@@ -353,7 +352,26 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                             finishBoard = true;
                         }
                         if(!drive.isBusy()){
-                            drive.setPoseEstimate(new Pose2d(tagOfInterest.metadata.fieldPosition.get(0)-8,tagOfInterest.metadata.fieldPosition.get(1), Math.toRadians(180)));
+                            double sideSum = 0;
+                            int count = 0;
+
+                            for (int x = 0; x < 3; x++) {
+                                double distance = bot.distanceSensor.getBotsRightCenterDistance();
+                                if (distance < 58) {
+                                    sideSum += distance;
+                                    count++;
+
+                                }
+                            }
+                            if(count!= 0){
+                                sideSum /= count;
+                                drive.setPoseEstimate(new Pose2d(tagOfInterest.metadata.fieldPosition.get(0)-8,72-sideSum, Math.toRadians(180)));
+                            }
+                            else{
+                                drive.setPoseEstimate(new Pose2d(tagOfInterest.metadata.fieldPosition.get(0)-8,tagOfInterest.metadata.fieldPosition.get(1), Math.toRadians(180)));
+                            }
+
+
                             telemetry.addLine("Reset Pose");
 
                             telemetry.addData("New Pose", drive.getPoseEstimate());
@@ -369,12 +387,27 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                     break;
                 case leaveBoard:
                     if(!drive.isBusy()){
+                        double sideSum = 0;
+                        int count = 0;
+
+                        for (int x = 0; x < 3; x++) {
+                            double distance = bot.distanceSensor.getBotsRightCenterDistance();
+                            if (distance < 58) {
+                                sideSum += distance;
+                                count++;
+
+                            }
+                        }
+                        if(count!= 0){
+                            sideSum /= count;
+                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(),72-sideSum, Math.toRadians(180)));
+                        }
                         TrajectorySequence leave = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                                 .waitSeconds(.1)
                                 .lineToConstantHeading(new Vector2d(42, drive.getPoseEstimate().getY()))
                                 .waitSeconds(.2)
-                                .lineToConstantHeading(new Vector2d(42, 12.25))
+                                .lineToConstantHeading(new Vector2d(42, 13.5))
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                                 .waitSeconds(.1)
                                 //.splineTo(new Vector2d(42, 10), Math.toRadians(180))
@@ -393,140 +426,186 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                     break;
                 case underGateToStack:
                     if(!drive.isBusy()){
+                        double sideSum = 0;
+                        int count = 0;
+
+                        for (int x = 0; x < 3; x++) {
+                            double distance = bot.distanceSensor.getBotsRightCenterDistance();
+                            if (distance < 58) {
+                                sideSum += distance;
+                                count++;
+
+                            }
+                        }
+                        if(count!= 0){
+                            sideSum /= count;
+                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(),72-sideSum, Math.toRadians(180)));
+                        }
                         TrajectorySequence underGate = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(47.5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                                .lineToConstantHeading(new Vector2d(-55, 11.75))
+                                .lineToConstantHeading(new Vector2d(-50, 15))
+                                .strafeRight(12)
 
                                 .build();
                         drive.followTrajectorySequenceAsync(underGate);
 
-                        currentState = state.stackTurn;
+                        currentState = state.stackTurnOtherWay;
                     }
 
                     break;
-                case stackTurn:
-                    if(!drive.isBusy()){
-                        if(bot.distanceSensor.getBotsFrontDistance() < 50){
-                            drive.setPoseEstimate(new Pose2d(-72 + bot.distanceSensor.getBotsFrontDistance() + 8, drive.getPoseEstimate().getY(), Math.toRadians(180)));
-                            pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                    .lineToLinearHeading(new Pose2d(-61.25, 11.65, Math.toRadians(210)))
-                                    .addTemporalMarker(() -> {
-                                        //     bot.setActiveIntakePosition(activeIntakeState.active);
-                                        bot.setLinkagePosition(linkageState.LOW);
-                                    })
-                                    .forward(bot.distanceSensor.getBotsFrontDistance() - 4)
-                                    .build();
-                        }
-                        else{
-                            pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                    .lineToLinearHeading(new Pose2d(-61.25, 11.65, Math.toRadians(210)))
-                                    .addTemporalMarker(() -> {
-                                        //     bot.setActiveIntakePosition(activeIntakeState.active);
-                                        bot.setLinkagePosition(linkageState.LOW);
-                                    })
-                                    .forward(1)
-                                    .build();
-                        }
 
-
-                        drive.followTrajectorySequenceAsync(pickUpStack);
-                        currentState = state.stack;
-                    }
-                    break;
                 case stackTurnOtherWay:
-                    if(!drive.isBusy()){
-                        if(bot.distanceSensor.getBotsFrontDistance() < 50){
-                            drive.setPoseEstimate(new Pose2d(-72 + bot.distanceSensor.getBotsFrontDistance() + 8, drive.getPoseEstimate().getY(), Math.toRadians(180)));
-                            pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                    .lineToLinearHeading(new Pose2d(-61.25, 18, Math.toRadians(180)))
-                                    .addTemporalMarker(() -> {
-                                        //     bot.setActiveIntakePosition(activeIntakeState.active);
-                                        bot.setLinkagePosition(linkageState.HIGH);
-                                    })
-                                    .forward(bot.distanceSensor.getBotsFrontDistance() - 4)
-                                    .build();
+                    if(!drive.isBusy()) {
+                        double frontSum = 0;
+                        int frontCount = 0;
+
+                        for (int x = 0; x < 5; x++) {
+                            double distance = bot.distanceSensor.getBotsFrontDistance();
+                            if (distance < 58) {
+                                frontSum += distance;
+                                frontCount++;
+
+                            }
                         }
-                        else{
-                            pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                    .lineToLinearHeading(new Pose2d(-61.25, 18, Math.toRadians(210)))
-                                    .addTemporalMarker(() -> {
-                                        //     bot.setActiveIntakePosition(activeIntakeState.active);
-                                        bot.setLinkagePosition(linkageState.HIGH);
-                                    })
-                                    .forward(1)
-                                    .build();
+                        if(frontCount!= 0){
+                            frontSum /= frontCount;
+                            drive.setPoseEstimate(new Pose2d(-72+frontSum + 8,drive.getPoseEstimate().getY(), Math.toRadians(180)));
                         }
 
+                            if (bot.distanceSensor.getBotsRightCenterDistance() < 58) {
+                                double sideSum = 0;
+                                int count = 0;
 
-                        drive.followTrajectorySequenceAsync(pickUpStack);
-                        currentState = state.stack;
-                    }
+                                for (int x = 0; x < 5; x++) {
+                                    double distance = bot.distanceSensor.getBotsRightCenterDistance();
+                                    if (distance < 58) {
+                                        sideSum += distance;
+                                        count++;
+
+                                    }
+                                }
+                                if(count!= 0){
+                                    sideSum /= count;
+                                    drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(),72-sideSum, Math.toRadians(180)));
+                                }
+
+
+
+                                //     drive.setPoseEstimate(new Pose2d(-72 + 8, drive.getPoseEstimate().getY(), Math.toRadians(180)));
+                                //   drive.setPoseEstimate(new Pose2d(-72 + bot.distanceSensor.getBotsFrontDistance() + 8, drive.getPoseEstimate().getY(), Math.toRadians(180)));
+                                pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                        .lineToLinearHeading(new Pose2d(-62, 20.5, Math.toRadians(180)))
+                                        .addTemporalMarker(() -> {
+                                            //     bot.setActiveIntakePosition(activeIntakeState.active);
+                                            bot.setLinkagePosition(linkageState.HIGH);
+                                        })
+                                        .forward(frontSum-8.1)
+                                        .build();
+                                telemetry.addData("Front sum", frontSum);
+                            }
+                            else
+                            {
+                                pickUpStack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                        .lineToLinearHeading(new Pose2d(-62, 20.5, Math.toRadians(180)))
+                                        .addTemporalMarker(() -> {
+                                            //     bot.setActiveIntakePosition(activeIntakeState.active);
+                                     //       bot.setArmPosition(armState.init, armExtensionState.extending);
+                                            bot.setLinkagePosition(linkageState.HIGH);
+                                        })
+                                        .forward(1)
+                                        .build();
+                            }
+
+
+                            drive.followTrajectorySequenceAsync(pickUpStack);
+                            currentState = state.stackOtherWay;
+                        }
+
                     break;
                 case stackOtherWay:
                     if(!drive.isBusy()){
+                        double frontSum = 0;
+                        int frontCount = 0;
+
+                        for (int x = 0; x < 3; x++) {
+                            double distance = bot.distanceSensor.getBotsFrontDistance();
+                            if (distance < 58) {
+                                frontSum += distance;
+                                frontCount++;
+
+                            }
+                        }
+                        if(frontCount!= 0){
+                            frontSum /= frontCount;
+                            drive.setPoseEstimate(new Pose2d(-72+frontSum + 8,drive.getPoseEstimate().getY(), Math.toRadians(180)));
+                        }
+
+                            double sideSum = 0;
+                            int count = 0;
+
+                            for (int x = 0; x < 5; x++) {
+                                double distance = bot.distanceSensor.getBotsRightCenterDistance();
+                                if (distance < 58) {
+                                    sideSum += distance;
+                                    count++;
+
+                                }
+                            }
+                            if(count!= 0){
+                                sideSum /= count;
+                                drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(),72-sideSum, Math.toRadians(180)));
+                            }
 
                         TrajectorySequence pickUpStack1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
 
                                 //.lineToLinearHeading(new Pose2d(-63, 15, Math.toRadians(180)))
-                                .strafeLeft(5)
+                                .strafeLeft(10)
                                 .addTemporalMarker(() -> {
                                     bot.setActiveIntakePosition(activeIntakeState.active);
-                                    // bot.setLinkagePosition(linkageState.HIGH);
+                                     bot.setLinkagePosition(linkageState.LOW);
                                 })
-                                .waitSeconds(.5)
-                                .back(.35)
-                                .strafeRight(2)
-                                .waitSeconds(.1)
+                                .waitSeconds(.35)
+                                .strafeRight(3)
+                                .waitSeconds(.35)
+                                  .strafeRight(1.5)
+                                   .waitSeconds(.1)
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                                 .back(10)
-                                .addTemporalMarker(() -> {
-                                    bot.setActiveIntakePosition(activeIntakeState.inactive);
-                                    bot.setArmPosition(armState.init, armExtensionState.extending);
 
-                                })
 
                                 .build();
                         drive.followTrajectorySequenceAsync(pickUpStack1);
                         currentState = state.leaveStack;
                     }
                     break;
-                case stack:
-                    if(!drive.isBusy()){
 
-                        TrajectorySequence pickUpStack1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .turn(Math.toRadians(-70))
-                                .addTemporalMarker(() -> {
-                                    bot.setActiveIntakePosition(activeIntakeState.active);
-                                    // bot.setLinkagePosition(linkageState.HIGH);
-                                })
-                                .lineToLinearHeading(new Pose2d(-63, 15, Math.toRadians(180)))
-
-                                .waitSeconds(.5)
-                                .back(.35)
-                                .strafeRight(2)
-                                .waitSeconds(.1)
-                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                                .back(10)
-                                .addTemporalMarker(() -> {
-                                    bot.setActiveIntakePosition(activeIntakeState.inactive);
-                                    bot.setArmPosition(armState.init, armExtensionState.extending);
-
-                                })
-
-                                .build();
-                        drive.followTrajectorySequenceAsync(pickUpStack1);
-                        currentState = state.leaveStack;
-                    }
-                    break;
                 case leaveStack:
                     if(!drive.isBusy()){
-                        if(bot.distanceSensor.getBotsRightCenterDistance() < 58) {
-                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), 72 - bot.distanceSensor.getBotsRightCenterDistance(), Math.toRadians(180)));
+                        double frontSum = 0;
+                        int frontCount = 0;
+
+                        for (int x = 0; x < 3; x++) {
+                            double distance = bot.distanceSensor.getBotsFrontDistance();
+                            if (distance < 58) {
+                                frontSum += distance;
+                                frontCount++;
+
+                            }
+                        }
+                        if(frontCount!= 0){
+                            frontSum /= frontCount;
+                            drive.setPoseEstimate(new Pose2d(-72+frontSum + 8,drive.getPoseEstimate().getY(), Math.toRadians(180)));
                         }
                         TrajectorySequence underGate = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                                .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX(), 13.75, Math.toRadians(180)))
-                                .addTemporalMarker(.1,() -> {
+                                .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX(), 10.75, Math.toRadians(180)))
+                                .addTemporalMarker(.01,() -> {
+                                    bot.setActiveIntakePosition(activeIntakeState.inactive);
+                                    bot.setArmPosition(armState.init, armExtensionState.extending);
+
+                                })
+                                .addTemporalMarker(.2
+                                        ,() -> {
                                     bot.setLidPosition(lidState.close);
                                     bot.setActiveIntakePosition(activeIntakeState.activeReverse);
                                 })
@@ -535,8 +614,8 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                                     bot.setActiveIntakePosition(activeIntakeState.inactive);
                                 })
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(47.5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                                .lineToConstantHeading(new Vector2d(38, 13.75))
-                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                                .lineToConstantHeading(new Vector2d(38, 11))
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                                 .lineToConstantHeading(new Vector2d(38, 34))
                                 .addTemporalMarker(() -> {
                                     bot.outtakeSlide.setPosition(700);
@@ -555,16 +634,31 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                     break;
                 case scoreStack:
                     if(!drive.isBusy()) {
-                        if(bot.distanceSensor.getBotsRightCenterDistance() < 58) {
-                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), 72 - bot.distanceSensor.getBotsRightCenterDistance(), Math.toRadians(180)));
+
+                        double sideSum = 0;
+                        int count = 0;
+
+                        for (int x = 0; x < 3; x++) {
+                            double distance = bot.distanceSensor.getBotsRightCenterDistance();
+                            if (distance < 58) {
+                                sideSum += distance;
+                                count++;
+
+                            }
+                        }
+                        if(count!= 0){
+                            sideSum /= count;
+                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(),72-sideSum, Math.toRadians(180)));
                         }
                         TrajectorySequence scoreSt = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 //    .lineToConstantHeading(new Vector2d(51.5, bot.distanceSensor.getBotsRightCenterDistance()))
-                                .lineToConstantHeading(new Vector2d(52.3, 31.75))
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                                .lineToConstantHeading(new Vector2d(51.4, 31.75))
                                 .addTemporalMarker(() -> {
                                     bot.setLidPosition(lidState.open);
                                     bot.outtakeSlide.setPosition(950);
                                 })
+                                .waitSeconds(.2)
                                 .build();
                         drive.followTrajectorySequenceAsync(scoreSt);
                         currentState = state.park;
@@ -581,17 +675,18 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                                 .addDisplacementMarker(5,  () -> {
                                     bot.setArmPosition(armState.intaking, armExtensionState.extending);
                                     bot.setWristPosition(wristState.intaking);
+                                  bot.linkage.setLinkageCustomPosition(.71);
                                 })
                                 .addDisplacementMarker(10,() -> {
                                     bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
 
                                 })
 
-                                .lineToLinearHeading(new Pose2d(45, 12, Math.toRadians(270)))
+                                .lineToLinearHeading(new Pose2d(45, 12.5, Math.toRadians(270)))
 
 //
 
-                                .lineToConstantHeading(new Vector2d(51, 12))
+                                .lineToConstantHeading(new Vector2d(50.9, 12.5))
                                 .build();
                         TrajectorySequence parkInCorner = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
@@ -616,43 +711,6 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                     break;
                 case idle:
                     telemetry.addLine("Inside Idle State");
-
-
-                    telemetry.addData("pose est ", drive.getPoseEstimate());
-
-                    telemetry.addData("Left Center Dis", bot.distanceSensor.getBotsLeftCenterDistance());
-                    telemetry.addData("Left Edge Distance", bot.distanceSensor.getLeftDistanceEdgeDistance());
-                    telemetry.addData("Pose Est", drive.getPoseEstimate());
-                    telemetry.addData("Y Value", drive.getPoseEstimate().getY());
-
-
-                    if (timer.seconds() > 5) {
-                        if (bot.distanceSensor.getBotsLeftCenterDistance() < 58) {
-                            double sideSum = 0;
-                            int count = 0;
-
-                            for (int x = 0; x < 3; x++) {
-                                double distance = bot.distanceSensor.getBotsLeftCenterDistance();
-                                if (distance < 58) {
-                                    sideSum += distance;
-                                    count++;
-
-                                }
-                            }
-                            if(count!= 0){
-                                sideSum /= count;
-                            }
-                            else{
-                                sideSum = 45;
-                            }
-
-                            telemetry.addData("Side Sum", sideSum);
-                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), -72 + sideSum, Math.toRadians(180)));
-                            telemetry.update();
-                            timer.reset();
-                        }
-                    }
-
                     //      telemetry.addData("Tag ID", tagOfInterest.id);
                     //        telemetry.addData("pose est ", drive.getPoseEstimate());
                     //         telemetry.addData("Tag y", tagY);

@@ -8,19 +8,19 @@ public class robotConstants
         public static double I = 0.0;
         public static double D = 0.0;
 
-        public static int MOSTHIGHLEFT = 1585;
-        public static int MOSTHIGHRIGHT = 1585;
+        public static int MOSTHIGHLEFT = 1500;
+        public static int MOSTHIGHRIGHT = 1500;
 
-        public static int HIGHLEFT = 1585;
-        public static int HIGHRIGHT = 1585;
+        public static int HIGHLEFT = 1380;
+        public static int HIGHRIGHT = 1380;
 
-        public static int MEDIUMLEFT = 1300;
-        public static int MEDIUMRIGHT = 1300;
-        public static int LOWMEDLEFT = 1000;
-        public static int LOWMEDRIGHT = 1000;
+        public static int MEDIUMLEFT = 1100;
+        public static int MEDIUMRIGHT = 1100;
+        public static int LOWMEDLEFT = 800;
+        public static int LOWMEDRIGHT = 800;
 
-        public static int LOWLEFT = 675;
-        public static int LOWRIGHT = 675;
+        public static int LOWLEFT = 500;
+        public static int LOWRIGHT = 500;
 
         public static int AUTOLOWLEFT = 100;
         public static int AUTOLOWRIGHT = 100;

@@ -35,7 +35,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "Close Red Distance Sensor Testing", group = "goobTest")
+//@Autonomous(name = "Close Red Distance Sensor Testing", group = "goobTest")
 public class CloseRedDistanceSensorTesting extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera

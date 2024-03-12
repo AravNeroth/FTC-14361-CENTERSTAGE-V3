@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Testing;
+package org.firstinspires.ftc.teamcode.OpModes.Autonomous.Stack;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -35,7 +35,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "Long Red Distance Sensor BS ", group = "goobTest")
+@Autonomous(name = "Long Red Stack DS", group = "Stack")
 public class LongRedDistanceSensor extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
