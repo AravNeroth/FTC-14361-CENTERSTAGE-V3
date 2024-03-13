@@ -28,7 +28,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 
 import java.util.List;
 
-//@Autonomous(name = "Close Blue April Tag Stack ", group = "goobTest")
+@Autonomous(name = "Close Blue April Tag Stack ", group = "goobTest")
 
 public class CloseBlueAprilTagStack extends LinearOpMode {
 
@@ -51,7 +51,7 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
 
     ElapsedTime timer = new ElapsedTime();
     ElapsedTime temporalMarkerTimer = new ElapsedTime();
-    Pose2d start = new Pose2d(11.5, 62.75, Math.toRadians(90));
+    Pose2d start = new Pose2d(11.5, 62.75, Math.toRadians(0));
     SampleMecanumDrive drive;
     String selection;
     OpenCvCamera camera;
@@ -74,7 +74,7 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
     double leftBoardX, leftBoardY, centerBoardX, centerBoardY, rightBoardX, rightBoardY;
     double secondTimeBoardX = 0, secondTimeBoardY = 0, thirdTimeBoardX, thirdTimeBoardY;
 
-    state currentState = state.tape;
+    state currentState = state.idle;
 
     enum state {
         tape, firstTimeBoard, secondTimeBoard, thirdTimeBoard, stack, idle, park, leaveBoard, underGateToStack, leaveStack, stackTurn, scoreStack, stackTurnOtherWay, stackOtherWay
@@ -201,7 +201,7 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
 
                 break;
         }
-        currentState = state.idle;
+        currentState = state.thirdTimeBoard;
         while (opModeIsActive() && !isStopRequested()) {
 
             switch (currentState) {
@@ -614,6 +614,25 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                         currentState = state.idle;
                     }
                     break;
+                case thirdTimeBoard:
+                    if(!drive.isBusy()){
+                        double leftStrafe = bot.ultrasonicSensor.avgOf(5);
+                        double offset = 0;
+                        if(leftStrafe > 48.5){
+                            //50
+                            offset = 42;
+                        }
+                        else{
+                            offset = 46;
+                        }
+                        TrajectorySequence parkInCorner = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                                .strafeLeft(leftStrafe - offset)
+                                .build();
+                        drive.followTrajectorySequenceAsync(parkInCorner);
+                        currentState = state.idle;
+                        }
+                    break;
                 case idle:
                     telemetry.addLine("Inside Idle State");
 
@@ -626,32 +645,7 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                     telemetry.addData("Y Value", drive.getPoseEstimate().getY());
 
 
-                    if (timer.seconds() > 5) {
-                        if (bot.distanceSensor.getBotsLeftCenterDistance() < 58) {
-                            double sideSum = 0;
-                            int count = 0;
 
-                            for (int x = 0; x < 3; x++) {
-                                double distance = bot.distanceSensor.getBotsLeftCenterDistance();
-                                if (distance < 58) {
-                                    sideSum += distance;
-                                    count++;
-
-                                }
-                            }
-                            if(count!= 0){
-                                sideSum /= count;
-                            }
-                            else{
-                                sideSum = 45;
-                            }
-
-                            telemetry.addData("Side Sum", sideSum);
-                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), -72 + sideSum, Math.toRadians(180)));
-                            telemetry.update();
-                            timer.reset();
-                        }
-                    }
 
                     //      telemetry.addData("Tag ID", tagOfInterest.id);
                     //        telemetry.addData("pose est ", drive.getPoseEstimate());

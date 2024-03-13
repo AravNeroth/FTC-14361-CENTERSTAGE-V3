@@ -59,7 +59,7 @@ public class Robot {
       //  colorSensor = new colorSensor(hardwareMap);
         voltMecanum = new VoltMecanum(hardwareMap);
         distanceSensor = new distanceSensor(hardwareMap);
-     //   ultrasonicSensor = new UltrasonicSensor(hardwareMap);
+        ultrasonicSensor = new UltrasonicSensor(hardwareMap);
     }
 
     // ---------------------------- OuttakeSlide ---------------------------- //

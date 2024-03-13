@@ -75,9 +75,12 @@ public class FieldCentric extends OpMode {
         telemetry.addLine("Total Runtime: " + getRuntime() + " seconds.");
         telemetry.addLine("Left Slide Position: " + bot.getOuttakeLeftSlidePosition() + " ticks");
         telemetry.addLine("Right Slide Position: " + bot.getOuttakeRightSlidePosition() + " ticks");
-    //    telemetry.addLine("Ultrasonic Sensor " + bot.ultrasonicSensor.getLeftDistance());
+telemetry.addLine("Left US" + bot.ultrasonicSensor.getVoltage());
+        telemetry.addLine("Left US With Equation" + bot.ultrasonicSensor.getVoltageWEquation());
+        telemetry.addLine("Left US With Equation Average" + bot.ultrasonicSensor.getAverageWEquation(10));
 
-//        telemetry.addLine("US Distance " + bot.distanceSensor.getUSDistance());
+
+//        telemetry.addLine("US Disance " + bot.distanceSensor.getUSDistance());
 //        telemetry.addLine("US Distance " + bot.distanceSensor.getUSDistanceNoDiv());
 //
 //        telemetry.addLine("US Distance " + bot.distanceSensor.getUSDistance360());
