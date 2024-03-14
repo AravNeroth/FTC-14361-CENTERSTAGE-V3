@@ -13,16 +13,18 @@ public class UltrasonicSensor {
      //   rightUS = hardwareMap.get(AnalogInput.class, "rightUltraSonicSensor");
     }
 
-    public double getLeftDistance() {
-        double distance = (leftUS.getVoltage()/((3.3/1024)*4.5))-3;
-        return distance;
-    }
-    public double getVoltage(){
-        double voltage = leftUS.getVoltage();
-        return voltage;
-    }
+
+    //this is the distance to the ultrasonic itself
     public double getVoltageWEquation(){
         double distance = 88.7*(leftUS.getVoltage())-15.2 + 3.2;
+        return distance;
+    }
+    public double getLeftDistanceCenter(){
+        double distance = 88.7*(leftUS.getVoltage())-15.2 + 8;
+        return distance;
+    }
+    public double getLeftDistanceEdge(){
+        double distance = 88.7*(leftUS.getVoltage())-15.2;
         return distance;
     }
     public double getAverageWEquation(int num){
@@ -33,18 +35,12 @@ public class UltrasonicSensor {
         return calculateAverage(distances);
     }
 
-    public double getDistance() {
-        return sqrtModelN(leftUS.getVoltage());
-    }
 
-    private double sqrtModelN(double voltage) {
-        return -108.795 * Math.sqrt(-.0237324 * (voltage - 206.937)) + 276.65;
-    }
 
     public double avgOf(int num) {
         double[] distances = new double[num];
         for (int i = 0; i < num; i++) {
-            distances[i] = getLeftDistance();
+            distances[i] = getVoltageWEquation();
         }
         return calculateAverage(distances);
     }

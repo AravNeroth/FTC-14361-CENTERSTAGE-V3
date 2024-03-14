@@ -45,7 +45,10 @@ public class distanceSensor {
     }
 
     public double getBotsLeftCenterDistance() {
-        return leftDistanceSensor.getDistance(DistanceUnit.INCH) + 3.75;
+        return leftDistanceSensor.getDistance(DistanceUnit.INCH) -.75 + 8;
+    }
+    public double getBotsLeftEdgeDistance() {
+        return leftDistanceSensor.getDistance(DistanceUnit.INCH);
     }
 
     public double getRightDistance() {

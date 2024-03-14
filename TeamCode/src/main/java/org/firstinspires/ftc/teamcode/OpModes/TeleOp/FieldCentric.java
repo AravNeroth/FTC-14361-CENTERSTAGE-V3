@@ -30,6 +30,8 @@ public class FieldCentric extends OpMode {
     private ElapsedTime runTime;
     private GamepadEx driver, operator;
     private Robot bot;
+    boolean startTime = false, endTime = false;
+    double startTimeS = 0, endTimes = 0;
 
     @Override
     public void init() {
@@ -72,12 +74,24 @@ public class FieldCentric extends OpMode {
 
     @Override
     public void loop() {
-        telemetry.addLine("Total Runtime: " + getRuntime() + " seconds.");
+        if(!startTime){
+            startTimeS = getRuntime();
+            startTime = true;
+        }
+        telemetry.addLine("Total Start Time" + startTimeS + " seconds.");
+
         telemetry.addLine("Left Slide Position: " + bot.getOuttakeLeftSlidePosition() + " ticks");
         telemetry.addLine("Right Slide Position: " + bot.getOuttakeRightSlidePosition() + " ticks");
-telemetry.addLine("Left US" + bot.ultrasonicSensor.getVoltage());
-        telemetry.addLine("Left US With Equation" + bot.ultrasonicSensor.getVoltageWEquation());
-        telemetry.addLine("Left US With Equation Average" + bot.ultrasonicSensor.getAverageWEquation(10));
+//
+//        telemetry.addLine("Left US With Equation" + bot.ultrasonicSensor.getVoltageWEquation());
+//        telemetry.addLine("Left US With Equation Average" + bot.ultrasonicSensor.getAverageWEquation(10));
+//        telemetry.addLine("Left US Center" + bot.ultrasonicSensor.getLeftDistanceCenter());
+//        telemetry.addLine("Left US Strafe" + (30-bot.ultrasonicSensor.getLeftDistanceCenter()));
+        double d1 = bot.distanceSensor.getBotsLeftEdgeDistance();
+        double d2 = bot.ultrasonicSensor.getLeftDistanceEdge();
+        telemetry.addLine("Dis Sensor" + d1);
+        telemetry.addLine("Ultrasonic" + d2);
+
 
 
 //        telemetry.addLine("US Disance " + bot.distanceSensor.getUSDistance());
@@ -276,5 +290,14 @@ telemetry.addLine("Left US" + bot.ultrasonicSensor.getVoltage());
         if(operator.wasJustPressed(GamepadKeys.Button.LEFT_STICK_BUTTON)){
           bot.outtakeSlide.resetSlideEncoder();
         }
+        if(!endTime){
+            endTimes = getRuntime();
+            endTime = true;
+            telemetry.addLine("end time"+ endTimes);
+            telemetry.update();
+        }
+
+        telemetry.addLine("end time"+ endTimes);
+        telemetry.update();
     }
 }
