@@ -343,7 +343,7 @@ public class DistanceSensorTesting extends LinearOpMode {
                     if(!drive.isBusy()){
                         TrajectorySequence lineUpWithWall = drive.trajectorySequenceBuilder(start)
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(10, 45, DriveConstants.TRACK_WIDTH))
-                                .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY() - bot.distanceSensor.getLeftDistanceEdgeDistance() + 3.75))
+                                .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY() - bot.distanceSensor.getBotsLeftEdgeDistance() + 3.75))
 
 
                                 //   .strafeRight(3)
@@ -386,7 +386,7 @@ public class DistanceSensorTesting extends LinearOpMode {
                     telemetry.addLine("Inside Idle State");
                     telemetry.addData("NewPose", drive.getPoseEstimate());
                     telemetry.addData("Distance",bot.distanceSensor.getLeftDistance());
-                    telemetry.addData("Bot's Distance",bot.distanceSensor.getLeftDistanceEdgeDistance());
+                    telemetry.addData("Bot's Distance",bot.distanceSensor.getBotsLeftEdgeDistance());
                     telemetry.addData("Bot's Distance",bot.distanceSensor.getBotsLeftCenterDistance());
                     telemetry.update();
                     break;
@@ -395,7 +395,7 @@ public class DistanceSensorTesting extends LinearOpMode {
             drive.update();
             telemetry.addData("NewPose", drive.getPoseEstimate());
             telemetry.addData("Distance",bot.distanceSensor.getLeftDistance());
-            telemetry.addData("Bot's Distance",bot.distanceSensor.getLeftDistanceEdgeDistance());
+            telemetry.addData("Bot's Distance",bot.distanceSensor.getBotsLeftEdgeDistance());
             telemetry.addData("Bot's Distance",bot.distanceSensor.getBotsLeftCenterDistance());
             telemetry.update();
         } // opmode loop

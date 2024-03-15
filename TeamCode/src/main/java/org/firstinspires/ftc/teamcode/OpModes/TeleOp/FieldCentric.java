@@ -79,6 +79,7 @@ public class FieldCentric extends OpMode {
             startTime = true;
         }
         telemetry.addLine("Total Start Time" + startTimeS + " seconds.");
+
        // telemetry.addLine("Fast Load Work??");
 
         telemetry.addLine("Left Slide Position: " + bot.getOuttakeLeftSlidePosition() + " ticks");

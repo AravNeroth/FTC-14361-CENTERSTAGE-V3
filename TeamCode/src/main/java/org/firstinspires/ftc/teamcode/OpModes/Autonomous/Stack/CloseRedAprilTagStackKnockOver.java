@@ -30,7 +30,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 
 import java.util.List;
 
-@Autonomous(name = "Close Red April Tag Stack Knock Over", group = "Stack")
+@Autonomous(name = "ALPHA RED", group = "Stack")
 public class CloseRedAprilTagStackKnockOver extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera

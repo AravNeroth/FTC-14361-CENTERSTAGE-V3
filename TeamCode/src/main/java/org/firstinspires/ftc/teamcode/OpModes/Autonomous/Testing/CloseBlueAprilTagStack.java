@@ -640,7 +640,7 @@ public class CloseBlueAprilTagStack extends LinearOpMode {
                     telemetry.addData("pose est ", drive.getPoseEstimate());
 
                     telemetry.addData("Left Center Dis", bot.distanceSensor.getBotsLeftCenterDistance());
-                    telemetry.addData("Left Edge Distance", bot.distanceSensor.getLeftDistanceEdgeDistance());
+                    telemetry.addData("Left Edge Distance", bot.distanceSensor.getBotsLeftEdgeDistance());
                     telemetry.addData("Pose Est", drive.getPoseEstimate());
                     telemetry.addData("Y Value", drive.getPoseEstimate().getY());
 

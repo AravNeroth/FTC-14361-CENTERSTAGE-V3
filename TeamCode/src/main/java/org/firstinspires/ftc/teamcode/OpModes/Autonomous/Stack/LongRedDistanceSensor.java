@@ -744,7 +744,7 @@ double underTrussOffset = 0, stackDistanceOffset = 0;
               //      telemetry.addData("double y -", detectYNeg);
               //      telemetry.addData("tag ", tagOfInterest.metadata.fieldPosition.get(1)+6);
                     telemetry.addData("Left Center Dis", bot.distanceSensor.getBotsLeftCenterDistance());
-                    telemetry.addData("Left Edge Dis", bot.distanceSensor.getLeftDistanceEdgeDistance());
+                    telemetry.addData("Left Edge Dis", bot.distanceSensor.getBotsLeftEdgeDistance());
                     telemetry.addData("pose est Y", drive.getPoseEstimate().getY());
 
 

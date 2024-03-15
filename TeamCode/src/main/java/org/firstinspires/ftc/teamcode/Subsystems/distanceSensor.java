@@ -8,6 +8,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Commands.frontDistanceState;
 import org.firstinspires.ftc.teamcode.Commands.stackState;
 
+
+//front port expansion hub i2c bus 3
+//right distance sensor expansion hub i2c bus 1
+//left distance sensor control hub i2c bus 1
 public class distanceSensor {
     DistanceSensor frontDistanceSensor, leftDistanceSensor, rightDistanceSensor;
     AnalogInput us;
@@ -40,15 +44,12 @@ public class distanceSensor {
         return leftDistanceSensor.getDistance(DistanceUnit.INCH);
     }
 
-    public double getLeftDistanceEdgeDistance() {
-        return leftDistanceSensor.getDistance(DistanceUnit.INCH) - 4;
-    }
 
     public double getBotsLeftCenterDistance() {
-        return leftDistanceSensor.getDistance(DistanceUnit.INCH) -.75 + 8;
+        return leftDistanceSensor.getDistance(DistanceUnit.INCH) -1 + 8;
     }
     public double getBotsLeftEdgeDistance() {
-        return leftDistanceSensor.getDistance(DistanceUnit.INCH);
+        return leftDistanceSensor.getDistance(DistanceUnit.INCH) -1.5;
     }
 
     public double getRightDistance() {

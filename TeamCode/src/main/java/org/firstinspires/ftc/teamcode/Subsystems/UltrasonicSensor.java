@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+//left US is 23
+//right US is 01
 public class UltrasonicSensor {
 
     private AnalogInput leftUS, rightUS;

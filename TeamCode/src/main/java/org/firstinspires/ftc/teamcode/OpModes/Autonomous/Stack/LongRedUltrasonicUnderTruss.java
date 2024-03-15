@@ -35,7 +35,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "Long Red Stack Under Truss US", group = "Stack")
+@Autonomous(name = "BETA RED", group = "Stack")
 public class LongRedUltrasonicUnderTruss extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
@@ -268,16 +268,7 @@ public class LongRedUltrasonicUnderTruss extends LinearOpMode {
                             edgeSum /= count;
                             drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), -72 + poseEstSum, Math.toRadians(180)));
 
-                            TrajectorySequence lineUp = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                    .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(20, 45, DriveConstants.TRACK_WIDTH))
 
-                                    .strafeLeft(poseEstSum - 16 - lineUpOffset)
-                                   // .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY() - edgeSum + 8 + stackDistanceOffset))
-
-
-                                    .resetVelConstraint()
-                                    .build();
-                            drive.followTrajectorySequenceAsync(lineUp);
                         }
 
 
@@ -541,7 +532,7 @@ public class LongRedUltrasonicUnderTruss extends LinearOpMode {
                                 })
                                 .waitSeconds(.1)
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                                .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX()-10, -57, Math.toRadians(183.5)))
+                                .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX()-10, -57, Math.toRadians(180)))
                                 .build();
                         drive.followTrajectorySequenceAsync(leaveBackBoard);
                         currentState = state.setPoseEstimate;
@@ -599,7 +590,7 @@ public class LongRedUltrasonicUnderTruss extends LinearOpMode {
                                         bot.setLinkagePosition(linkageState.HIGH);
                                     })
                                     .strafeRight(25 - sideSum)
-                                    .forward(frontSum -2)
+                                    .forward(frontSum -4)
                                     //  .lineToLinearHeading(new Pose2d(drive, drive.getPoseEstimate().getY(), Math.toRadians(230)))
                                     .waitSeconds(.1)
                                    .strafeLeft(7.5)
@@ -621,7 +612,7 @@ public class LongRedUltrasonicUnderTruss extends LinearOpMode {
                                     .forward(12.5)
                                     //   .lineToLinearHeading(new Pose2d(-56, drive.getPoseEstimate().getY(), Math.toRadians(230)))
                                     .waitSeconds(.1)
-                                   .strafeLeft(7.5 )
+                                   .strafeRight(7.5 )
                                    // .turn(Math.toRadians(-100))
                                     .addTemporalMarker(() -> {
                                         bot.setLinkagePosition(linkageState.LOW);
@@ -768,7 +759,7 @@ public class LongRedUltrasonicUnderTruss extends LinearOpMode {
                     //      telemetry.addData("double y -", detectYNeg);
                     //      telemetry.addData("tag ", tagOfInterest.metadata.fieldPosition.get(1)+6);
                     telemetry.addData("Left Center Dis", bot.distanceSensor.getBotsLeftCenterDistance());
-                    telemetry.addData("Left Edge Dis", bot.distanceSensor.getLeftDistanceEdgeDistance());
+                    telemetry.addData("Left Edge Dis", bot.distanceSensor.getBotsLeftEdgeDistance());
                     telemetry.addData("pose est Y", drive.getPoseEstimate().getY());
 
 
