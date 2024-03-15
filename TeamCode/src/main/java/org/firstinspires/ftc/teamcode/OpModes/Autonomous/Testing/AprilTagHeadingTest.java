@@ -59,7 +59,7 @@ public class AprilTagHeadingTest extends LinearOpMode {
 
     ElapsedTime timer = new ElapsedTime();
     ElapsedTime temporalMarkerTimer = new ElapsedTime();
-    Pose2d start = new Pose2d(-36.5, -62.75, Math.toRadians(270));
+    Pose2d start = new Pose2d(-36.5, -62.75, Math.toRadians(180));
     SampleMecanumDrive drive;
     String selection;
     OpenCvCamera camera;
@@ -213,6 +213,10 @@ public class AprilTagHeadingTest extends LinearOpMode {
                     break;
 
                 case toAprilTags:
+                    if(!timerOn){
+                        timerOn = true;
+                        timer.reset();
+                    }
                     List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
                     if (currentDetections.size() != 0) {
@@ -248,9 +252,10 @@ public class AprilTagHeadingTest extends LinearOpMode {
                                 // final double distanceX = tagOfInterest.center.x;
 
                                 //   tagY = drive.getPoseEstimate().getX() - tagOfInterest.ftcPose.y-3;
+
                                 tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                         .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(28, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                                        .turn(Math.toRadians(-detection.ftcPose.elevation))
+                                        .turn(Math.toRadians(bot.driveTrain.pidController(180 - detection.ftcPose.elevation)))
                                         // .waitSeconds(.15)
                                         //   .lineToConstantHeading(new Vector2d(50, tagY - 8))
 
@@ -270,10 +275,14 @@ public class AprilTagHeadingTest extends LinearOpMode {
                                 if(!drive.isBusy()){
                                     drive.setPoseEstimate(new Pose2d(tagOfInterest.metadata.fieldPosition.get(0)-8,tagOfInterest.metadata.fieldPosition.get(1), drive.getPoseEstimate().getHeading()));
                                     telemetry.addLine("Reset Pose");
-                                    bot.driveTrain.updatePID(drive.getPoseEstimate().getHeading() - detection.ftcPose.elevation);
-                                    //drive.followTrajectorySequenceAsync(tag);
+                                    if(timer.seconds() < 2){
+                                        drive.followTrajectorySequenceAsync(tag);
+                                    } else if (timer.seconds() > 2) {
+                                        currentState = state.idle;
+                                    }
+
                                     telemetry.addData("New Pose", drive.getPoseEstimate());
-                                    currentState = state.toAprilTags;
+                                  //  currentState = state.toAprilTags;
                                     tagFound = false;
                                 }
                                 telemetry.update();

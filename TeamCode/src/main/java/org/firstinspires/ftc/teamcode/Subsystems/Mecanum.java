@@ -230,4 +230,29 @@ break;
         rightFrontPower = ( rx) / denominator;
         rightRearPower = ( rx) / denominator;
     }
+    public double pidController(double desiredAngle){
+
+        // double error = angleWrap(Math.toRadians(90) - imu.getAngularOrientation().firstAngle);
+        // rx = .1*(Math.toRadians(90)-imu.getAngularOrientation().firstAngle);
+        // rx = gamepad1.getRightX(); // 0.01 * (des_angle - curr_angle)
+        error = smallestAngleDifference(desiredAngle, imu.getAngularOrientation().firstAngle * (180/Math.PI));
+
+
+        timer.reset();
+        output = (error * -Kp) + (imu.getAngularVelocity().zRotationRate * Kd) + (integralSum * Ki);
+        rx = output;
+
+        botHeading = -imu.getAngularOrientation().firstAngle;
+
+            return rx;
+
+//        rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+//        rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
+//
+//        denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+//        leftFrontPower = (rx) / denominator;
+//        leftRearPower = (rx) / denominator;
+//        rightFrontPower = ( rx) / denominator;
+//        rightRearPower = ( rx) / denominator;
+    }
 }

@@ -266,12 +266,23 @@ public class LongRedUltrasonicUnderTruss extends LinearOpMode {
                         if (count != 0) {
                             poseEstSum /= count;
                             edgeSum /= count;
-                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), -72 + poseEstSum, Math.toRadians(180)));
+                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), -72 + poseEstSum, drive.getPoseEstimate().getHeading()));
 
 
                         }
 
 
+                        TrajectorySequence lineUp = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(55, 45, DriveConstants.TRACK_WIDTH))
+                              //  .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX(),drive.getPoseEstimate().getY()))
+                                .strafeLeft(poseEstSum - 16 - lineUpOffset)
+                                .addTemporalMarker(() -> {
+                                    bot.setArmPosition(armState.outtaking, armExtensionState.extending);
+                                    bot.setWristPosition(wristState.outtaking);
+                                })
+                                .resetVelConstraint()
+                                .build();
+                        drive.followTrajectorySequenceAsync(lineUp);
 
 
 
@@ -522,7 +533,7 @@ public class LongRedUltrasonicUnderTruss extends LinearOpMode {
                         }
                         TrajectorySequence leaveBackBoard = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                                .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX()-10, drive.getPoseEstimate().getY()))
+                            //    .lineToConstantHeading(new Vector2d(drive.getPoseEstimate().getX()-10, drive.getPoseEstimate().getY()))
                                 .addDisplacementMarker(5, () -> {
                                     bot.setArmPosition(armState.intaking, armExtensionState.extending);
                                     bot.setWristPosition(wristState.intaking);
@@ -531,8 +542,8 @@ public class LongRedUltrasonicUnderTruss extends LinearOpMode {
                                     bot.outtakeSlide.setOuttakeSlidePosition(extensionState.extending, outtakeSlidesState.STATION);
                                 })
                                 .waitSeconds(.1)
-                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                                .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX()-10, -57, Math.toRadians(180)))
+                                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(28, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                                .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX()-30, -57, Math.toRadians(177.5)))
                                 .build();
                         drive.followTrajectorySequenceAsync(leaveBackBoard);
                         currentState = state.setPoseEstimate;
@@ -542,7 +553,7 @@ public class LongRedUltrasonicUnderTruss extends LinearOpMode {
                     if(!drive.isBusy()){
                         TrajectorySequence underTruss = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(55, 45, DriveConstants.TRACK_WIDTH))
-                                .lineToConstantHeading(new Vector2d(-40, drive.getPoseEstimate().getY() + 0.2))
+                                .lineToConstantHeading(new Vector2d(-40, drive.getPoseEstimate().getY() + 1.5))
 
                                 .resetVelConstraint()
                                 .build();
@@ -590,10 +601,10 @@ public class LongRedUltrasonicUnderTruss extends LinearOpMode {
                                         bot.setLinkagePosition(linkageState.HIGH);
                                     })
                                     .strafeRight(25 - sideSum)
-                                    .forward(frontSum -4)
+                                    .forward(frontSum -6)
                                     //  .lineToLinearHeading(new Pose2d(drive, drive.getPoseEstimate().getY(), Math.toRadians(230)))
                                     .waitSeconds(.1)
-                                   .strafeLeft(7.5)
+                                   .strafeRight(7.5)
                                  //   .turn(Math.toRadians(-100))
                                     .addTemporalMarker(() -> {
                                         bot.setLinkagePosition(linkageState.LOW);
