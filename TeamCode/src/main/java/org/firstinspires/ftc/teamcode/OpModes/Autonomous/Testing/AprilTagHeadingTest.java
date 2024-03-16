@@ -216,9 +216,12 @@ public class AprilTagHeadingTest extends LinearOpMode {
                     if(!drive.isBusy()){
                         TrajectorySequence turn = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                         .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(28, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                                         .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX() + 1, drive.getPoseEstimate().getY(), Math.toRadians(180)))
+                                         //.lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX() + 1, drive.getPoseEstimate().getY(), Math.toRadians(180)))
+                                       //  .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX() -1, drive.getPoseEstimate().getY(), Math.toRadians(180)))
                                          // .lineToConstantHeading(new Vector2d(50, tagY - 8))
                                 .turn(Math.toRadians(-yaw))
+                              //  .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX() + 1, drive.getPoseEstimate().getY(), Math.toRadians(180)))
+                            //    .lineToLinearHeading()
                            //     .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX() + .01, drive.getPoseEstimate().getY(), Math.toRadians(180)))
 
                                         .build();
@@ -273,10 +276,10 @@ public class AprilTagHeadingTest extends LinearOpMode {
                                 //   tagY = drive.getPoseEstimate().getX() - tagOfInterest.ftcPose.y-3;
 
                               //  drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), (drive.getPoseEstimate().getY() * .5) + (-72+8 * .5));
-                          //      drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX() + detection.ftcPose.y, drive.getPoseEstimate().getY() - detection.ftcPose.x, drive.getPoseEstimate().getHeading() - detection.ftcPose.yaw));
+                              //  drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX() + detection.ftcPose.y, drive.getPoseEstimate().getY() - detection.ftcPose.x, drive.getPoseEstimate().getHeading() - detection.ftcPose.pitch));
 
 
-                           //     drive.setPoseEstimate(new Pose2d(tagOfInterest.metadata.fieldPosition.get(0) - detection.ftcPose.y, tagOfInterest.metadata.fieldPosition.get(1) + detection.ftcPose.x, Math.toRadians(Math.toDegrees(drive.getPoseEstimate().getHeading()) + detection.ftcPose.pitch)));
+                                drive.setPoseEstimate(new Pose2d(tagOfInterest.metadata.fieldPosition.get(0) - detection.ftcPose.y, tagOfInterest.metadata.fieldPosition.get(1) + detection.ftcPose.x, Math.toRadians(Math.toDegrees(drive.getPoseEstimate().getHeading()) + detection.ftcPose.pitch)));
                                 telemetry.addLine("Yaw" + detection.ftcPose.pitch);
                                 telemetry.update();
                                 yaw = detection.ftcPose.pitch;
