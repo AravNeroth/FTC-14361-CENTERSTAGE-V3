@@ -96,7 +96,7 @@ double headingOffset = 0;
         drive.setPoseEstimate(start);
 
         TrajectorySequence centerTape = drive.trajectorySequenceBuilder(start)
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(55, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                 //.lineToConstantHeading(new Vector2d(19,-55))
                 .lineToConstantHeading(new Vector2d(-40, -35))
                 .addTemporalMarker(.05, () -> {
@@ -295,7 +295,7 @@ double headingOffset = 0;
                         } else if (lineUpCount == 1) {
                             //after u go under truss
                             lineUpCount++;
-                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), -72 + poseEstSum, Math.toRadians(180)));
+                            //  drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), -72 + poseEstSum, Math.toRadians(180)));
                             drive.followTrajectorySequenceAsync(lineUp);
 
                             currentState = state.toAprilTags;
@@ -305,7 +305,7 @@ double headingOffset = 0;
                             //after u score
                             lineUpOffset = 0;
                             lineUpCount++;
-                            drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), -72 + poseEstSum, Math.toRadians(180)));
+                         //   drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), -72 + poseEstSum, Math.toRadians(180)));
                             drive.followTrajectorySequenceAsync(lineUp);
                             currentState = state.underTrussToStack;
                         }
@@ -683,7 +683,7 @@ double headingOffset = 0;
                               //  .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                                 .back(5)
                                 .addTemporalMarker(.15,() -> {
-                                    bot.setActiveIntakePosition(activeIntakeState.inactive);
+                                    bot.setActiveIntakePosition(activeIntakeState.active);
 
                                 })
                                 .addTemporalMarker(.25,() -> {
@@ -779,13 +779,12 @@ double headingOffset = 0;
                                 .addTemporalMarker(() -> {
                                     bot.outtakeSlide.setPosition(700);
                                 })
-                                .lineToLinearHeading(new Pose2d(51.9, -41, Math.toRadians(180)))
+                                .lineToLinearHeading(new Pose2d(52.2, -41, Math.toRadians(180)))
                                 .addTemporalMarker(() -> {
                                     bot.lid.setLidPosition(lidState.open);
                                     bot.outtakeSlide.setPosition(825);
                                 })
-                                .waitSeconds(.45)
-
+                                .waitSeconds(.4)
                                 .resetVelConstraint()
                                 .build();
                         drive.followTrajectorySequenceAsync(score);
@@ -803,7 +802,7 @@ double headingOffset = 0;
                                     bot.setArmPosition(armState.intaking, armExtensionState.extending);
                                     bot.setWristPosition(wristState.intaking);
                                 })
-                                .addDisplacementMarker(10,() -> {
+                                .addDisplacementMarker(6,() -> {
                                     bot.setOuttakeSlidePosition(outtakeSlidesState.STATION, extensionState.extending);
 
                                 })
