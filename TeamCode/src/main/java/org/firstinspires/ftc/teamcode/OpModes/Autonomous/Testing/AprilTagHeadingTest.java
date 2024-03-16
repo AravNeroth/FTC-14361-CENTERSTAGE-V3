@@ -239,6 +239,8 @@ public class AprilTagHeadingTest extends LinearOpMode {
                                     tagY = drive.getPoseEstimate().getY() - (detection.ftcPose.x);
                                     tagFound = true;
                                     tagOfInterest = detection;
+                                   Pose2d f = new Pose2d(detection.ftcPose.y, detection.ftcPose.x, detection.ftcPose.yaw);
+
                                 }
 
                             }
@@ -252,7 +254,8 @@ public class AprilTagHeadingTest extends LinearOpMode {
                                 // final double distanceX = tagOfInterest.center.x;
 
                                 //   tagY = drive.getPoseEstimate().getX() - tagOfInterest.ftcPose.y-3;
-
+                              //  drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), (drive.getPoseEstimate().getY() * .5) + (-72+8 * .5));
+                                drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX() + detection.ftcPose.y, drive.getPoseEstimate().getY() - detection.ftcPose.x, drive.getPoseEstimate().getHeading() - detection.ftcPose.yaw));
                                 tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                         .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(28, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
                                         .turn(Math.toRadians(bot.driveTrain.pidController(180 - detection.ftcPose.elevation)))
