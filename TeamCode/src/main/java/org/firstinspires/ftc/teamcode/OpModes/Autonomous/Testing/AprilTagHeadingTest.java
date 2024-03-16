@@ -76,6 +76,7 @@ public class AprilTagHeadingTest extends LinearOpMode {
     int LEFT = 4, MIDDLE = 5, RIGHT = 6, REDSTACK = 7;
     int ID_TAG_OF_INTEREST = 4;
     boolean tagFound = false;
+    double yaw = 0;
     TrajectorySequence toStack = null,    toStackTraj = null;;
 
 
@@ -93,7 +94,7 @@ public class AprilTagHeadingTest extends LinearOpMode {
     ElapsedTime headingTimer = new ElapsedTime();
     boolean timerOn = false;
 
-    state currentState = state.stack;
+    state currentState = state.toAprilTags;
 
     enum state {
         tape, firstTimeBoard, secondTimeBoard, stack, idle, park, underGate, lineUp, underTruss, toAprilTags, leaveBoard, setPoseEstimate, underTrussToStack, toStack, boardFromStack, forwardStack, tagHeading
@@ -209,9 +210,25 @@ public class AprilTagHeadingTest extends LinearOpMode {
                 case idle:
                     telemetry.addLine("US Dist" + bot.ultrasonicSensor.getLeftDistanceEdge());
                     telemetry.addLine(" Dist" + bot.distanceSensor.getBotsLeftEdgeDistance());
-                    telemetry.update();
-                    break;
+                    telemetry.addLine("Yaw" + yaw);
 
+                    telemetry.update();
+                    if(!drive.isBusy()){
+                        TrajectorySequence turn = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                        .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(28, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+                                         .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX() + 1, drive.getPoseEstimate().getY(), Math.toRadians(180)))
+                                         // .lineToConstantHeading(new Vector2d(50, tagY - 8))
+                                .turn(Math.toRadians(-yaw))
+                           //     .lineToLinearHeading(new Pose2d(drive.getPoseEstimate().getX() + .01, drive.getPoseEstimate().getY(), Math.toRadians(180)))
+
+                                        .build();
+                        drive.followTrajectorySequenceAsync(turn);
+                        currentState = state.stack;
+                    }
+                    break;
+                case stack:
+                    telemetry.addLine("Yaw" + yaw);
+                    break;
                 case toAprilTags:
                     if(!timerOn){
                         timerOn = true;
@@ -254,17 +271,26 @@ public class AprilTagHeadingTest extends LinearOpMode {
                                 // final double distanceX = tagOfInterest.center.x;
 
                                 //   tagY = drive.getPoseEstimate().getX() - tagOfInterest.ftcPose.y-3;
+
                               //  drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX(), (drive.getPoseEstimate().getY() * .5) + (-72+8 * .5));
-                                drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX() + detection.ftcPose.y, drive.getPoseEstimate().getY() - detection.ftcPose.x, drive.getPoseEstimate().getHeading() - detection.ftcPose.yaw));
-                                tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                        .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(28, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
-                                        .turn(Math.toRadians(bot.driveTrain.pidController(180 - detection.ftcPose.elevation)))
-                                        // .waitSeconds(.15)
-                                        //   .lineToConstantHeading(new Vector2d(50, tagY - 8))
-
-                                        .build();
+                          //      drive.setPoseEstimate(new Pose2d(drive.getPoseEstimate().getX() + detection.ftcPose.y, drive.getPoseEstimate().getY() - detection.ftcPose.x, drive.getPoseEstimate().getHeading() - detection.ftcPose.yaw));
 
 
+                           //     drive.setPoseEstimate(new Pose2d(tagOfInterest.metadata.fieldPosition.get(0) - detection.ftcPose.y, tagOfInterest.metadata.fieldPosition.get(1) + detection.ftcPose.x, Math.toRadians(Math.toDegrees(drive.getPoseEstimate().getHeading()) + detection.ftcPose.pitch)));
+                                telemetry.addLine("Yaw" + detection.ftcPose.pitch);
+                                telemetry.update();
+                                yaw = detection.ftcPose.pitch;
+
+
+//                                tag = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+//                                        .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(28, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH))
+//                                        .turn(detection.ftcPose.pitch)
+//                                         .waitSeconds(.15)
+//                                       //    .lineToConstantHeading(new Vector2d(50, tagY - 8))
+//
+//                                        .build();
+//                            drive.followTrajectorySequenceAsync(tag);
+                                currentState = state.idle;
 
                                 telemetry.addData("FTC Pose x: ", tagOfInterest.ftcPose.x);
                                 telemetry.addData("Tag ID", tagOfInterest.id);
@@ -279,9 +305,9 @@ public class AprilTagHeadingTest extends LinearOpMode {
                                     drive.setPoseEstimate(new Pose2d(tagOfInterest.metadata.fieldPosition.get(0)-8,tagOfInterest.metadata.fieldPosition.get(1), drive.getPoseEstimate().getHeading()));
                                     telemetry.addLine("Reset Pose");
                                     if(timer.seconds() < 2){
-                                        drive.followTrajectorySequenceAsync(tag);
+                                      //  drive.followTrajectorySequenceAsync(tag);
                                     } else if (timer.seconds() > 2) {
-                                        currentState = state.idle;
+
                                     }
 
                                     telemetry.addData("New Pose", drive.getPoseEstimate());
