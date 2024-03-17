@@ -90,9 +90,11 @@ public class FieldCentric extends OpMode {
 //        telemetry.addLine("Left US Center" + bot.ultrasonicSensor.getLeftDistanceCenter());
 //        telemetry.addLine("Left US Strafe" + (30-bot.ultrasonicSensor.getLeftDistanceCenter()));
         double d1 = bot.distanceSensor.getBotsLeftEdgeDistance();
-        double d2 = bot.ultrasonicSensor.getLeftDistanceEdge();
+        double d2 = bot.ultrasonicSensor.getRightDistanceCenter();
+        double d3 = bot.ultrasonicSensor.getLeftDistanceCenter();
         telemetry.addLine("Left Dis Sensor" + d1);
-        telemetry.addLine("Ultrasonic" + d2);
+        telemetry.addLine("Ultrasonic RIght" + d2);
+        telemetry.addLine("Ultrasonic Left" + d3);
         telemetry.addLine("Front Distance Sensor" + bot.distanceSensor.getBotsFrontDistance());
         telemetry.addLine("Front Distance Sensor" + bot.distanceSensor.getBotsFrontDistance());
 

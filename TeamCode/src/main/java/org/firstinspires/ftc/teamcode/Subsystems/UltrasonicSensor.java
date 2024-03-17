@@ -12,7 +12,7 @@ public class UltrasonicSensor {
 
     public UltrasonicSensor(HardwareMap hardwareMap) {
         leftUS = hardwareMap.get(AnalogInput.class, "leftUltraSonicSensor");
-     //   rightUS = hardwareMap.get(AnalogInput.class, "rightUltraSonicSensor");
+        rightUS = hardwareMap.get(AnalogInput.class, "rightUltraSonicSensor");
     }
 
 
@@ -22,11 +22,20 @@ public class UltrasonicSensor {
         return distance;
     }
     public double getLeftDistanceCenter(){
-        double distance = 88.7*(leftUS.getVoltage())-15.2 + 8;
+        double distance = 88.7*(leftUS.getVoltage())-15.2 + 7.5;
         return distance;
     }
     public double getLeftDistanceEdge(){
         double distance = 88.7*(leftUS.getVoltage())-15.2;
+        return distance;
+    }
+
+    public double getRightDistanceCenter(){
+        double distance = 88.7*(rightUS.getVoltage())-15.2 + 7.5;
+        return distance;
+    }
+    public double getRightDistanceEdge(){
+        double distance = 88.7*(rightUS.getVoltage())-15.2;
         return distance;
     }
     public double getAverageWEquation(int num){
